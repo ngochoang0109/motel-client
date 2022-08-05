@@ -1,6 +1,7 @@
 import './Register.css'
 import {Link} from "react-router-dom";
 import AuthForm from '../../components/common/AuthForm/AuthForm';
+import Process from '../../components/common/Process/Process';
 
 const Register = () => {
 	return (<div className="auth-form-styles__FormWrapper-sc-16d3ww9-0 eVBJAS">
