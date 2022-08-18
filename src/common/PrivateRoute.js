@@ -1,20 +1,27 @@
-import { Navigate } from 'react-router-dom';
+import { Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { authentication } from '../action/authentication';
 import { message } from '../action/message';
 import { messageConstant } from '../constant/messageConstant';
+import { AuthService } from '../service/AuthService';
 
 
 
 const PrivateRoute=({ children })=> {
 
-    const {authUser } = useSelector(state => state.authenticated.isLogin);
+    const dispatch = useDispatch()
 
-    const dispatch=useDispatch()
+	useEffect(() => {
+		if (AuthService.getTokenOfLocalStorage()) {
+			dispatch(authentication.loginSuccess())
+		} else {
+			dispatch(authentication.logout())
+		}
+	}, [])
     
-    if (!authUser) {
-        // not logged in so redirect to login page with the return url
+    if (!AuthService.getTokenOfLocalStorage()) {
         dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
-        return null
+        return <Fragment></Fragment>
     }
 
     // authorized so return child components

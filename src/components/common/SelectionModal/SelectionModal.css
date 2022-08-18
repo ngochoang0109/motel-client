@@ -1,0 +1,12 @@
+.grid {
+	display: grid;
+}
+
+.flex-col .flex-row button {
+	width: 100%;
+}
+
+.flex-col {
+	display: flex;
+	flex-direction: column;
+}

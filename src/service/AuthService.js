@@ -1,11 +1,12 @@
 import httpClient from "../common/httpClient"
+import { storageKey } from "../constant/storageKey";
 
 const register = (userInfor) => {
-	return httpClient({}, 'auth/register', 'POST', userInfor);
+	return httpClient({},storageKey.API, 'auth/register', 'POST', userInfor);
 }
 
 const login = (user) => {
-	return httpClient({}, 'auth/login', 'POST', user);
+	return httpClient({},storageKey.API, 'auth/login', 'POST', user);
 }
 
 const logout = () => {
