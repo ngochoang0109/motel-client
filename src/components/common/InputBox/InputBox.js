@@ -15,7 +15,7 @@ const InputBox = ({ mode, placeholder, data,
 	const [id] = useState(generated(storageKey.SIZE_ID))
 	const [currentInput, setCurrentInput] = useState({})
 	const [inputValue, setInputValue] = useState({ value: "", nameOfinput: "" })
-	
+
 	useEffect(() => {
 		dispatch(InputBoxAction.addInputBox(id))
 	}, [])
@@ -56,9 +56,12 @@ const InputBox = ({ mode, placeholder, data,
 				</Fragment>
 			case inputConstant.DROP_DOWN_LIST:
 				return <Fragment>
-					<div className="input-selection-font" onClick={onFocusInputBox} 
-							style={{ width: '100%' }} id={id}>
-						<div className={inputValue.value.length === 0 ? `placeholder` : `placeholder value-selected`}>{inputValue.value.length === 0 ? `Ví dụ: ${placeholder}` : inputValue.value}</div>
+					<div className="input-selection-font"
+						onClick={onFocusInputBox}
+						style={{ width: '100%' }} id={id}>
+						<div className={inputValue.value.length === 0 ? `placeholder` : `placeholder value-selected`}>
+							{inputValue.value.length === 0 ? `Ví dụ: ${placeholder}` : inputValue.value}
+						</div>
 					</div>
 					{currentInput.show ? <div onClick={clearInputData} className="icon-clear">
 						<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -106,9 +109,9 @@ const InputBox = ({ mode, placeholder, data,
 	}
 
 	const selectedItemOfDropDownList = (event, value) => {
-		setInputValue({...inputValue,id:value.id,value:value.name, nameOfinput:name})
+		setInputValue({ ...inputValue, id: value.id, value: value.name, nameOfinput: name })
 		controllInput()
-		getValueDropList({ ...value, nameOfinput: name })
+		getValueDropList({...inputValue,id: value.id, value:value.name, nameOfinput: name })
 	}
 
 	const controllInput = () => {
@@ -130,7 +133,7 @@ const InputBox = ({ mode, placeholder, data,
 					<div width="100%" className="popover-content">
 						<div className="list-item-selected">
 							{data.map((value, index) => {
-								return <div className="item-wrapper" key={index} 
+								return <div className="item-wrapper" key={index}
 									onClick={(event) => selectedItemOfDropDownList(event, value)}>
 									<div className="item-detail" type="primary">{value.name}</div>
 								</div>
@@ -156,11 +159,11 @@ const InputBox = ({ mode, placeholder, data,
 
 	const handleOnChangeInput = (event) => {
 		let value = event.target.value
-		if (type === 'number') {
+		if (type === 'number' && value) {
 			value = parseInt(value)
 		}
 		setInputValue({ ...inputValue, value: value, nameOfinput: name })
-		onChange({ ...inputValue, value:value, nameOfinput: name })
+		onChange({ ...inputValue, value: value, nameOfinput: name })
 	}
 
 	const clearInputData = () => {
