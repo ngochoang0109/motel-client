@@ -6,7 +6,7 @@ import Login from './../../page/Login/Login';
 import Process from "../common/Process/Process";
 import PrivateRoute from "../../common/PrivateRoute";
 import CreatePost from "../../page/CreatePost/CreatePost";
-import Container from "../common/Container/Container";
+import Container from "./../common/Container/Container";
 
 const Layout = () => {
 	
