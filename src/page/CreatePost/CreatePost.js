@@ -1,62 +1,54 @@
 import { Fragment, useEffect, useState } from "react"
 import InputBox from "../../components/common/InputBox/InputBox"
-import SearchSelection from "../../components/common/SelectionModal/SelectionModal"
 import { inputConstant } from "../../constant/inputConstant"
-import { integrationConstant } from "../../constant/integrationConstant"
 import { PostNewsService } from "./../../service/PostNewsService"
-import { useDispatch, useSelector } from 'react-redux';
 import './CreatePost.css'
 import { AddressApiService } from "../../service/AddressApiService"
 
 const CreatePost = () => {
-	const typesOfAcc = useSelector(state => state.integration)
-	const dispatch = useDispatch()
-	const [getAllProvinces, setGetAllProvinces] = useState([{
-		id: 0,
-		name: ''
-	}])
-	const [getAllDistrictByProvinceId, setGetAllDistrictByProvinceId] = useState([{
-		id: 0,
-		name: ''
-	}])
-	const [getAllWardByDistrictId, setGetAllWardByDistrictId] = useState([{
-		id: 0,
-		name: ''
-	}])
+	const [typesOfAcc, setTypeOffAcc] = useState([])
+	const [getAllProvinces, setGetAllProvinces] = useState([{id: 0,name: ''}])
+	const [getAllDistrictByProvinceId, setGetAllDistrictByProvinceId] = useState([{id: 0,name: ''}])
+	const [getAllWardByDistrictId, setGetAllWardByDistrictId] = useState([{id: 0,name: ''}])
 	const [postNews, setPostNews] = useState({
 		typesOfAcc: 0,
 		province: '',
 		district: '',
-		ward:'',
-		street:'',
+		ward: '',
+		street: '',
+		title: '',
+		description: '',
+		area:0,
+		price:''
 	})
 
 	useEffect(() => {
 		PostNewsService.getTypeOfAcc()
 			.then((response) => {
-				dispatch({
-					type: integrationConstant.GET_TYPE_OF_ACC,
-					data: response.data
-				})
+				setTypeOffAcc(response.data)
 			})
 		AddressApiService.getAllProvince().then((data) => {
 			setGetAllProvinces(data)
 		})
 	}, [])
 
-	const handleGetValue = (value) => {
-		if (value.nameOfinput === 'province') {
-			AddressApiService.getAllDistricByProvinceId(value.id).then((data) => {
-				setGetAllDistrictByProvinceId(data)
-			})
-		} else if(value.nameOfinput === 'district'){
-			AddressApiService.getAllWardByDistrictId(value.id).then((data) => {
+	const handleGetValue = (target) => {
+		if (target.nameOfinput === 'province') {
+			//check district belong to province. if not => clear input district, ward, street, else dont change
+			if(!AddressApiService.checkDistrictOfProvince(target.id,postNews.district)){
+				AddressApiService.getAllDistricByProvinceId(target.id).then((data) => {
+					setGetAllDistrictByProvinceId(data)
+				})
+				
+			}
+		} else if (target.nameOfinput === 'district') {
+			AddressApiService.getAllWardByDistrictId(target.id).then((data) => {
 				setGetAllWardByDistrictId(data)
 			})
 		}
 		setPostNews({
 			...postNews,
-			[value.nameOfinput]: value.name
+			[target.nameOfinput]: target.name
 		})
 	}
 
@@ -85,7 +77,7 @@ const CreatePost = () => {
 													<InputBox mode={inputConstant.DROP_DOWN_LIST}
 														placeholder={`Chọn loại tin`}
 														data={typesOfAcc}
-														getValue={handleGetValue}
+														getValueDropList={handleGetValue}
 														name='typesOfAcc'></InputBox>
 												</div>
 											</div>
@@ -103,9 +95,12 @@ const CreatePost = () => {
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.INPUT_SEARCH}
 														placeholder={`Chọn tỉnh`}
-														data={getAllProvinces}
-														getValue={handleGetValue}
-														name='province'></InputBox>
+														data={getAllProvinces.filter((item) => {
+															return item.name.toLowerCase().includes(postNews.province.toLowerCase())
+														})}
+														getValueDropList={handleGetValue}
+														name='province'
+														onChange={handleGetValue}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -120,8 +115,9 @@ const CreatePost = () => {
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.INPUT_SEARCH} placeholder={`Chọn huyện`}
 														data={getAllDistrictByProvinceId}
-														getValue={handleGetValue}
-														name='district'></InputBox>
+														getValueDropList={handleGetValue}
+														name='district'
+														onChange={handleGetValue}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -139,8 +135,9 @@ const CreatePost = () => {
 													<InputBox mode={inputConstant.INPUT_SEARCH}
 														placeholder={`Chọn xã`}
 														data={getAllWardByDistrictId}
-														getValue={handleGetValue}
-														name='ward'></InputBox>
+														getValueDropList={handleGetValue}
+														name='ward'
+														onChange={handleGetValue}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -148,14 +145,13 @@ const CreatePost = () => {
 									<div className="wrapper-input-level-1">
 										<div className="wrapper-input-level-2">
 											<div className="label-input">
-												Đường, phố
+												Đường, số nhà
 												<div className="sc-kstrdz kihuz">&nbsp;*</div>
 											</div>
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
-													<InputBox mode={inputConstant.INPUT_TEXT_BOX} placeholder={`Chọn đường`}
-														data={getAllDistrictByProvinceId}
-														getValue={handleGetValue}
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập tên đường, số nhà`}
 														name='street'
 														onChange={handleGetValue}></InputBox>
 												</div>
@@ -163,566 +159,284 @@ const CreatePost = () => {
 										</div>
 									</div>
 								</div>
-								<div className="sc-JMrIS gyxkLD">
-									<div className="sc-ffEnQn foItZU">
-										{/* <div className="sc-kkjstb ghUCIz sc-gcNxir eDFzMO">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-													Phường, xã
-													<div className="sc-kstrdz kihuz">&nbsp;*</div>
-												</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div id="ward" data-tracking-id="ward-address-dropdown-lcp" placeholder="Chọn" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-																<div className="sc-gGTGfU fSjCQg sc-hguquU itkkfU">
-																	<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.30670992685148724" id="ward" data-tracking-id="ward-address-dropdown-lcp" placeholder="Chọn" className="sc-dcwrBW iDAuKv" defaultValue style={{ width: '100%' }} /></div>
-																</div>
-															</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> */}
-										{/* <div className="sc-kkjstb ghUCIz sc-ehlwGc ckxeCE">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Đường, phố</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div placeholder="Chọn" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-																<div className="sc-gGTGfU fSjCQg sc-hguquU itkkfU">
-																	<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.313960864505594" placeholder="Chọn" className="sc-dcwrBW iDAuKv" defaultValue style={{ width: '100%' }} /></div>
-																</div>
-															</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> */}
-									</div>
-									{/* <div className="sc-dkcnnY cJuolF">
-										<div className="sc-kkjstb ghUCIz sc-iDdsNx duLAok">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Dự án</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div data-tracking-id="project-address-dropdown-lcp" placeholder="Chọn" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-																<div className="sc-gGTGfU fSjCQg sc-hguquU itkkfU">
-																	<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.39832992093027064" data-tracking-id="project-address-dropdown-lcp" placeholder="Chọn" className="sc-dcwrBW iDAuKv" defaultValue style={{ width: '100%' }} /></div>
-																</div>
-															</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div> */}
-								</div>
-								{/* <div className="sc-hFUjvt cXVkiD">
-									<div className="sc-gGTGfU fSjCQg sc-dBnTLu Koial">
-										<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-											Địa chỉ hiển thị trên tin đăng
-											<div className="sc-kstrdz kihuz">&nbsp;*</div>
-										</div>
-										<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.8482008063843314" id="address" maxLength={200} placeholder="Bạn có thể bổ sung hẻm, ngách, ngõ..." data-tracking-id="adress-detail-input-lcp" className="sc-dcwrBW iDAuKv" defaultValue /></div>
-									</div>
-								</div> */}
-							</div>
-							<div className="sc-gzYaIe gSRNsV">
-								{/* <h3 className="sc-dlfnbm lhekIy sc-euHYbB peett">Thông tin bài viết</h3> */}
-								{/* <div className="sc-jvJioj enGzWK">
-									<div className="sc-fkubWd iXQHrd">
-										<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-											Tiêu đề
-											<div className="sc-kstrdz kihuz">&nbsp;*</div>
-										</div>
-										<textarea id="title" placeholder="VD: Bán nhà riêng 50m2 chính chủ tại Cầu Giấy" rows={2} className="sc-iuGMqu cbgjuq" defaultValue={""} />
-										<div className="sc-fubCfw eeaWWy sc-ihnbgO dWVYgZ" type="secondary">Tối thiểu 30 ký tự, tối đa 99 ký tự</div>
-									</div>
-								</div> */}
-								{/* <div className="sc-fkubWd iXQHrd sc-bynpOE kjsGCr">
-									<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-										Mô tả
-										<div className="sc-kstrdz kihuz">&nbsp;*</div>
-									</div>
-									<textarea id="descContent" placeholder="Nhập mô tả chung về bất động sản của bạn. Ví dụ: Khu nhà có vị trí thuận lợi, gần công viên, gần trường học ... " className="sc-iuGMqu Asfdz" defaultValue={""} />
-									<div className="sc-fubCfw eeaWWy sc-ihnbgO dWVYgZ" type="secondary">Tối thiểu 30 ký tự, tối đa 3.000 ký tự</div>
-								</div> */}
-							</div>
-							<div className="sc-gvnAtk fykAqp">
-								{/* <h3 className="sc-dlfnbm lhekIy sc-jPavhj azStf">Thông tin bất động sản</h3>
-								<div className="sc-gGTGfU fSjCQg sc-iTbZsn kYFBIE">
-									<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-										Diện tích
-										<div className="sc-kstrdz kihuz">&nbsp;*</div>
-									</div>
-									<div className="sc-hFXnzx fjFzkC">
-										<input name="pgds-0.5978529368648222" id="acreage" placeholder="Nhập diện tích, VD 80" rightmode="icon" inputMode="numeric" className="sc-ehsPrw dHwiZa" defaultValue />
-										<div mode="icon" className="sc-iuAqxS OkBJE">
-											<div className="sc-fubCfw iAFymC">m²</div>
-										</div>
-									</div>
-								</div> */}
-								<div style={{ display: 'flex', marginBottom: '16px' }}>
-									{/* <div className="sc-kkjstb ghUCIz sc-exkdkS gLiJnq">
-										<div className="sc-dwqbIM lgnhdE">
-											<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-												Mức giá
+								<div className="m-t-16"></div>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Tên tòa nhà
 												<div className="sc-kstrdz kihuz">&nbsp;*</div>
 											</div>
-											<div className="sc-fTNIDv ieXpgb">
-												<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-													<div type="number" className="sc-licaXj kCALOO">
-														<div name="price" placeholder="Nhập giá, VD 12000000" type="number" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-															<div className="sc-gGTGfU fSjCQg sc-hguquU itkkfU">
-																<div className="sc-hFXnzx fjFzkC"><input name="price" placeholder="Nhập giá, VD 12000000" rightmode="button" inputMode="numeric" className="sc-ehsPrw ylxsH" defaultValue style={{ width: '100%' }} /></div>
-															</div>
-														</div>
-														<div className="sc-gUUzQN jMensr icon-clear">
-															<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#CCCCCC" />
-																<path d="M15 9L9 15" stroke="white" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																<path d="M15 15L9 9" stroke="white" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-															</svg>
-														</div>
-													</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập tên tòa nhà`}
+														onChange={handleGetValue}
+														name='tower'
+														type='text'></InputBox>
 												</div>
 											</div>
-										</div>
-									</div> */}
-									{/* <div className="sc-gwMuRV Druhw">
-										<div className="sc-kkjstb ghUCIz">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Đơn vị</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div id="price" placeholder className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>VND</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div> */}
-								</div>
-								{/* <div className="sc-kstrdz dPmahJ">Giấy tờ pháp lý</div> */}
-								{/* <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-									<div className="sc-gYhigD gdlclw">
-										<div mode="tag" className="sc-kHNMoK hSbJLH sc-dFkSPt gBnblK" type="solid" color="gray2"><span color="#2C2C2C" className="sc-kEjbxe bhKKEC sc-bGqQkm leOoTK">Sổ đỏ/ Sổ hồng</span></div>
-									</div>
-									<div className="sc-gYhigD gdlclw">
-										<div mode="tag" className="sc-kHNMoK hSbJLH sc-dFkSPt gBnblK" type="solid" color="gray2"><span color="#2C2C2C" className="sc-kEjbxe bhKKEC sc-bGqQkm leOoTK">Hợp đồng mua bán</span></div>
-									</div>
-									<div className="sc-gYhigD gdlclw">
-										<div mode="tag" className="sc-kHNMoK hSbJLH sc-dFkSPt gBnblK" type="solid" color="gray2"><span color="#2C2C2C" className="sc-kEjbxe bhKKEC sc-bGqQkm leOoTK">Đang chờ sổ</span></div>
-									</div>
-									<div className="sc-gYhigD gdlclw">
-										<div mode="tag" className="sc-kHNMoK eCPwoe sc-dFkSPt gBnblK" type="solid" color="gray2">
-											<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-												<line x1="4.75" y1="12.25" x2="18.25" y2="12.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-												<line x1="11.75" y1="5.75" x2="11.75" y2="19.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-											</svg>
 										</div>
 									</div>
-								</div> */}
-								<div className="sc-jQliKr bhqNCP" />
-								<div>
-									{/* <div className="sc-kGNybE iqergQ sc-futmCW buzJvC">
-										<div className="sc-kstrdz dPmahJ sc-bAfeAT kgPYcZ">Số phòng ngủ</div>
-										<div className="sc-bxniyx bACUYk">
-											<button type="solid" color="secondary" disabled className="sc-kLgntA iKxMds">
-												<span className="sc-jJEJSO hYLcNg">
-													<div className="sc-gWHgXt ikxKmn">
-														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<line x1="4.75" y1="11.25" x2="19.25" y2="11.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-														</svg>
-													</div>
-												</span>
-											</button>
-											<div className="sc-gGTGfU fSjCQg sc-jYCGvq MiXGF">
-												<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.18255941915314478" widthinput={55} rightmode="button" inputMode="numeric" className="sc-ehsPrw ylxsH" defaultValue={0} /></div>
-											</div>
-											<button type="solid" color="secondary" className="sc-kLgntA ecqTvW">
-												<span className="sc-jJEJSO hYLcNg">
-													<div className="sc-gWHgXt ikxKmn">
-														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<line x1="4.75" y1="12.25" x2="18.25" y2="12.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-															<line x1="11.75" y1="5.75" x2="11.75" y2="19.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-														</svg>
-													</div>
-												</span>
-											</button>
-										</div>
-									</div> */}
-									{/* <div className="sc-kGNybE iqergQ sc-futmCW buzJvC">
-										<div className="sc-kstrdz dPmahJ sc-bAfeAT kgPYcZ">Số phòng tắm, vệ sinh</div>
-										<div className="sc-bxniyx bACUYk">
-											<button type="solid" color="secondary" disabled className="sc-kLgntA iKxMds">
-												<span className="sc-jJEJSO hYLcNg">
-													<div className="sc-gWHgXt ikxKmn">
-														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<line x1="4.75" y1="11.25" x2="19.25" y2="11.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-														</svg>
-													</div>
-												</span>
-											</button>
-											<div className="sc-gGTGfU fSjCQg sc-jYCGvq MiXGF">
-												<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.6509005068917875" widthinput={55} rightmode="button" inputMode="numeric" className="sc-ehsPrw ylxsH" defaultValue={0} /></div>
-											</div>
-											<button type="solid" color="secondary" className="sc-kLgntA ecqTvW">
-												<span className="sc-jJEJSO hYLcNg">
-													<div className="sc-gWHgXt ikxKmn">
-														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<line x1="4.75" y1="12.25" x2="18.25" y2="12.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-															<line x1="11.75" y1="5.75" x2="11.75" y2="19.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-														</svg>
-													</div>
-												</span>
-											</button>
-										</div>
-									</div> */}
-									{/* <div className="sc-kGNybE iqergQ">
-										<div className="sc-kstrdz dPmahJ sc-bAfeAT kgPYcZ">Số tầng</div>
-										<div className="sc-bxniyx bACUYk">
-											<button type="solid" color="secondary" disabled className="sc-kLgntA iKxMds">
-												<span className="sc-jJEJSO hYLcNg">
-													<div className="sc-gWHgXt ikxKmn">
-														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<line x1="4.75" y1="11.25" x2="19.25" y2="11.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-														</svg>
-													</div>
-												</span>
-											</button>
-											<div className="sc-gGTGfU fSjCQg sc-jYCGvq MiXGF">
-												<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.0250708528148178" widthinput={55} rightmode="button" inputMode="numeric" className="sc-ehsPrw ylxsH" defaultValue={0} /></div>
-											</div>
-											<button type="solid" color="secondary" className="sc-kLgntA ecqTvW">
-												<span className="sc-jJEJSO hYLcNg">
-													<div className="sc-gWHgXt ikxKmn">
-														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<line x1="4.75" y1="12.25" x2="18.25" y2="12.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-															<line x1="11.75" y1="5.75" x2="11.75" y2="19.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-														</svg>
-													</div>
-												</span>
-											</button>
-										</div>
-									</div> */}
-									{/* <div style={{ display: 'flex', marginBottom: '24px', marginTop: '24px' }}>
-										<div className="sc-hBEYos dWFkPG">Mô tả bổ sung</div>
-										<div className="sc-kyOGgU jcUoDI" />
-									</div> */}
-									<div className="sc-tIXxi jBxEZE">
-										{/* <div className="sc-kkjstb ghUCIz sc-gCgac bXLEsq">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Hướng nhà</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div name="houseDirection" placeholder="Chọn hướng" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-																<div className="sc-iBPRYJ jfvWqv sc-bTRMAZ gfyNKU placeholder">Chọn hướng</div>
-															</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> */}
-										{/* <div className="sc-kkjstb ghUCIz sc-eCuchx fkeIdG">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Hướng ban công</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div name="balconyDirection" placeholder="Chọn hướng" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-																<div className="sc-iBPRYJ jfvWqv sc-bTRMAZ gfyNKU placeholder">Chọn hướng</div>
-															</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> */}
-									</div>
-									<div className="sc-tIXxi jBxEZE">
-										{/* <div className="sc-gGTGfU fSjCQg sc-hsKQGR erSnjP">
-											<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Đường vào</div>
-											<div className="sc-hFXnzx fjFzkC">
-												<input name="pgds-0.16781607605161364" placeholder="Nhập số" rightmode="icon" inputMode="numeric" className="sc-ehsPrw dHwiZa" defaultValue />
-												<div mode="icon" className="sc-iuAqxS OkBJE">
-													<div className="sc-fubCfw iAFymC">m</div>
-												</div>
-											</div>
-										</div> */}
-										{/* <div className="sc-gGTGfU fSjCQg sc-jmPcvM fKlXbV">
-											<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Mặt tiền</div>
-											<div className="sc-hFXnzx fjFzkC">
-												<input name="pgds-0.3118992730587453" placeholder="Nhập số" rightmode="icon" inputMode="numeric" className="sc-ehsPrw dHwiZa" defaultValue />
-												<div mode="icon" className="sc-iuAqxS OkBJE">
-													<div className="sc-fubCfw iAFymC">m</div>
-												</div>
-											</div>
-										</div> */}
-									</div>
-									{/* <div className="sc-gGTGfU fSjCQg">
-										<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Nội thất</div>
-										<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.8138832698892464" maxLength={512} placeholder="VD: Nội thất đầy đủ" className="sc-dcwrBW iDAuKv" defaultValue /></div>
-									</div> */}
-								</div>
-							</div>
-							<div className="sc-hrKtqM chsvWH">
-								{/* <div className="sc-bYgjwZ jiJypP">
-									<h3 className="sc-dlfnbm lhekIy">Hình ảnh &amp; Video</h3>
-									<div className="sc-cbFqsP bkAFvh" />
-									<div className="sc-gTgzIj fTLLNh">
-										<div className="sc-kQoRyN eZqfDk">
-											<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" fontSize="16px">
-												<path fillRule="evenodd" clipRule="evenodd" d="M2.25 12C2.25 6.61522 6.61522 2.25 12 2.25C17.3848 2.25 21.75 6.61522 21.75 12C21.75 17.3848 17.3848 21.75 12 21.75C6.61522 21.75 2.25 17.3848 2.25 12ZM12 7.75C10.8917 7.75 9.96738 8.47508 9.72413 9.3771C9.61628 9.77702 9.20465 10.0138 8.80472 9.90595C8.40479 9.7981 8.16802 9.38647 8.27587 8.98654C8.70934 7.37913 10.2678 6.25 12 6.25C14.0801 6.25 15.75 7.87091 15.75 9.90909C15.75 11.3648 14.6776 12.0945 13.9756 12.5722C13.9577 12.5844 13.9399 12.5964 13.9225 12.6083C13.0988 13.1699 12.75 13.4581 12.75 14C12.75 14.4142 12.4142 14.75 12 14.75C11.5858 14.75 11.25 14.4142 11.25 14C11.25 12.6066 12.3013 11.8947 12.9848 11.4319C13.0165 11.4104 13.0475 11.3894 13.0775 11.369C13.8779 10.8232 14.25 10.5071 14.25 9.90909C14.25 8.73398 13.2867 7.75 12 7.75ZM12 16.24C12.4142 16.24 12.75 16.5758 12.75 16.99V17C12.75 17.4142 12.4142 17.75 12 17.75C11.5858 17.75 11.25 17.4142 11.25 17V16.99C11.25 16.5758 11.5858 16.24 12 16.24Z" fill="currentColor" />
-											</svg>
-										</div>
-									</div>
-								</div> */}
-								<div className="sc-cMJmvu hGyZNO">
-									{/* <div className="sc-glnKDv dGlbCW">
-										<span type="secondary" className="sc-iqHYGH fwttXz">Hãy dùng ảnh thật, không trùng, không chèn số điện thoại. Mỗi ảnh kích thước tối thiểu 400x400, tối đa 15 MB. Số lượng ảnh tối đa tuỳ theo loại tin. Xem thêm <a href="/quy-dinh-dang-tin/hinh-anh" target="_blank" rel="noreferrer"> <span className="sc-dIUggk xEfgI">Quy định đăng tin</span></a>.</span>
-										<section>
-											<div>
-												<div className="sc-kZNjfP kdniOn">
-													<input accept="image/*,.heic" multiple type="file" style={{ display: 'none' }} />
-													<svg width={80} height={80} viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path d="M118.42 75.84C118.43 83.2392 116.894 90.5589 113.91 97.33H16.09C12.8944 90.0546 11.3622 82.1579 11.6049 74.2154C11.8477 66.2728 13.8593 58.4844 17.4932 51.4177C21.1271 44.3511 26.2918 38.1841 32.6109 33.3662C38.93 28.5483 46.2443 25.2008 54.0209 23.5676C61.7976 21.9345 69.8406 22.0568 77.564 23.9257C85.2873 25.7946 92.4965 29.363 98.6661 34.3709C104.836 39.3787 109.81 45.6999 113.228 52.8739C116.645 60.0478 118.419 67.8937 118.42 75.84Z" fill="#F2F2F2" />
-														<path d="M5.54 97.33H126.37" stroke="#63666A" strokeWidth={1} strokeMiterlimit={10} strokeLinecap="round" />
-														<path d="M97 97.33H49.91V34.65C49.91 34.3848 50.0154 34.1305 50.2029 33.9429C50.3904 33.7554 50.6448 33.65 50.91 33.65H84.18C84.6167 33.6541 85.0483 33.7445 85.4499 33.9162C85.8515 34.0878 86.2152 34.3372 86.52 34.65L96.02 44.15C96.3321 44.4533 96.5811 44.8153 96.7527 45.2151C96.9243 45.615 97.0152 46.0449 97.02 46.48L97 97.33Z" fill="#D7D7D7" stroke="#63666A" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M59.09 105.64H42.09C41.8248 105.64 41.5704 105.535 41.3829 105.347C41.1954 105.16 41.09 104.905 41.09 104.64V41.79C41.09 41.5248 41.1954 41.2705 41.3829 41.0829C41.5704 40.8954 41.8248 40.79 42.09 40.79H77.33L89 52.42V104.62C89 104.885 88.8946 105.14 88.7071 105.327C88.5196 105.515 88.2652 105.62 88 105.62H74.86" fill="white" />
-														<path d="M59.09 105.64H42.09C41.8248 105.64 41.5704 105.535 41.3829 105.347C41.1954 105.16 41.09 104.905 41.09 104.64V41.79C41.09 41.5248 41.1954 41.2705 41.3829 41.0829C41.5704 40.8954 41.8248 40.79 42.09 40.79H77.33L89 52.42V104.62C89 104.885 88.8946 105.14 88.7071 105.327C88.5196 105.515 88.2652 105.62 88 105.62H74.86" stroke="#63666A" strokeWidth={1} strokeMiterlimit={10} strokeLinecap="round" />
-														<path d="M88.97 52.42H77.33V40.77L88.97 52.42Z" fill="#D7D7D7" stroke="#63666A" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M27.32 65.49V70.6" stroke="#D7D7D7" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M29.88 68.04H24.76" stroke="#D7D7D7" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M110.49 32.5601V39.9901" stroke="#D7D7D7" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M114.2 36.27H106.77" stroke="#D7D7D7" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M34.07 14.58V25.59" stroke="#D7D7D7" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M39.57 20.08H28.57" stroke="#D7D7D7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-														<path d="M67 115.86V67.12" stroke="#63666A" strokeWidth={1} strokeMiterlimit={10} strokeLinecap="round" />
-														<path d="M55.5 78.61L67 67.12L78.5 78.61" fill="white" />
-														<path d="M55.5 78.61L67 67.12L78.5 78.61" stroke="#63666A" strokeWidth={1} strokeMiterlimit={10} />
-													</svg>
-													<div className="sc-iBPRYJ jfvWqv">Bấm để chọn ảnh cần tải lên</div>
-													<div className="sc-iBPRYJ oLMna" style={{ marginBottom: '16px' }}>hoặc kéo thả ảnh vào đây</div>
-												</div>
-											</div>
-										</section>
-									</div> */}
-									<div className="sc-Fyfyc eqtGSF">
-										<div className="sc-jXktwP hMtZrn">
-											{/* <div className="sc-dUrnRO AXFeE">
-												<span className="sc-fXoxut bWOcTw">
-													<div className="sc-aAhaV hmZIoz">
-														<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" fontSize="24px">
-															<circle cx="12.5" cy="12.5" r="9.5" stroke="currentColor" strokeWidth="1.5" />
-															<path d="M10.5 10.5017C10.5 9.70299 11.3901 9.22659 12.0547 9.66963L15.2519 11.8011C15.8457 12.1969 15.8457 13.0694 15.2519 13.4652L12.0547 15.5967C11.3901 16.0397 10.5 15.5633 10.5 14.7646V10.5017Z" fill="currentColor" />
-														</svg>
-													</div>
-												</span>
-												<div className="sc-iBPRYJ jfvWqv sc-fmlJLJ fOPGoU">Thêm video từ Youtube</div>
-											</div> */}
-											{/* <div className="sc-jmhFOf fFGAIg">
-												<div className="sc-gYfyDA juKlQY">
-													<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-													</svg>
-												</div>
-											</div> */}
-										</div>
-									</div>
-									<div className="sc-bKfpMw bDFxcZ" />
-									<div className="sc-Fyfyc eqtGSF">
-										<div className="sc-jXktwP hMtZrn">
-											{/* <div className="sc-dUrnRO AXFeE">
-												<span className="sc-fXoxut bWOcTw">
-													<div className="sc-aAhaV hmZIoz">
-														<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" fontSize="24px">
-															<path d="M20.3333 12.3335C21.3864 12.9618 22 13.7159 22 14.5268C22 16.4457 18.5644 18.0466 14 18.4141C13.3538 18.4662 12.6849 18.4935 12 18.4935C11.776 18.4935 11.5537 18.4906 11.3333 18.4848C11.109 18.479 10.8867 18.4702 10.6667 18.4585M3.67756 12.3335C2.62005 12.961 2 13.7137 2 14.5268C2 16.2538 4.78277 17.7232 8.66667 18.2678M8.66667 18.2678L7.33333 16.2535M8.66667 18.2678L6 19.3335" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-															<path d="M5.58569 7.02734H6.33765C6.69572 7.02734 6.96102 6.93783 7.13354 6.75879C7.30607 6.57975 7.39233 6.34212 7.39233 6.0459C7.39233 5.75944 7.30607 5.53646 7.13354 5.37695C6.96427 5.21745 6.7299 5.1377 6.43042 5.1377C6.16024 5.1377 5.934 5.21257 5.75171 5.3623C5.56942 5.50879 5.47827 5.70085 5.47827 5.93848H4.06714C4.06714 5.56738 4.16642 5.23535 4.36499 4.94238C4.56681 4.64616 4.84676 4.41504 5.20483 4.24902C5.56616 4.08301 5.9633 4 6.39624 4C7.14819 4 7.73739 4.18066 8.16382 4.54199C8.59025 4.90007 8.80347 5.39486 8.80347 6.02637C8.80347 6.35189 8.70418 6.65137 8.50562 6.9248C8.30705 7.19824 8.04663 7.4082 7.72437 7.55469C8.12476 7.69792 8.42261 7.91276 8.61792 8.19922C8.81649 8.48568 8.91577 8.82422 8.91577 9.21484C8.91577 9.84635 8.68465 10.3525 8.22241 10.7334C7.76343 11.1143 7.1547 11.3047 6.39624 11.3047C5.6866 11.3047 5.10555 11.1175 4.65308 10.7432C4.20386 10.3688 3.97925 9.87402 3.97925 9.25879H5.39038C5.39038 9.52572 5.48966 9.74381 5.68823 9.91309C5.89006 10.0824 6.13745 10.167 6.43042 10.167C6.76571 10.167 7.02775 10.0791 7.21655 9.90332C7.40861 9.72428 7.50464 9.48828 7.50464 9.19531C7.50464 8.48568 7.11401 8.13086 6.33276 8.13086H5.58569V7.02734Z" fill="currentColor" />
-															<path d="M13.7205 4.02441V5.18652H13.5837C12.9457 5.19629 12.4314 5.3623 12.0408 5.68457C11.6534 6.00684 11.4207 6.45443 11.3425 7.02734C11.7201 6.64323 12.197 6.45117 12.7732 6.45117C13.3917 6.45117 13.8832 6.67253 14.2478 7.11523C14.6124 7.55794 14.7947 8.14062 14.7947 8.86328C14.7947 9.32552 14.6938 9.74381 14.4919 10.1182C14.2934 10.4925 14.0102 10.7839 13.6423 10.9922C13.2778 11.2005 12.8643 11.3047 12.4021 11.3047C11.6534 11.3047 11.0479 11.0443 10.5857 10.5234C10.1267 10.0026 9.89722 9.30762 9.89722 8.43848V7.93066C9.89722 7.15918 10.0421 6.47884 10.3318 5.88965C10.6248 5.2972 11.043 4.83984 11.5867 4.51758C12.1335 4.19206 12.7667 4.02767 13.4861 4.02441H13.7205ZM12.3435 7.58398C12.1156 7.58398 11.9089 7.64421 11.7234 7.76465C11.5378 7.88184 11.4011 8.03809 11.3132 8.2334V8.66309C11.3132 9.13509 11.406 9.50456 11.5916 9.77148C11.7771 10.0352 12.0375 10.167 12.3728 10.167C12.6755 10.167 12.9197 10.0482 13.1052 9.81055C13.294 9.56966 13.3884 9.25879 13.3884 8.87793C13.3884 8.49056 13.294 8.17806 13.1052 7.94043C12.9164 7.7028 12.6625 7.58398 12.3435 7.58398Z" fill="currentColor" />
-															<path d="M20.4197 8.26758C20.4197 9.25065 20.2162 10.0026 19.8093 10.5234C19.4024 11.0443 18.8067 11.3047 18.0222 11.3047C17.2475 11.3047 16.655 11.0492 16.2449 10.5381C15.8347 10.027 15.6248 9.2946 15.615 8.34082V7.03223C15.615 6.03939 15.8201 5.28581 16.2302 4.77148C16.6436 4.25716 17.2377 4 18.0125 4C18.7872 4 19.3796 4.25553 19.7898 4.7666C20.2 5.27441 20.4099 6.00521 20.4197 6.95898V8.26758ZM19.0085 6.83203C19.0085 6.24284 18.9272 5.81478 18.7644 5.54785C18.6049 5.27767 18.3542 5.14258 18.0125 5.14258C17.6804 5.14258 17.4347 5.27116 17.2751 5.52832C17.1189 5.78223 17.0359 6.18099 17.0261 6.72461V8.45312C17.0261 9.03255 17.1042 9.46387 17.2605 9.74707C17.42 10.027 17.6739 10.167 18.0222 10.167C18.3673 10.167 18.6163 10.0319 18.7693 9.76172C18.9223 9.49154 19.002 9.07812 19.0085 8.52148V6.83203Z" fill="currentColor" />
-														</svg>
-													</div>
-												</span>
-												<div className="sc-iBPRYJ jfvWqv sc-fmlJLJ fOPGoU">Hướng dẫn đăng ảnh 360°</div>
-											</div> */}
-											{/* <div className="sc-jmhFOf fFGAIg">
-												<div className="sc-gYfyDA juKlQY">
-													<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-													</svg>
-												</div>
-											</div> */}
-										</div>
-									</div>
-								</div>
-							</div>
-							<div className="sc-jrpKwx jChZsf">
-								{/* <h3 className="sc-dlfnbm lhekIy sc-jKzNgy cuXlHH">Thông tin liên hệ</h3> */}
-								<div className="sc-gQqokz hBrndl">
-									{/* <div className="sc-gGTGfU fSjCQg sc-hxhkai cKGeJg">
-										<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-											Tên liên hệ
-											<div className="sc-kstrdz kihuz">&nbsp;*</div>
-										</div>
-										<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.9837390651593634" id="name" maxLength={200} placeholder="Nhập tên" className="sc-dcwrBW iDAuKv" defaultValue="Tran Ngoc Hoang" /></div>
-									</div> */}
-									<div className="sc-frRhtF ehlgdK">
-										{/* <div className="sc-bvVdbW fsfWuT sc-WdzTA icDWSI">
-											<div color="cyan" className="sc-btdgZA RmMeE">
-												<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-													<line x1="4.75" y1="12.25" x2="18.25" y2="12.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-													<line x1="11.75" y1="5.75" x2="11.75" y2="19.25" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-												</svg>
-											</div>
-											<div color="cyan" className="sc-kstrdz dPmahJ sc-ekboDZ hzGhJg">Thêm</div>
-										</div> */}
-										{/* <div className="sc-kkjstb ghUCIz sc-cvwzgI daXzoq">
-											<div className="sc-dwqbIM lgnhdE">
-												<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">
-													Số điện thoại
-													<div className="sc-kstrdz kihuz">&nbsp;*</div>
-												</div>
-												<div className="sc-fTNIDv ieXpgb">
-													<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
-														<div className="sc-licaXj kCALOO">
-															<div id="mobile" placeholder="Chọn số đã đăng ký" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>
-																<div className="sc-iBPRYJ jfvWqv sc-bTRMAZ gfyNKU placeholder">Chọn số đã đăng ký</div>
-															</div>
-															<div className="sc-gUUzQN jMensr icon-clear">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-																	<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																	<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-															<div className="sc-cuWcWY eXAtTF div-button-right">
-																<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-																</svg>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div> */}
-									</div>
-								</div>
-								<div className="sc-ktBSnf klQNLu">
-									{/* <div className="sc-gGTGfU fSjCQg sc-hxhkai cKGeJg">
-										<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Địa chỉ</div>
-										<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.03807821970499603" maxLength={200} placeholder="Nhập địa chỉ" className="sc-dcwrBW iDAuKv" defaultValue /></div>
-									</div> */}
-									{/* <div className="sc-frRhtF ehlgdK">
-										<div className="sc-gGTGfU fSjCQg sc-jwsIVb gMKkZH">
-											<div className="sc-kstrdz dPmahJ sc-JooDp cMcpet">Email</div>
-											<div className="sc-hFXnzx fjFzkC"><input name="pgds-0.7746497900775222" id="email" maxLength={100} placeholder="Nhập email" type="email" className="sc-dcwrBW iDAuKv" defaultValue="ngochoang0109giolinh@gmail.com" /></div>
-										</div>
-									</div> */}
 								</div>
 							</div>
 						</div>
-						{/* <div className="sc-fQHbyX fwOWeI">
-							<div>
-								<div className="sc-hSaFeN hCKySk">
-									<div>
-										<div className="sc-gMFxnT ffKXqq">
-											<button data-tracking-id="preview-listing-lcp" type="border" color="secondary" className="sc-kLgntA jXvlyk">
-												<div className="sc-iktFzd gaGeRK"><span className="sc-iwyYcG gBmyGv">Xem trước giao diện</span></div>
-											</button>
-											<button data-tracking-id="submit-checkout-lcp" id="save-button" type="solid" color="primary" className="sc-kLgntA hjHBEZ">
-												<div className="sc-iktFzd gaGeRK">
-													<span className="sc-iwyYcG gBmyGv">Tiếp tục</span>
-													<span className="sc-hiSbYr huRFSL">
-														<div className="sc-gWHgXt ikxKmn">
-															<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																<path xmlns="http://www.w3.org/2000/svg" d="M9 20L17 12L9 4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-															</svg>
-														</div>
-													</span>
+						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+							<div className="infor-basic">
+								<h3 className="mb-16 font-stand">Thông tin bài viết</h3>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Tiêu đề
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_BIG_BOX}
+														placeholder={`VD: Cho thuê phòng trọ gần...Tối thiểu 30 ký tự, tối đa 100 ký tự`}
+														onChange={handleGetValue}
+														name='title'
+														maxlength="100" minlength="30"
+														row='2'></InputBox>
 												</div>
-											</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="m-t-16"></div>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Mô tả
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_BIG_BOX}
+														placeholder={`VD: Thông tin về bất động sản: giờ giấc, vị trí thuận lợi, mô tả không gian bất động sản.... Tối thiểu 300 ký tự, tối đa 10000 ký tự`}
+														onChange={handleGetValue}
+														name='description'
+														maxlength="10000" minlength="300" row={8}></InputBox>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div> */}
+						</div>
+						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+							<div className="infor-basic">
+								<h3 className="mb-16 font-stand">Thông tin bất động sản</h3>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Diện tích
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập diện tích VD: 20, 25, 30, ...`}
+														onChange={handleGetValue}
+														name='area'
+														type='number'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="m-t-16"></div>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Giá cho thuê VND/Tháng
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập giá VD: 2.500.000, 3.000.000, 5.000.000,...`}
+														onChange={handleGetValue}
+														name='price'
+														type='text'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="fields-form">
+									<div className="wrapper-input-level-1 p-r-8">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Số phòng ngủ
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														data={getAllWardByDistrictId}
+														placeholder={'Nhập số lượng phòng ngủ'}
+														name='numOfBed'
+														onChange={handleGetValue}
+														type='number'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="wrapper-input-level-1">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Số phòng vệ sinh
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập số lượng phòng ngủ`}
+														name='numOfToilet'
+														onChange={handleGetValue}
+														type='number'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="fields-form">
+								<div className="wrapper-input-level-1 p-r-8">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Số tầng
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														data={getAllWardByDistrictId}
+														placeholder={'Nhập số tầng'}
+														name='numOfFloor'
+														onChange={handleGetValue}
+														type='number'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="wrapper-input-level-1">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Thuộc tầng số
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập tầng số đang ở`}
+														name='floorNumber'
+														onChange={handleGetValue}
+														type='number'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="m-t-16"></div>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Tình trạng nội thất
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`VD: Tủ lạnh, máy giặt, bồn rửa chén,...`}
+														onChange={handleGetValue}
+														name='tower'
+														type='text'></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+							<div className="infor-basic">
+								<h3 className="mb-16 font-stand">Thông tin liên hệ</h3>
+								<div className="fields-form">
+									<div className="wrapper-input-level-1 p-r-8">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Tên tác giả
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập tên đầy đủ`}
+														name='author'
+														onChange={handleGetValue}></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="wrapper-input-level-1">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Số điện thoại
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập số điện thoại`}
+														name='phone'
+														onChange={handleGetValue}></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="fields-form">
+									<div className="wrapper-input-level-1 p-r-8">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Địa chỉ
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập địa chỉ`}
+														name='addressOfAuthor'
+														onChange={handleGetValue}></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="wrapper-input-level-1">
+										<div className="wrapper-input-level-2">
+											<div className="label-input">
+												Email
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+														placeholder={`Nhập email`}
+														name='email'
+														onChange={handleGetValue}></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div className="ant-col second-col">
 						<div className="second-col-wrapp">
@@ -733,7 +447,7 @@ const CreatePost = () => {
 										<div className="sc-fTNIDv ieXpgb">
 											<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
 												<div className="sc-licaXj kCALOO" data-tracking-id="vip-menu-lcp">
-													<div id="vip_type" placeholder className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>Tin thường</div>
+													<div id="vip_type" className="sc-hJxCPi gpzJyv" style={{ width: '100%' }}>Tin thường</div>
 													<div className="sc-gUUzQN jMensr icon-clear">
 														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 															<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
@@ -826,7 +540,7 @@ const CreatePost = () => {
 										<div className="sc-fTNIDv ieXpgb">
 											<div className="sc-gTgzIj fTLLNh sc-biOYSp enqmnf" style={{ width: '100%' }}>
 												<div disabled className="sc-licaXj hVHrkG">
-													<div id="posting_hours" placeholder disabled className="sc-hJxCPi aoAxu" style={{ width: '100%' }}>Chọn khung giờ</div>
+													<div id="posting_hours" disabled className="sc-hJxCPi aoAxu" style={{ width: '100%' }}>Chọn khung giờ</div>
 													<div className="sc-gUUzQN jMensr icon-clear">
 														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 															<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />

@@ -9,19 +9,15 @@ const addInputBox = (id) => {
 }
 
 // close or open modal drop down list
-const controllModal = (type,showModal, id) => {
-	let status = false
-	if (!showModal) {
-		status = true
-	}
+const controllInput = (type,showModal, id) => {
 	return {
 		type: type,
-		show: status,
+		show: showModal = !showModal,
 		id: id
 	}
 }
 
 export const InputBoxAction = {
 	addInputBox,
-	controllModal
+	controllInput
 }

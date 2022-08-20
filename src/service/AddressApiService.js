@@ -5,12 +5,12 @@ const getAllProvince = () => {
 	return httpClient({
 		'Content-Type': 'application/json',
 		'token': storageKey.TOKEN_API_ADDRESS
-	}, storageKey.API_ADDRESS, storageKey.ENDPOINT_PROVINCE_ADDRESS, 'GET',{}).then((response) => {
+	}, storageKey.API_ADDRESS, storageKey.ENDPOINT_PROVINCE_ADDRESS, 'GET', {}).then((response) => {
 		let setState = []
 		response.data.data.map((province) => {
 			setState.push({
 				id: province.ProvinceID,
-				name: province.NameExtension[2]
+				name: province.NameExtension[1]
 			})
 		})
 		return setState
@@ -24,14 +24,16 @@ const getAllDistricByProvinceId = (provinceId) => {
 	}, storageKey.API_ADDRESS, `${storageKey.ENDPOINT_DISTRICT_ADDRESS}${provinceId}`, 'GET', {}).then((response) => {
 		let setState = []
 		response.data.data.map((district) => {
-			let name=''
-			if(district.NameExtension){
-				name=district.NameExtension[0]
+			let name = ''
+			if (district.NameExtension) {
+				name = district.NameExtension[0]
 			}
-			setState.push({
-				id: district.DistrictID,
-				name: name
-			})
+			if (name.length !== 0) {
+				setState.push({
+					id: district.DistrictID,
+					name: name
+				})
+			}
 		})
 		return setState
 	})
@@ -41,7 +43,7 @@ const getAllWardByDistrictId = (districtId) => {
 	return httpClient({
 		'Content-Type': 'application/json',
 		'token': storageKey.TOKEN_API_ADDRESS
-	}, storageKey.API_ADDRESS,`${storageKey.ENDPOINT_WARD_ADDRESS}${districtId}`, 'GET', {}).then((response) => {
+	}, storageKey.API_ADDRESS, `${storageKey.ENDPOINT_WARD_ADDRESS}${districtId}`, 'GET', {}).then((response) => {
 		let setState = []
 		response.data.data.map((ward) => {
 			setState.push({
@@ -53,14 +55,15 @@ const getAllWardByDistrictId = (districtId) => {
 	})
 }
 
-const checkDistrictOfProvince=(provinceId, districtName)=>{
-	const districts=getAllDistricByProvinceId(provinceId)
-	districts.map((district)=>{
-		if(district.name===districtName){
-			return true
-		}
+const checkDistrictOfProvince = (provinceId, districtName) => {
+	getAllDistricByProvinceId(provinceId).then((districts) => {
+		districts.map((district) => {
+			if (district.name === districtName) {
+				return true
+			}
+		})
+		return false
 	})
-	return false
 }
 
 export const AddressApiService = {

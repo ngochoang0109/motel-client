@@ -43,7 +43,6 @@ const Header = () => {
 			dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
 		} else {
 			navigate('trang-chu/tao-bai-viet', { replace: true })
-			console.log('ngáo à')
 		}
 	}
 

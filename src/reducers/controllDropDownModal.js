@@ -17,7 +17,6 @@ const controllDropDownModal = (state = initialState, action) => {
 			}
 			return state
 		case inputConstant.CHANGE_STATUS:
-			console.log("CHANGE_STATUS")
 			let updateState = []
 			state.map((value) => {
 				if (value.id === action.id) {
