@@ -2,10 +2,12 @@ import { combineReducers } from 'redux'
 import controllMessage from './controllMessage'
 import authenticated from './authenticated'
 import { authentication } from '../action/authentication'
+import controllDropDownModal from './controllDropDownModal'
 
 const appReducer = combineReducers({
     controllMessage,
-    authenticated
+    authenticated,
+    controllDropDownModal
 })
 
 const rootReducer = (state, action) => {

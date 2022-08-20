@@ -32,19 +32,6 @@ header {
 	display: none;
 }
 
-.survey__close-tab-event-trigger--top {
-	top: 0px;
-}
-
-.survey__close-tab-event-trigger {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 6px;
-	z-index: 1000000;
-}
-
 .survey__close-tab-event-trigger--bot {
 	top: 90px;
 }
@@ -78,7 +65,7 @@ header {
 	float: left;
 }
 
-#divUserStt a {
+#divUserStt div {
 	cursor: pointer;
 }
 
@@ -145,11 +132,6 @@ a {
 	line-height: 1px;
 }
 
-.icon-heart {
-	width: 2.3rem;
-	height: 2.4rem;
-}
-
 .full-menu .drop-menu .left-menu {
 	float: left;
 }
@@ -197,6 +179,10 @@ ul.dropdown-no-art--sm {
 	padding-bottom: 8px;
 	box-shadow: 0px 8px 20px rgb(182 182 182 / 30%);
 	background: #fff;
+}
+
+#kct_username{
+	margin-right: 0.8rem;
 }
 
 ol,
@@ -276,7 +262,7 @@ ul.dropdown-no-art--sm li a {
 	font-family: 'Nunito', sans-serif;
 	font-size: 16px;
 	line-height: 20px;
-	font-weight: 700;
+	font-weight: 650;
 }
 
 .hover-menu .right-menu .dropdown-navigative-menu.dropdown-no-art--sm li a span {
@@ -307,18 +293,11 @@ ul.dropdown-no-art--sm li a {
 	margin-right: 3px !important;
 }
 
-#divUserStt div {
-	display: table-cell;
-	vertical-align: middle;
-	padding-right: 13px;
-	position: relative;
-}
-
-#divUserStt * {
+#divUserStt .user-name {
 	font-family: 'Nunito', sans-serif;
 	font-size: 16px;
 	line-height: 20px;
-	font-weight: 700;
+	font-weight: 650;
 }
 
 #divUserStt img {
@@ -330,8 +309,8 @@ ul.dropdown-no-art--sm li a {
 }
 
 .notification img {
-	width: 2.4rem;
-	height: 2.4rem;
+	width: 1.9rem;
+	height: 1.9rem;
 }
 
 .notification .mnu-notify-icon-unread {
@@ -355,14 +334,14 @@ ul.dropdown-no-art--sm li a {
 
 
 .user-non-avatar img{
-	width: 2.2rem;
-	height: 2.3rem;
+	width: 1.8rem;
+	height: 1.9rem;
 }
 
 #divUserStt div {
 	display: table-cell;
 	vertical-align: middle;
-	padding-right: 13px;
+	padding-right: 4px;
 	position: relative;
 }
 
@@ -372,7 +351,7 @@ ul.dropdown-no-art--sm li a {
 	display: table-row;
 	float: left;
 	position: relative;
-	z-index: 998;
+	z-index: 999;
 }
 
 .dropdown-user {
@@ -430,8 +409,8 @@ ul li {
 	display: none;
 	width: 240px;
 	position: absolute;
-	right: -4px;
-	top: 120%;
+	right: -28px;
+	top: 36px;
 	zoom: 1;
 	background: #fff;
 	box-shadow: 0 8px 20px rgb(182 182 182);
@@ -471,8 +450,8 @@ ul li {
 	white-space: nowrap;
 }
 
-.dropdown-user div,
-.dropdown-user div span {
+.dropdown-user a,
+.dropdown-user a span {
 	font-family: Roboto, sans-serif;
 	font-weight: normal;
 	font-size: 14px;
@@ -481,7 +460,7 @@ ul li {
 	color: #2C2C2C;
 }
 
-.subMenuUser div {
+.subMenuUser a {
 	padding-left: 52px;
 	padding-top: 6px;
 	font-weight: normal;
@@ -498,11 +477,3 @@ ul li {
 	position: absolute;
 	left: 17px;
 }
-
-.haslink span{
-	font-family: 'Nunito', sans-serif;
-	font-size: 16px;
-	line-height: 20px;
-	font-weight: 700;
-}
-
