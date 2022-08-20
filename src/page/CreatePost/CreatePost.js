@@ -39,7 +39,6 @@ const CreatePost = () => {
 				AddressApiService.getAllDistricByProvinceId(target.id).then((data) => {
 					setGetAllDistrictByProvinceId(data)
 				})
-				
 			}
 		} else if (target.nameOfinput === 'district') {
 			AddressApiService.getAllWardByDistrictId(target.id).then((data) => {
@@ -48,7 +47,7 @@ const CreatePost = () => {
 		}
 		setPostNews({
 			...postNews,
-			[target.nameOfinput]: target.name
+			[target.nameOfinput]: target.value
 		})
 	}
 
@@ -78,7 +77,8 @@ const CreatePost = () => {
 														placeholder={`Chọn loại tin`}
 														data={typesOfAcc}
 														getValueDropList={handleGetValue}
-														name='typesOfAcc'></InputBox>
+														name='typesOfAcc'
+														onChange={handleGetValue}></InputBox>
 												</div>
 											</div>
 										</div>
