@@ -9,7 +9,7 @@ import CreatePost from "../../page/CreatePost/CreatePost";
 import Container from "./../common/Container/Container";
 
 const Layout = () => {
-	
+
 	return (
 		<Fragment>
 			<Process></Process>

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { storageKey } from './../constant/storageKey';
 
 const httpClient = (headers,host,endpoint, method = "GET", data) => {
 	return axios({

@@ -24,6 +24,7 @@ const Header = () => {
 		dispatch(message.successfully(true, 'Đăng xuất thành công'))
 		dispatch(authentication.logout())
 		setShowControll('')
+		navigate('/trang-chu',{replace:true})
 	}
 
 	const markPostnHandler = () => {
