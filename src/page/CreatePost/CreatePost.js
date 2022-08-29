@@ -54,7 +54,8 @@ const CreatePost = () => {
 	})
 	const [cost, setCost] = useState({
 		numDatePost: 0,
-		startedDate:moment(new Date())
+		startedDate: new Date(),
+		discount:''
 	})
 	const dispatch = useDispatch();
 	const [rollImage, setRollImage] = useState({ number: 0, name: '' })
@@ -175,9 +176,10 @@ const CreatePost = () => {
 			[target.nameOfinput]: target.value
 		})
 	}
-
+	console.log('Thông tin post')
 	console.log(postNews)
-	console.log(cost.startedDate)
+	console.log('Phi bai viet')
+	console.log(cost)
 	return <Fragment>
 		<div className="left-bar">
 
@@ -203,7 +205,8 @@ const CreatePost = () => {
 														data={typesOfAcc}
 														getValueDropList={handleGetValue}
 														name='typesOfAcc'
-														onChange={handleGetValue}></InputBox>
+														onChange={handleGetValue}
+														value={postNews.typesOfAcc}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -772,7 +775,8 @@ const CreatePost = () => {
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
 														placeholder={`Nhập số`}
 														name='numDatePost'
-														onChange={handleCaculatedCost}></InputBox>
+														onChange={handleCaculatedCost}
+														type='number'></InputBox>
 												</div>
 											</div>
 										</div>
@@ -783,6 +787,7 @@ const CreatePost = () => {
 												Ngày bắt đầu
 												<div className="sc-kstrdz kihuz">&nbsp;*</div>
 											</div>
+											{console.log(cost.startedDate)}
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.CALENDAR_BOX}
@@ -798,13 +803,35 @@ const CreatePost = () => {
 										</div>
 									</div>
 								</div>
+								<div className="flex-col">
+									<div className="grid">
+										<div className="flex-col">
+											<div className="title-index">
+												Khuyến mãi
+												<div className="sc-kstrdz kihuz">&nbsp;*</div>
+											</div>
+											<div className="input-selection">
+												<div className="input-selection-level-one" style={{ width: '100%' }}>
+													<InputBox mode={inputConstant.INPUT_SEARCH}
+														placeholder={`Chọn mã giảm giá`}
+														data={typesOfAcc}
+														getValueDropList={handleCaculatedCost}
+														name='discount'
+														onChange={handleCaculatedCost}
+														value={cost.discount}></InputBox>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</Fragment>
+	</Fragment >
 }
 
 export default CreatePost

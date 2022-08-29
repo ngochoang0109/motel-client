@@ -30,18 +30,11 @@ const formatDate = () => {
 	return 'DD/MM/YYYY'
 }
 
-const addDate = (strDate, numDate) => {
-	console.log(strDate)
-	if (strDate.length===0 || numDate === 0) {
-		return ''
-	}
-	const [day, month,year] = strDate.split('/');
-	let date = new Date(`${year}-${month}-${day}`);
-	console.log(date.getDay())
-	date.setDate(date.getDay()+parseInt(numDate))
-	console.log(date)
-	const strReturn=`${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`
-	return strReturn;
+const addDate = (initDate, numDate) => {
+	const copy = new Date(initDate)
+	copy.setDate(initDate.getDate() + numDate)
+	console.log(copy)
+	return moment(copy).format(formatCommon.formatDate());
 }
 
 

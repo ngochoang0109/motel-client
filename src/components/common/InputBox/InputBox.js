@@ -28,9 +28,12 @@ const InputBox = ({ mode, placeholder, data,
 	useEffect(() => {
 		dispatch(InputBoxAction.addInputBox(id))
 	}, [])
-
 	useEffect(() => {
 		if (value) {
+			if(type==='startedDate'){
+				console.log('set inputvalue')
+				console.log(value)
+			}
 			setInputValue({ value: value, nameOfinput: name })
 		}
 	}, [value])
@@ -134,21 +137,26 @@ const InputBox = ({ mode, placeholder, data,
 			
 			case inputConstant.CALENDAR_BOX:
 				console.log(inputValue.value)
+				console.log(value)
 				return <DatePicker format={formatCommon.formatDate()} 
-										defaultValue={moment(inputValue.value?new Date(inputValue.value):new Date())}
+										defaultValue={moment(inputValue.value.toString().length!==0?new Date(inputValue.value):new Date())}
+										disabledDate={disabledDate}
 										onChange={onChangeCalendar}
-										disabledDate={disabledDate}></DatePicker>
+										placeholder=''></DatePicker>
 		}
 	}
 
 	function disabledDate(current) {
 		// Can not select days before today and today
 		return current && current.valueOf() < Date.now();
-	 }
-
+	}
+ 
 	const onChangeCalendar=(value)=>{
 		console.log(value)
-		onChange({ ...inputValue, value: value, nameOfinput: name })
+		if(value.length===0){
+			return
+		}
+		onChange({ ...inputValue,value: value.toDate(), nameOfinput: name })
 	}
 
 	const handleChooseFiles = (event) => {
