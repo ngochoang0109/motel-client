@@ -229,8 +229,9 @@ const InputBox = ({ mode, placeholder, data,
 		onChange({ value: event.target.checked, nameOfinput: name })
 	}
 
-	const handleOnChangeInputSearch = () => {
-		setInputValue({ nameOfinput: name })
+	const handleOnChangeInputSearch = (event) => {
+		setInputValue({value:event.target.value, nameOfinput: name })
+		onChange({ ...inputValue, value: event.target.value, nameOfinput: name })
 	}
 
 	const handleOnChangeInput = (event) => {

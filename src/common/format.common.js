@@ -37,6 +37,45 @@ const addDate = (initDate, numDate) => {
 	return moment(copy).format(formatCommon.formatDate());
 }
 
+function getDifferenceInDays(date1, date2) {
+	const diffInMs = Math.abs(date2 - date1);
+	return Math.round(diffInMs / (1000 * 60 * 60 * 24));
+}
+
+function getDifferenceInHours(date1, date2) {
+	const diffInMs = Math.abs(date2 - date1);
+	return Math.round(diffInMs / (1000 * 60 * 60));
+}
+
+function getDifferenceInMinutes(date1, date2) {
+	const diffInMs = Math.abs(date2 - date1);
+	return Math.round(diffInMs / (1000 * 60));
+}
+
+function getDifferenceInSeconds(date1, date2) {
+	const diffInMs = Math.abs(date2 - date1);
+	return Math.round(diffInMs / 1000);
+}
+
+const getResultDiffDate = (date1, date2) => {
+	console.log(date1, date2)
+	if (getDifferenceInSeconds(date1, date2) < 60) {
+		return `${getDifferenceInSeconds(date1, date2)} giây`
+	}
+	else if (getDifferenceInMinutes(date1, date2) < 60) {
+		return `${getDifferenceInMinutes(date1, date2)} phút`
+	}
+	else if (getDifferenceInHours(date1, date2) < 24) {
+		return `${getDifferenceInHours(date1, date2)} giờ`
+	}
+	else if (getDifferenceInDays(date1, date2) < 10) {
+		return `${getDifferenceInDays(date1, date2)} ngày`
+	}
+	else {
+		return formatDate(date1);
+	}
+}
+
 
 export const formatCommon = {
 	formatNumberic,
@@ -44,5 +83,6 @@ export const formatCommon = {
 	getVideoIdFromUrlYoutube,
 	formatStringToNewLineInTexarea,
 	formatDate,
-	addDate
+	addDate,
+	getResultDiffDate
 }

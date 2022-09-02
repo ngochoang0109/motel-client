@@ -14,7 +14,21 @@ const getCurrentUserInfor=()=>{
 				})
 }
 
+const getExpenses=()=>{
+	return httpClient({},storageKey.API,'auth/get-type-of-post','GET',{}).then((response)=>{
+		return response.data;
+	})
+}
+
+const getDiscountOfExpense=(id)=>{
+	return httpClient({},storageKey.API,`auth/get-discount-of-expense?id=${id}`,'GET',{}).then((response)=>{
+		return response.data;
+	})
+}
+
 export const PostNewsService = {
 	getTypeOfAcc,
-	getCurrentUserInfor
+	getCurrentUserInfor,
+	getExpenses,
+	getDiscountOfExpense
 }
