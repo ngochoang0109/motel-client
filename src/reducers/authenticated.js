@@ -1,4 +1,4 @@
-import { authenticationConstant } from "../constant/authenticationConstant";
+import { authenticationConstant } from "../constant/Authentication.constant";
 
 const initialState = {
 	isLogin: false

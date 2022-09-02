@@ -66,9 +66,18 @@ const checkDistrictOfProvince = (provinceId, districtName) => {
 	})
 }
 
+const getLocationFromAddress=(strQuery)=>{
+	return httpClient({},storageKey.HEADER_URL_GOOGLE_API,`${strQuery}${storageKey.FOOTER_URL_GOOGLE_API}`,'GET',{})
+				.then((response)=>{
+					return response.data
+				})
+}
+
+
 export const AddressApiService = {
 	getAllProvince,
 	getAllDistricByProvinceId,
 	checkDistrictOfProvince,
-	getAllWardByDistrictId
+	getAllWardByDistrictId,
+	getLocationFromAddress
 }

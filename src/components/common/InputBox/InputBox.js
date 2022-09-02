@@ -1,28 +1,36 @@
-import { Fragment, useEffect, useState } from "react";
-import { inputConstant } from "../../../constant/inputConstant";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { inputConstant } from "../../../constant/InputConstant";
 import { useDispatch, useSelector } from 'react-redux';
 import generated from "../../../common/generated.common";
 import { storageKey } from "../../../constant/storageKey";
 import { InputBoxAction } from "./InputBox.action";
 import { formatCommon } from "../../../common/format.common";
+import upload from './../../../assets/upload.png'
+import cross from './../../../assets/cross.png'
+import down from './../../../assets/down.png'
+import add from './../../../assets/add.png'
+import calendar from './../../../assets/calendar.png'
+import { DatePicker } from "antd";
+import "antd/dist/antd.css";
+import moment from "moment";
 
 const InputBox = ({ mode, placeholder, data,
 	name, getValueDropList, onChange,
-	maxlength, minlength, row, type, value }) => {
+	maxlength, minlength, row, type, value, title, disable, addItem }) => {
 
 	const showModal = useSelector(state => state.controllDropDownModal)
 	const dispatch = useDispatch()
 	const [id] = useState(generated(storageKey.SIZE_ID))
 	const [currentInput, setCurrentInput] = useState({})
 	const [inputValue, setInputValue] = useState({ value: "", nameOfinput: "" })
+	const mediaInput = useRef(null);
 
 	useEffect(() => {
 		dispatch(InputBoxAction.addInputBox(id))
 	}, [])
-
 	useEffect(() => {
 		if (value) {
-			setInputValue({ value: value, nameOfinput: name })
+			setInputValue({ value: value.el || value, nameOfinput: name })
 		}
 	}, [value])
 
@@ -36,65 +44,62 @@ const InputBox = ({ mode, placeholder, data,
 		switch (mode) {
 			case inputConstant.INPUT_SEARCH:
 				return <Fragment>
-					<input id={id} type="text" className="placeholder input-box"
-						placeholder={placeholder} style={{ width: "100%", height: "100%" }}
-						onFocus={onFocusInputBox}
-						onChange={handleOnChangeInput}
-						value={inputValue.value}
-						name={name}></input>
-					{currentInput.show ? <div className="icon-clear" onClick={clearInputData}>
-						<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-							<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-							<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
-					</div> : <div className="div-button-right">
-						<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
-					</div>}
+					<div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}>
+						<input id={id} type="text" className="placeholder input-box"
+							placeholder={placeholder} style={{ width: "100%", height: "100%" }}
+							onFocus={onFocusInputBox}
+							onChange={handleOnChangeInputSearch}
+							value={inputValue.value}
+							name={name}></input>
+						{currentInput.show ? <div className="icon-clear" onClick={clearInputData}>
+							<img src={cross}></img>
+						</div> : <div className="div-button-right">
+							<img src={down}></img>
+						</div>}
+					</div>
 				</Fragment>
 			case inputConstant.DROP_DOWN_LIST:
-				return <Fragment>
+				return <div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}>
 					<div className="input-selection-font"
 						onClick={onFocusInputBox}
 						style={{ width: '100%' }} id={id}>
 						<div className={inputValue.value.length === 0 ? `placeholder` : `placeholder value-selected`}>
-							{inputValue.value.length === 0 ? `Ví dụ: ${placeholder}` : inputValue.value}
+							{inputValue.value.length === 0 ? `${placeholder}` : inputValue.value}
 						</div>
 					</div>
 					{currentInput.show ? <div onClick={clearInputData} className="icon-clear">
-						<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#F2F2F2" />
-							<path d="M15 9L9 15" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-							<path d="M15 15L9 9" stroke="#999999" strokeWidth="1.9" strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
+						<img src={cross}></img>
 					</div> : <div className="div-button-right">
-						<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path xmlns="http://www.w3.org/2000/svg" d="M4 9L12 17L20 9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
+						<img src={down}></img>
 					</div>}
-				</Fragment>
+				</div>
 			case inputConstant.INPUT_TEXT_BOX:
-				return <Fragment>
+				return <div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}>
 					<input id={id} type={type} className="placeholder input-box"
-						placeholder={placeholder} style={{ width: "100%", height: "100%" }}
+						placeholder={placeholder}
+						style={{ width: "100%", height: "100%" }}
 						onFocus={onFocusInputBox}
 						onChange={handleOnChangeInput}
 						value={inputValue.value}
 						min='0'
 						onBlur={onFocusOutInputBox}
-						name={name}></input>
+						name={name}
+						disabled={disable ? disable : false}></input>
 
 					{name === 'area' ? <div className="icon-clear color-bl">
 						m&sup2;
 					</div> : (name === 'price' ? <div className="icon-clear div-text-right">
 						VND
-					</div> : null)}
-
-				</Fragment>
+					</div> : (name === 'video-add' ? <div className="icon-clear" onClick={clickIconAdd}>
+						<img src={add}></img>
+					</div> : (name === 'video-close' ? <div className="icon-clear" onClick={clearInputData}>
+						<img src={cross}></img>
+					</div> : type === 'calendar' ? <div className="icon-clear">
+						<img src={calendar}></img>
+					</div> : null)))}
+				</div>
 			case inputConstant.INPUT_BIG_BOX:
-				return <textarea rows={row} id={id} type="text"
+				return <div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}><textarea rows={row} id={id} type="text"
 					className="placeholder input-box p-11"
 					placeholder={placeholder} style={{ width: "100%", height: "100%" }}
 					onFocus={onFocusInputBox}
@@ -103,15 +108,73 @@ const InputBox = ({ mode, placeholder, data,
 					maxLength={maxlength}
 					minLength={minlength}
 					onBlur={onFocusOutInputBox}
-					name={name}></textarea>
+					name={name}
+					disabled={disable ? disable : false}></textarea></div>
+			case inputConstant.CHECK_BOX:
+				return <div className="checkbox-row">
+					<div color="#CCCCCC" className="size-checkbox">
+						<input type='checkbox'
+							className="check-box"
+							onClick={clickCheckBox}
+							value={inputValue.value} />
+						<div className="mr-l-8">
+							<div className="text-of-checkbox">{title}</div>
+						</div>
+					</div>
+				</div>
+			case inputConstant.MEDIA_BOX:
+				return <div className="input-media" onClick={clickChooseFiles}>
+					<input multiple
+						type="file"
+						style={{ display: 'none' }}
+						ref={mediaInput}
+						onChange={handleChooseFiles} />
+					<img src={upload}></img>
+					<p className="input-media-text">Bấm để chọn ảnh cần tải lên</p>
+					<p className="input-media-text" style={{ marginBottom: '16px' }}>hoặc kéo thả ảnh vào đây</p>
+				</div>
 
+			case inputConstant.CALENDAR_BOX:
+				return <DatePicker format={formatCommon.formatDate()}
+					defaultValue={moment(inputValue.value.toString().length !== 0 ? new Date(inputValue.value) : new Date())}
+					disabledDate={disabledDate}
+					onChange={onChangeCalendar}
+					placeholder=''></DatePicker>
 		}
+	}
+
+	function disabledDate(current) {
+		// Can not select days before today and today
+		return current && current.valueOf() < Date.now();
+	}
+
+	const onChangeCalendar = (value) => {
+		console.log(value)
+		if (value.length === 0) {
+			return
+		}
+		onChange({ ...inputValue, value: value.toDate(), nameOfinput: name })
+	}
+
+	const handleChooseFiles = (event) => {
+		const filesObj = event.target.files[0] && event.target.files;
+		let arrFiles = []
+		for (let i = 0; i < Object.keys(filesObj).length; i++) {
+			arrFiles.push(filesObj[i.toString()])
+		}
+		onChange({ value: arrFiles, nameOfinput: name })
+		//reset file input
+		event.target.value = null;
+	}
+
+	const clickChooseFiles = () => {
+		mediaInput.current.click()
 	}
 
 	const selectedItemOfDropDownList = (event, value) => {
 		setInputValue({ ...inputValue, id: value.id, value: value.name, nameOfinput: name })
 		controllInput()
-		getValueDropList({...inputValue,id: value.id, value:value.name, nameOfinput: name })
+		getValueDropList({ ...inputValue, id: value.id, value: value.name, nameOfinput: name })
 	}
 
 	const controllInput = () => {
@@ -129,26 +192,26 @@ const InputBox = ({ mode, placeholder, data,
 	const controllDropDownList = () => {
 		switch (mode) {
 			case inputConstant.DROP_DOWN_LIST:
-				return currentInput.show ? <div width="100%" className="pgds-popover-content">
-					<div width="100%" className="popover-content">
+				return currentInput.show ? <div className="pgds-popover-content">
+					<div className="popover-content">
 						<div className="list-item-selected">
 							{data.map((value, index) => {
 								return <div className="item-wrapper" key={index}
 									onClick={(event) => selectedItemOfDropDownList(event, value)}>
-									<div className="item-detail" type="primary">{value.name}</div>
+									<div className="item-detail">{value.name}</div>
 								</div>
 							})}
 						</div>
 					</div>
 				</div> : <Fragment></Fragment>
 			case inputConstant.INPUT_SEARCH:
-				return currentInput.show ? <div width="100%" className="pgds-popover-content">
-					<div width="100%" className="popover-content">
+				return currentInput.show ? <div className="pgds-popover-content">
+					<div className="popover-content">
 						<div className="list-item-selected">
 							{data.map((value, index) => {
 								return <div className="item-wrapper" key={index}
 									onClick={(event) => selectedItemOfDropDownList(event, value)}>
-									<div className="item-detail" type="primary">{value.name}</div>
+									<div className="item-detail">{value.name}</div>
 								</div>
 							})}
 						</div>
@@ -157,18 +220,45 @@ const InputBox = ({ mode, placeholder, data,
 		}
 	}
 
+
+	const clickCheckBox = (event) => {
+		setInputValue({ value: event.target.checked, nameOfinput: name })
+		onChange({ value: event.target.checked, nameOfinput: name })
+	}
+
+	const handleOnChangeInputSearch = (event) => {
+		setInputValue({ value: event.target.value, nameOfinput: name })
+		onChange({ ...inputValue, value: event.target.value, nameOfinput: name })
+	}
+
 	const handleOnChangeInput = (event) => {
-		let value = event.target.value
-		if (type === 'number' && value) {
-			value = parseInt(value)
+		if (onChange) {
+			let value = event.target.value
+			if (type === 'number' && value) {
+				value = parseInt(value)
+			}
+			setInputValue({ ...inputValue, value: value, nameOfinput: name })
+			if (name === 'video') {
+				return
+			}
+			onChange({ ...inputValue, value: value, nameOfinput: name })
 		}
-		setInputValue({ ...inputValue, value: value, nameOfinput: name })
-		onChange({ ...inputValue, value: value, nameOfinput: name })
 	}
 
 	const clearInputData = () => {
 		setInputValue({ value: "", nameOfinput: "" })
-		onChange({ ...inputValue, value: "", nameOfinput: name })
+		try{
+			onChange({ ...inputValue, value: "", nameOfinput: name, index: value.index})
+		}catch{
+			onChange({ ...inputValue, value: "", nameOfinput: name})
+		}
+	}
+
+	const clickIconAdd = () => {
+		if (inputValue.value.length > 0) {
+			addItem({ ...inputValue, value: inputValue.value, nameOfinput: inputValue.nameOfinput })
+			setInputValue({ value: "", nameOfinput: "" })
+		}
 	}
 
 	const onFocusOutInputBox = (event) => {
@@ -179,9 +269,7 @@ const InputBox = ({ mode, placeholder, data,
 	}
 
 	return <Fragment>
-		<div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}>
-			{controllTextBoxMode()}
-		</div>
+		{controllTextBoxMode()}
 		{controllDropDownList()}
 	</Fragment>
 

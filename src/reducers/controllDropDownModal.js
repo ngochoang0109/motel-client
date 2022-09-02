@@ -1,4 +1,4 @@
-import { inputConstant } from "../constant/inputConstant";
+import { inputConstant } from "../constant/InputConstant";
 
 const initialState = [];
 

@@ -6,7 +6,7 @@ import { message } from '../../../action/message';
 const Process = () => {
 
 	const controllMessage = useSelector((state) => state.controllMessage);
-	const dispatch= useDispatch();
+	const dispatch = useDispatch();
 
 	const handleConfirmMessage = () => {
 		dispatch(message.buttonCloseMessage())
