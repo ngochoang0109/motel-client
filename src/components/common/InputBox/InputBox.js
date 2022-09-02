@@ -30,11 +30,7 @@ const InputBox = ({ mode, placeholder, data,
 	}, [])
 	useEffect(() => {
 		if (value) {
-			if(type==='startedDate'){
-				console.log('set inputvalue')
-				console.log(value)
-			}
-			setInputValue({ value: value, nameOfinput: name })
+			setInputValue({ value: value.el || value, nameOfinput: name })
 		}
 	}, [value])
 
@@ -87,15 +83,18 @@ const InputBox = ({ mode, placeholder, data,
 						value={inputValue.value}
 						min='0'
 						onBlur={onFocusOutInputBox}
-						name={name}></input>
+						name={name}
+						disabled={disable ? disable : false}></input>
 
 					{name === 'area' ? <div className="icon-clear color-bl">
 						m&sup2;
 					</div> : (name === 'price' ? <div className="icon-clear div-text-right">
 						VND
-					</div> : (name === 'video' ? <div className="icon-clear" onClick={clickIconAdd}>
+					</div> : (name === 'video-add' ? <div className="icon-clear" onClick={clickIconAdd}>
 						<img src={add}></img>
-					</div> : (type === 'calendar' ? <div className="icon-clear">
+					</div> : (name === 'video-close' ? <div className="icon-clear" onClick={clearInputData}>
+						<img src={cross}></img>
+					</div> : type === 'calendar' ? <div className="icon-clear">
 						<img src={calendar}></img>
 					</div> : null)))}
 				</div>
@@ -134,15 +133,13 @@ const InputBox = ({ mode, placeholder, data,
 					<p className="input-media-text">Bấm để chọn ảnh cần tải lên</p>
 					<p className="input-media-text" style={{ marginBottom: '16px' }}>hoặc kéo thả ảnh vào đây</p>
 				</div>
-			
+
 			case inputConstant.CALENDAR_BOX:
-				console.log(inputValue.value)
-				console.log(value)
-				return <DatePicker format={formatCommon.formatDate()} 
-										defaultValue={moment(inputValue.value.toString().length!==0?new Date(inputValue.value):new Date())}
-										disabledDate={disabledDate}
-										onChange={onChangeCalendar}
-										placeholder=''></DatePicker>
+				return <DatePicker format={formatCommon.formatDate()}
+					defaultValue={moment(inputValue.value.toString().length !== 0 ? new Date(inputValue.value) : new Date())}
+					disabledDate={disabledDate}
+					onChange={onChangeCalendar}
+					placeholder=''></DatePicker>
 		}
 	}
 
@@ -150,13 +147,13 @@ const InputBox = ({ mode, placeholder, data,
 		// Can not select days before today and today
 		return current && current.valueOf() < Date.now();
 	}
- 
-	const onChangeCalendar=(value)=>{
+
+	const onChangeCalendar = (value) => {
 		console.log(value)
-		if(value.length===0){
+		if (value.length === 0) {
 			return
 		}
-		onChange({ ...inputValue,value: value.toDate(), nameOfinput: name })
+		onChange({ ...inputValue, value: value.toDate(), nameOfinput: name })
 	}
 
 	const handleChooseFiles = (event) => {
@@ -230,7 +227,7 @@ const InputBox = ({ mode, placeholder, data,
 	}
 
 	const handleOnChangeInputSearch = (event) => {
-		setInputValue({value:event.target.value, nameOfinput: name })
+		setInputValue({ value: event.target.value, nameOfinput: name })
 		onChange({ ...inputValue, value: event.target.value, nameOfinput: name })
 	}
 
@@ -250,7 +247,11 @@ const InputBox = ({ mode, placeholder, data,
 
 	const clearInputData = () => {
 		setInputValue({ value: "", nameOfinput: "" })
-		onChange({ ...inputValue, value: "", nameOfinput: name })
+		try{
+			onChange({ ...inputValue, value: "", nameOfinput: name, index: value.index})
+		}catch{
+			onChange({ ...inputValue, value: "", nameOfinput: name})
+		}
 	}
 
 	const clickIconAdd = () => {

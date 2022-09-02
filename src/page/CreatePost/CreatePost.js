@@ -85,6 +85,7 @@ const CreatePost = () => {
 	}, [])
 
 	const handleGetValue = (target) => {
+		let newArr = [];
 		switch (target.nameOfinput) {
 			case 'province':
 				const existsProvince = getAllProvinces.filter((el) => {
@@ -106,11 +107,19 @@ const CreatePost = () => {
 					})
 				}
 				break
-			case 'video':
-				let newArr = [];
+			case 'video-add':
 				if (target.value) {
 					newArr = postNews.videos.concat(target.value)
 				}
+				setPostNews({
+					...postNews,
+					'videos': newArr
+				})
+				return
+			case 'video-close':
+				newArr = postNews.videos.filter((el, index) => {
+					return target.index !== index
+				})
 				setPostNews({
 					...postNews,
 					'videos': newArr
@@ -152,6 +161,37 @@ const CreatePost = () => {
 			...postNews,
 			[target.nameOfinput]: newFiles
 		})
+	}
+
+	const getDiscountPrice = () => {
+		const arrFillter = getDiscouts.filter((el) => {
+			return el.code === cost.discount
+		})
+		if (arrFillter[0]) {
+			const total = handleCaculatedTotalAmount()
+			const discount = parseFloat(formatCommon.convertStringNumricToNumber(total) * arrFillter[0].percent) / 100
+			console.log(discount)
+			if (discount > arrFillter[0].price) {
+				return arrFillter[0].price
+			} else {
+				return discount
+			}
+		}
+		return ''
+	}
+
+	const handleCaculatedTotalAmount = () => {
+		const type = expenses.filter((el) => {
+			return el.id === cost.typeOfPost
+		})
+		if (type[0]) {
+			return type[0].cost * cost.numDatePost
+		}
+		return ''
+	}
+
+	const finalTotalAmountNeeded = () => {
+		return handleCaculatedTotalAmount() - getDiscountPrice()
 	}
 
 	const handlePreviewImage = () => {
@@ -196,12 +236,21 @@ const CreatePost = () => {
 		setRollImage({ number: newRotation, name: image })
 	}
 
+	const handleUpdateVideo = (target) => {
+
+	}
+
 	const handleCaculatedCost = (target) => {
 		console.log(target)
 		if (target.nameOfinput === 'typeOfPost') {
 			PostNewsService.getDiscountOfExpense(target.id).then((data) => {
 				setDiscounts(data)
 			})
+			setCost({
+				...cost,
+				[target.nameOfinput || target.target.name]: target.id
+			})
+			return
 		}
 		setCost({
 			...cost,
@@ -683,22 +732,28 @@ const CreatePost = () => {
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
 														placeholder={`VD: https://www.youtube.com/watch?v=PRMZtf8WTgg`}
 														addItem={handleGetValue}
-														onChange={handleGetValue}
-														name='video'
+														onChange={handleUpdateVideo}
+														name='video-add'
 														type='text'></InputBox>
 												</div>
 											</div>
-											<div className="m-t-16"></div>
-											<div className="input-selection">
-												<div className="input-selection-level-one" style={{ width: '100%' }}>
-													<InputBox mode={inputConstant.INPUT_BIG_BOX}
-														name='videos'
-														type='text'
-														row={4}
-														value={formatCommon.formatStringToNewLineInTexarea(postNews.videos)}
-														onChange={handleGetValue}></InputBox>
-												</div>
-											</div>
+
+											{postNews.videos.map((el, index) => {
+												if (el.length !== 0) {
+													return <Fragment>
+														<div className="m-t-16"></div>
+														<div className="input-selection">
+															<div className="input-selection-level-one" style={{ width: '100%' }}>
+																<InputBox mode={inputConstant.INPUT_TEXT_BOX}
+																	name='video-close'
+																	type='text'
+																	value={{ el, index }}
+																	onChange={handleGetValue}
+																	disable={true}></InputBox>
+															</div>
+														</div></Fragment>
+												}
+											})}
 										</div>
 									</div>
 								</div>
@@ -774,6 +829,29 @@ const CreatePost = () => {
 								</div>
 							</div>
 						</div>
+						<div class="footer-button">
+							<div class="wrap-button">
+								<div>
+									<div class="flex-between">
+										<button data-tracking-id="preview-listing-lcp" type="border" color="secondary" class="sc-kIeTtH bOmeuB">
+											<div class="sc-hOqqkJ bKiBMa"><span type="primary" class="sc-TmcTc dUUUwk">Thoát</span></div>
+										</button>
+										<button data-tracking-id="submit-checkout-lcp" id="save-button" type="solid" color="primary" class="sc-kIeTtH jYwsoP">
+											<div class="sc-hOqqkJ bKiBMa">
+												<span type="primary" class="sc-TmcTc dUUUwk">Tạo bài viết</span>
+												<span class="sc-dacFzL jBNrga">
+													<div class="sc-jUEnpm cCSKON">
+														<svg font-size="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+															<path xmlns="http://www.w3.org/2000/svg" d="M9 20L17 12L9 4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+														</svg>
+													</div>
+												</span>
+											</div>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div className="ant-col second-col">
 						<div className="second-col-wrapp">
@@ -823,7 +901,6 @@ const CreatePost = () => {
 												Ngày bắt đầu
 												<div className="sc-kstrdz kihuz">&nbsp;*</div>
 											</div>
-											{console.log(cost.startedDate)}
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.CALENDAR_BOX}
@@ -871,7 +948,7 @@ const CreatePost = () => {
 																	<div className="discount-infor">
 																		<div className="discount-right">
 																			<div><span className="io0LX9">{el.description}</span></div>
-																			<div className="aHZeXi"><div className="_0ZX7+X"><div className="YsfdPb">{el.price}</div></div></div>
+																			<div className="aHZeXi"><div className="_0ZX7+X"><div className="YsfdPb">Tối đa {formatCommon.formatNumberic(el.price)}</div></div></div>
 																			<div className="mpTlYm"><span className="jjBnhm">Sắp hết hạn: {formatCommon.getResultDiffDate(new Date(el.endDate), new Date())}</span></div>
 																		</div>
 																		<div className="discount-left">
@@ -890,37 +967,40 @@ const CreatePost = () => {
 												</div>
 											</div>
 										</div>
-										<div className="wrap-bill">
-											<div className="wrap-row">
-												<div className="first-row">Đơn giá / ngày</div>
-												<span className="second-row"><span className="sc-fodVxV sUpQc">5.454</span> VND</span>
-											</div>
-											<div className="wrap-row" style={{ marginTop: '16px' }}>
-												<div className="first-row">Số ngày đăng tin</div>
-												<div className="second-row"><span className="sc-fodVxV sUpQc">10 </span>Ngày</div>
-											</div>
-											<div className="wrap-row" style={{ marginTop: '16px' }}>
-												<div className="first-row">Khuyến mãi</div>
-												<div className="second-row">
-													<span className="second-row"><span className="sc-fodVxV sUpQc">10.540</span> VND</span></div>
-											</div>
-											<div className="line" />
-											<div style={{ "height": "8px" }}></div>
-											<div className="row-total" style={{ marginTop: '14px' }}>
-												<div className="first-row-total">Tổng cộng</div>
-												<div className="second-row-total">
-													<div className="sc-gsTCUz bLoRcR sc-hmgsod jgvoXG">
-														<span className="second-row"><span className="sc-fodVxV sUpQc">54.540</span> VND</span></div>
+										{expenses.map((el) => {
+											return el.id === cost.typeOfPost ? <div className="wrap-bill">
+												<div className="wrap-row">
+													<div className="first-row">Đơn giá / ngày</div>
+													<span className="second-row"><span className="sc-fodVxV sUpQc">{formatCommon.formatNumberic(el.cost)}</span> VND</span>
 												</div>
-											</div>
-										</div>
+												<div className="wrap-row" style={{ marginTop: '16px' }}>
+													<div className="first-row">Số ngày đăng tin</div>
+													<div className="second-row"><span className="sc-fodVxV sUpQc">{cost.numDatePost} </span>Ngày</div>
+												</div>
+												<div className="wrap-row" style={{ marginTop: '16px' }}>
+													<div className="first-row">Khuyến mãi</div>
+													<div className="second-row">
+														<span className="second-row"><span className="sc-fodVxV sUpQc">{formatCommon.formatNumberic(getDiscountPrice())}</span> VND</span></div>
+												</div>
+												<div className="line" />
+												<div style={{ "height": "8px" }}></div>
+												<div className="row-total" style={{ marginTop: '14px' }}>
+													<div className="first-row-total">Tổng cộng</div>
+													<div className="second-row-total">
+														<div className="sc-gsTCUz bLoRcR sc-hmgsod jgvoXG">
+															<span className="second-row"><span className="sc-fodVxV sUpQc">{formatCommon.formatNumberic(finalTotalAmountNeeded())}</span> VND</span></div>
+													</div>
+												</div>
+											</div> : <Fragment></Fragment>
+										})
+										}
 									</div>
 								</div>
-
 							</div>
 						</div>
 					</div>
 				</div>
+
 			</div>
 		</div>
 	</Fragment >

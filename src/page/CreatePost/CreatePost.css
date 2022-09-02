@@ -912,3 +912,114 @@ h3 {
 	line-height: 20px;
 	font-weight: 500;
 }
+.footer-button{
+	position: sticky;
+	bottom: 0px;
+}
+
+.footer-button .wrap-button{
+ background-color: white;
+	width: 100%;
+	padding: 8px 24px;
+	box-shadow: rgb(182 182 182 / 18%) 0px -2px 8px;
+	position: sticky;
+	bottom: 0px;
+	
+}
+.footer-button .flex-between{
+	display: flex;
+	-webkit-box-pack: justify;
+	justify-content: space-between;
+}
+
+.bOmeuB {
+	position: relative;
+	height: 48px;
+	display: inline-block;
+	border-radius: 8px;
+	cursor: pointer;
+	white-space: nowrap;
+	width: fit-content;
+	background-color: rgb(255, 255, 255);
+	padding: 14px 16px;
+	color: rgb(44, 44, 44);
+	opacity: 1;
+	border: 1px solid rgb(204, 204, 204);
+}
+.jYwsoP {
+	position: relative;
+	height: 48px;
+	display: inline-block;
+	border-radius: 8px;
+	cursor: pointer;
+	white-space: nowrap;
+	width: fit-content;
+	background-color: rgb(224, 60, 49);
+	padding: 12px 8px 12px 16px;
+	color: rgb(255, 255, 255);
+	opacity: 1;
+	border: none;
+}
+.bKiBMa {
+	display: flex;
+	-webkit-box-align: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	-webkit-box-pack: center;
+	justify-content: center;
+}
+.bOmeuB.bOmeuB span {
+	color: rgb(44, 44, 44);
+}
+.dUUUwk {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 500;
+	color: rgb(44, 44, 44);
+	display: inline-block;
+}
+
+.bOmeuB:hover{
+	background-color: rgb(242, 242, 242);
+}
+
+.bKiBMa {
+	display: flex;
+	-webkit-box-align: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	-webkit-box-pack: center;
+	justify-content: center;
+}
+.jYwsoP.jYwsoP span {
+	color: rgb(255, 255, 255);
+}
+.dUUUwk {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 500;
+	color: rgb(44, 44, 44);
+	display: inline-block;
+}
+.jYwsoP.jYwsoP span {
+	color: rgb(255, 255, 255);
+}
+
+.jBNrga {
+	font-size: 24px;
+	height: 16px;
+	width: 16px;
+	display: inline-block;
+	margin-left: 4px;
+}
+.cCSKON {
+	display: flex;
+	-webkit-box-align: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+}

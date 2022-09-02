@@ -5,6 +5,10 @@ const formatNumberic = (price) => {
 	return (resutl || resutl === 0) ? resutl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
 }
 
+const convertStringNumricToNumber=(strNumberic)=>{
+	let resutl = strNumberic.toString().replace(/[^0-9]/g, '')
+	return resutl;
+}
 
 const combineComponentOfAddress = (province, district, ward, street) => {
 	return `${street.length === 0 ? (ward.length === 0 ? (district.length === 0 ? (province.length === 0 ? `` : `${province}`)
@@ -33,7 +37,6 @@ const formatDate = () => {
 const addDate = (initDate, numDate) => {
 	const copy = new Date(initDate)
 	copy.setDate(initDate.getDate() + numDate)
-	console.log(copy)
 	return moment(copy).format(formatCommon.formatDate());
 }
 
@@ -84,5 +87,6 @@ export const formatCommon = {
 	formatStringToNewLineInTexarea,
 	formatDate,
 	addDate,
-	getResultDiffDate
+	getResultDiffDate,
+	convertStringNumricToNumber
 }
