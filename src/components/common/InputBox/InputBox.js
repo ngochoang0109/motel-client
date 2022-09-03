@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { inputConstant } from "../../../constant/InputConstant";
+import { inputConstant } from "../../../constant/inputConstant";
 import { useDispatch, useSelector } from 'react-redux';
 import generated from "../../../common/generated.common";
 import { storageKey } from "../../../constant/storageKey";

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react"
 import InputBox from "../../components/common/InputBox/InputBox"
-import { inputConstant } from "../../constant/InputConstant"
+import { inputConstant } from "../../constant/inputConstant"
 import { PostNewsService } from "./../../service/PostNewsService"
 import './CreatePost.css'
 import { AddressApiService } from "../../service/AddressApiService"
