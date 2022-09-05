@@ -14,7 +14,7 @@ const AuthForm = ({ form }) => {
 	const [userInfor, setUserInfor] = useState({
 		email: '',
 		username: '',
-		fullname: '',
+		fullName: '',
 		phone: '',
 		password: '',
 		usernameOrEmail: ''
@@ -130,7 +130,7 @@ const AuthForm = ({ form }) => {
 				</div>
 				<label className="styles__TextFieldLabel-sc-12i1x7w-1 cvbjEz">Họ và tên</label>
 				<div className="sc-icwmWt iXXDXO">
-					<input type="text" className="sc-dYdBQb hxqKDG styles__TextField-sc-12i1x7w-2 igEGOe" name="fullname"
+					<input type="text" className="sc-dYdBQb hxqKDG styles__TextField-sc-12i1x7w-2 igEGOe" name="fullName"
 						onChange={inputOnChangeHandler} />
 				</div>
 				<label className="styles__TextFieldLabel-sc-12i1x7w-1 cvbjEz">Số điện thoại liên lạc</label>

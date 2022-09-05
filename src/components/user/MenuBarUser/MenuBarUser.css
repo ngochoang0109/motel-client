@@ -1,0 +1,7 @@
+.left-bar {
+	position: absolute;
+	width: 280px;
+	background-color: white;
+	height: 100%;
+	box-shadow: rgb(182 182 182 / 18%) 0px 4px 8px;
+}
