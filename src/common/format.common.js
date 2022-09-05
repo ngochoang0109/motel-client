@@ -7,7 +7,7 @@ const formatNumberic = (price) => {
 
 const convertStringNumricToNumber=(strNumberic)=>{
 	let resutl = strNumberic.toString().replace(/[^0-9]/g, '')
-	return resutl;
+	return parseFloat(resutl);
 }
 
 const combineComponentOfAddress = (province, district, ward, street) => {
@@ -18,8 +18,10 @@ const combineComponentOfAddress = (province, district, ward, street) => {
 }
 /*input: String contains url youtube*/
 const getVideoIdFromUrlYoutube = (urls) => {
-	const str = 'llll;one,two.three four';
-	const result = str.split(/[;,.\s]/);
+  if (urls) {
+    return urls.split("v=")[1].split("&")[0];
+  }
+  return '';
 }
 
 const formatStringToNewLineInTexarea = (arrStr) => {
@@ -61,7 +63,6 @@ function getDifferenceInSeconds(date1, date2) {
 }
 
 const getResultDiffDate = (date1, date2) => {
-	console.log(date1, date2)
 	if (getDifferenceInSeconds(date1, date2) < 60) {
 		return `${getDifferenceInSeconds(date1, date2)} giây`
 	}
@@ -88,5 +89,6 @@ export const formatCommon = {
 	formatDate,
 	addDate,
 	getResultDiffDate,
-	convertStringNumricToNumber
+	convertStringNumricToNumber,
+	getVideoIdFromUrlYoutube
 }

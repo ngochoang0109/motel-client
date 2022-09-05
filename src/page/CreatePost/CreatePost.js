@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react"
 import InputBox from "../../components/common/InputBox/InputBox"
-import { inputConstant } from "../../constant/InputConstant"
+import { inputConstant } from "../../constant/inputConstant"
 import { PostNewsService } from "./../../service/PostNewsService"
 import './CreatePost.css'
 import { AddressApiService } from "../../service/AddressApiService"
@@ -11,10 +11,9 @@ import { MapConstant } from "../../constant/MapConstant"
 import { dataCommon } from "../../common/data.common"
 import { useDispatch } from "react-redux"
 import { message } from "../../action/message"
-import rotation from '../../assets/rotation.png'
 import cancel from '../../assets/cancel.png'
-import moment from "moment"
 import Modal from "antd/lib/modal/Modal"
+import MenuBarUser from "../../components/user/MenuBarUser/MenuBarUser"
 
 const CreatePost = () => {
 	const [typesOfAcc, setTypeOffAcc] = useState([])
@@ -31,7 +30,7 @@ const CreatePost = () => {
 		email: ''
 	})
 	const [postNews, setPostNews] = useState({
-		typesOfAcc: '',
+		typesOfAcc: 0,
 		province: '',
 		district: '',
 		ward: '',
@@ -54,7 +53,9 @@ const CreatePost = () => {
 		title: '',
 		description: '',
 		images: [],
-		videos: []
+		videos: [],
+		tower: '',
+		totalAmount: 0
 	})
 	const [cost, setCost] = useState({
 		typeOfPost: '',
@@ -126,7 +127,6 @@ const CreatePost = () => {
 				})
 				return
 		}
-		console.log(target.value)
 		setPostNews({
 			...postNews,
 			address: formatCommon.combineComponentOfAddress(postNews.province, postNews.district,
@@ -170,7 +170,6 @@ const CreatePost = () => {
 		if (arrFillter[0]) {
 			const total = handleCaculatedTotalAmount()
 			const discount = parseFloat(formatCommon.convertStringNumricToNumber(total) * arrFillter[0].percent) / 100
-			console.log(discount)
 			if (discount > arrFillter[0].price) {
 				return arrFillter[0].price
 			} else {
@@ -237,7 +236,7 @@ const CreatePost = () => {
 	}
 
 	const handleUpdateVideo = (target) => {
-
+		// defined to accept onchange on input
 	}
 
 	const handleCaculatedCost = (target) => {
@@ -258,15 +257,31 @@ const CreatePost = () => {
 		})
 	}
 
-
 	console.log('Thông tin post')
 	console.log(postNews)
 	console.log('Phi bai viet')
 	console.log(cost)
-	return <Fragment>
-		<div className="left-bar">
 
-		</div>
+	const submitData = () => {
+		dispatch(message.information(true))
+		postNews.totalAmount = finalTotalAmountNeeded()
+		PostNewsService.sendRequestPostNews(postNews, cost, typesOfAcc)
+			.then((data) => {
+				console.log(data)
+				if (data) {
+					dispatch(message.information(false))
+					dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
+				} else {
+					dispatch(message.error(true, 'Tạo tin thất bại'))
+				}
+			})
+			.catch((error)=>{
+				console.log(error)
+				dispatch(message.error(true, 'Tạo tin thất bại'))
+			})
+	}
+	return <Fragment>
+		<MenuBarUser></MenuBarUser>
 		<div className="right-bar">
 			<div className="container-right-bar">
 				<div className="ant-row wrap-table">
@@ -284,7 +299,7 @@ const CreatePost = () => {
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.DROP_DOWN_LIST}
-														placeholder={`Chọn loại tin`}
+														placeholder={`Chọn bất động sản`}
 														data={typesOfAcc}
 														getValueDropList={handleGetValue}
 														name='typesOfAcc'
@@ -692,7 +707,7 @@ const CreatePost = () => {
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
 														placeholder={`VD: Tủ lạnh, máy giặt, bồn rửa chén,...`}
 														onChange={handleGetValue}
-														name='tower'
+														name='furniture'
 														type='text'></InputBox>
 												</div>
 											</div>
@@ -725,7 +740,6 @@ const CreatePost = () => {
 										<div className="flex-col">
 											<div className="label-input">
 												Đính kèm link video youtube
-												<div className="sc-kstrdz kihuz">&nbsp;*</div>
 											</div>
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
@@ -740,7 +754,7 @@ const CreatePost = () => {
 
 											{postNews.videos.map((el, index) => {
 												if (el.length !== 0) {
-													return <Fragment>
+													return <Fragment key={index}>
 														<div className="m-t-16"></div>
 														<div className="input-selection">
 															<div className="input-selection-level-one" style={{ width: '100%' }}>
@@ -829,26 +843,26 @@ const CreatePost = () => {
 								</div>
 							</div>
 						</div>
-						<div class="footer-button">
-							<div class="wrap-button">
-								<div>
-									<div class="flex-between">
-										<button data-tracking-id="preview-listing-lcp" type="border" color="secondary" class="sc-kIeTtH bOmeuB">
-											<div class="sc-hOqqkJ bKiBMa"><span type="primary" class="sc-TmcTc dUUUwk">Thoát</span></div>
-										</button>
-										<button data-tracking-id="submit-checkout-lcp" id="save-button" type="solid" color="primary" class="sc-kIeTtH jYwsoP">
-											<div class="sc-hOqqkJ bKiBMa">
-												<span type="primary" class="sc-TmcTc dUUUwk">Tạo bài viết</span>
-												<span class="sc-dacFzL jBNrga">
-													<div class="sc-jUEnpm cCSKON">
-														<svg font-size="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<path xmlns="http://www.w3.org/2000/svg" d="M9 20L17 12L9 4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
-														</svg>
-													</div>
-												</span>
-											</div>
-										</button>
-									</div>
+						<div className="footer-button">
+							<div className="wrap-button">
+								<div className="flex-between">
+									<button className="btn-right">
+										<div className="bKiBMa">
+											<span className="dUUUwk">Thoát</span>
+										</div>
+									</button>
+									<button className="btn-left" onClick={submitData}>
+										<div className="bKiBMa">
+											<span className="dUUUwk">Tạo bài viết</span>
+											<span className="jBNrga">
+												<div className="cCSKON">
+													<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path xmlns="http://www.w3.org/2000/svg" d="M9 20L17 12L9 4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+													</svg>
+												</div>
+											</span>
+										</div>
+									</button>
 								</div>
 							</div>
 						</div>
@@ -931,7 +945,7 @@ const CreatePost = () => {
 													</div>
 													<div className="lhekIy">Áp dụng ticket <span style={{ "color": "red" }}>{cost.discount}</span></div>
 												</div>
-												<div data-tracking-id="promotion-menu-lcp" id="promotion" className="button-text">
+												<div className="button-text">
 													<div color="cyan" className="bFCWPV" />
 													<div color="cyan" className="lhekIy dqTjzx" onClick={showModal}>Chọn mã</div>
 													<Modal title="Khuyến mãi hiện có"
@@ -939,8 +953,8 @@ const CreatePost = () => {
 														centered footer={null}
 														onCancel={handleCancel}>
 														<div className="discount-content">
-															{getDiscouts.map((el) => {
-																return <div className="wrap-item">
+															{getDiscouts.map((el, index) => {
+																return <div className="wrap-item" key={index}>
 																	<div style={{ "borderColor": "#00bfa5", "backgroundColor": "#00bfa5" }}
 																		className="title-discount">
 																		<div className="buv384 dbzfqh">{el.code} hỗ trợ {el.percent}%</div>
@@ -967,8 +981,8 @@ const CreatePost = () => {
 												</div>
 											</div>
 										</div>
-										{expenses.map((el) => {
-											return el.id === cost.typeOfPost ? <div className="wrap-bill">
+										{expenses.map((el, index) => {
+											return el.id === cost.typeOfPost ? <div className="wrap-bill" key={index}>
 												<div className="wrap-row">
 													<div className="first-row">Đơn giá / ngày</div>
 													<span className="second-row"><span className="sc-fodVxV sUpQc">{formatCommon.formatNumberic(el.cost)}</span> VND</span>
@@ -992,8 +1006,7 @@ const CreatePost = () => {
 													</div>
 												</div>
 											</div> : <Fragment></Fragment>
-										})
-										}
+										})}
 									</div>
 								</div>
 							</div>
