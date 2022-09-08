@@ -97,7 +97,7 @@ const Header = () => {
 										<div onMouseLeave={closePopupOver}>
 											<ul className={`menu-user-child ${showControll}`}>
 												<li className="subMenuUser">
-													<a href="/trang-ca-nhan/uspg-lstproduct" className="haslink">
+													<a href="/quan-ly-bai-viet" className="haslink">
 														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none">
 															<path d="M4.5 6C5.32843 6 6 5.32843 6 4.5C6 3.67157 5.32843 3 4.5 3C3.67157 3 3 3.67157 3 4.5C3 5.32843 3.67157 6 4.5 6Z" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
 															<path d="M4.5 13C5.32843 13 6 12.3284 6 11.5C6 10.6716 5.32843 10 4.5 10C3.67157 10 3 10.6716 3 11.5C3 12.3284 3.67157 13 4.5 13Z" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
@@ -171,7 +171,7 @@ const Header = () => {
 										<div className="arrrow" />
 									</li>
 									<li className="lv0">
-										<Link to='/quan-ly-tin-dang' className="haslink">
+										<Link to='/trang-chu/quan-ly-bai-viet' className="haslink">
 											<span className="text">Quản lý tin đăng</span>
 										</Link>
 										<div className="arrrow" />

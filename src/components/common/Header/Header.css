@@ -309,8 +309,8 @@ ul.dropdown-no-art--sm li a {
 }
 
 .notification img {
-	width: 1.9rem;
-	height: 1.9rem;
+	width: 1.7rem;
+	height: 1.7rem;
 }
 
 .notification .mnu-notify-icon-unread {
@@ -327,15 +327,15 @@ ul.dropdown-no-art--sm li a {
 	min-width: 14px;
 	/* top: 27px; */
 	right: 10px;
-	font-family: Roboto, sans-serif;
+	font-family: 'Roboto', sans-serif;
 	line-height: 16px;
 	border: 2px solid #FFF;
 }
 
 
 .user-non-avatar img{
-	width: 1.8rem;
-	height: 1.9rem;
+	width: 1.6rem;
+	height: 1.7rem;
 }
 
 #divUserStt div {
@@ -393,7 +393,7 @@ ul li {
 
 .dropdown-user a,
 .menu-2020 .dropdown-user a span {
-	font-family: Roboto, sans-serif;
+	font-family: 'Roboto', sans-serif;
 	font-weight: normal;
 	font-size: 14px;
 	line-height: 20px;
@@ -452,7 +452,7 @@ ul li {
 
 .dropdown-user a,
 .dropdown-user a span {
-	font-family: Roboto, sans-serif;
+	font-family: 'Roboto', sans-serif;
 	font-weight: normal;
 	font-size: 14px;
 	line-height: 20px;
