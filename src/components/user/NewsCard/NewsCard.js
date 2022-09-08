@@ -3,12 +3,13 @@ import { modeNews } from "../../../constant/mode.news";
 
 const NewsCard = ({ title, price, area, province, district, description,
 	fullName, phone, startedDate, closedDate,
-	avatar, mode, totalAmount }) => {
+	avatar, mode, totalAmount, id }) => {
 	const showBtnFooter = () => {
 		switch (mode) {
 			case modeNews.WAITING_APROVED:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
@@ -24,6 +25,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.NEWS_REJECT:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
@@ -41,6 +43,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.NEWS_WAIT_PAYMENT:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} &ensp; &ensp;</span>
@@ -60,6 +63,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.WAITING_SHOW:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
@@ -75,6 +79,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.SHOWING:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
@@ -90,6 +95,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.EXPRIED:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
@@ -107,6 +113,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.HINDDEN:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
+						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
@@ -125,7 +132,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
 						<span className="re__card-published-info-published-at"> Đăng bởi {fullName} &ensp;</span>
-						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())}</span>
+						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())} trước</span>
 					</div>
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >

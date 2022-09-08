@@ -16,8 +16,8 @@ import './NewsManagement.css'
 const NewsManagement = () => {
 	const [getNewsCard, setNewsCard] = useState()
 	const dispatch = useDispatch()
-	const [isActive, setActive] = useState({ id: 0, status: false, mode: '', pageNo: 1 })
-	const [textSearch, setTextSearch]=useState('')
+	const [isActive, setActive] = useState({ id: 0, status: false, mode: dataCommon.menuBarStatusManagement[0].mode, pageNo: 1 })
+	const [textSearch, setTextSearch] = useState({ searched: false, text: '' })
 	useEffect(() => {
 		dispatch(message.information(true))
 		NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
@@ -41,14 +41,15 @@ const NewsManagement = () => {
 					closedDate={el.closedDate}
 					avatar={el.avatar}
 					mode={el.mode}
-					totalAmount={el.totalAmount}></NewsCard>
+					totalAmount={el.totalAmount}
+					id={el.id}></NewsCard>
 			})
 		}
 	}
 
 	const selectedItemMenuBar = async (event, i, el) => {
 		setActive({ id: i, status: !isActive.status, mode: el.mode, pageNo: 1 })
-		getNewsDataList(el.mode, isActive.pageNo)
+		getNewsDataList(el.mode, 1)
 	}
 
 	const showMenuBarStatus = () => {
@@ -69,72 +70,77 @@ const NewsManagement = () => {
 	}
 
 	const getNewsDataList = async (mode, page) => {
+		dispatch(message.information(true))
+		if (textSearch.searched) {
+			NewsManagementService.getNewsByTextSearch(page - 1, 5, 'startedDate', 2, mode, textSearch.text).then((page) => {
+				setNewsCard(page)
+				dispatch(message.information(false))
+			})
+			return
+		}
 		switch (mode) {
 			case modeNews.NEWS_ALL:
-				dispatch(message.information(true))
 				await NewsManagementService.getAllPostOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					setNewsCard(page)
 					dispatch(message.information(false))
 				})
 				return
 			case modeNews.WAITING_APROVED:
-				dispatch(message.information(true))
 				await NewsManagementService.getWaittingApproved(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
 					setNewsCard(page)
 				})
 				return
 			case modeNews.NEWS_REJECT:
-				dispatch(message.information(true))
 				await NewsManagementService.getNewsRejected(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
 					setNewsCard(page)
 				})
 				return
 			case modeNews.NEWS_WAIT_PAYMENT:
-				dispatch(message.information(true))
 				await NewsManagementService.getDontPayment(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
 					setNewsCard(page)
 				})
 				return
 			case modeNews.WAITING_SHOW:
-				dispatch(message.information(true))
 				await NewsManagementService.getWaittingShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
 					setNewsCard(page)
 				})
 				return
 			case modeNews.SHOWING:
-				dispatch(message.information(true))
 				await NewsManagementService.getNewsShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
 					setNewsCard(page)
 				})
 				return
 			case modeNews.EXPRIED:
-				dispatch(message.information(true))
 				await NewsManagementService.getNewsExpriedOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
 					setNewsCard(page)
 				})
 				return
 			case modeNews.HINDDEN:
-				dispatch(message.information(true))
 				await NewsManagementService.getNewsHiddenOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
-					dispatch(message.information(false))
 					setNewsCard(page)
+					dispatch(message.information(false))
 				})
 				return
 		}
 	}
 
-	const searchByTextSearch=(target)=>{
-		setTextSearch(target.value)
+	const searchByTextSearch = (target) => {
+		setTextSearch({ searched: false, text: target.value })
 	}
 
-	const clickIconSeach=()=>{
-		console.log(textSearch)
+	const clickIconSeach = () => {
+		dispatch(message.information(true))
+		setTextSearch({ ...textSearch, searched: true })
+		NewsManagementService.getNewsByTextSearch(0, 5, 'startedDate', 2, isActive.mode, textSearch.text).then((page) => {
+			setNewsCard(page)
+			dispatch(message.information(false))
+		})
 	}
 
 	return <Fragment>
@@ -152,11 +158,12 @@ const NewsManagement = () => {
 							<div className="input-selection">
 								<div className="input-selection-level-one" style={{ width: '100%' }}>
 									<InputBox mode={inputConstant.INPUT_TEXT_BOX}
-										placeholder={`Tìm theo tiêu đề`}
+										placeholder={`Tìm theo mã tin, tiêu đề`}
 										name='textSearch'
 										icon={seo}
 										onChange={searchByTextSearch}
-										clickIcon={clickIconSeach}></InputBox>
+										clickIcon={clickIconSeach}
+										value={textSearch.text}></InputBox>
 								</div>
 							</div>
 						</div>
@@ -311,7 +318,6 @@ const NewsManagement = () => {
 				{showNewsCard()}
 			</div>
 			<div className='table-data' style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
-				{console.log(getNewsCard ? getNewsCard.pageSize : 0)}
 				<Pagination current={isActive.pageNo}
 					total={getNewsCard ? getNewsCard.totalPages * 10 : 0}
 					onChange={handleChoosePage}
