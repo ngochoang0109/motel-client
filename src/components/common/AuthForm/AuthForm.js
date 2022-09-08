@@ -40,7 +40,7 @@ const AuthForm = ({ form }) => {
 						localStorage.setItem('tokenUser', JSON.stringify(response.data));
 						dispatch(authentication.loginSuccess())
 						dispatch(message.successfully(true, 'Đăng nhập thành công'))
-						await navigate('/', { replace: true })
+						navigate('/', { replace: true })
 					} else {
 						dispatch(authentication.loginFailure())
 						dispatch(message.error(true, 'Đăng nhập thất bại'))
@@ -57,7 +57,7 @@ const AuthForm = ({ form }) => {
 					dispatch(message.information(false))
 					if (response.data.status) {
 						dispatch(message.successfully(true, response.data.message))
-						await navigate('/login', { replace: true })
+						navigate('/login', { replace: true })
 					}
 				})
 				.catch((error) => {

@@ -421,10 +421,11 @@ h3 {
 	margin-top: 16px;
 }
 
+/* width: text+check */
 .checkbox-row {
 	max-height: 24px;
 	overflow: hidden;
-	width: 32%;
+	margin-right: 8px;
 }
 
 .size-checkbox {
@@ -437,6 +438,7 @@ h3 {
 	width: fit-content;
 }
 
+/* width: check */
 .size-checkbox .check-box {
 	height: 1.2rem;
 	width: 1.2rem;

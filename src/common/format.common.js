@@ -24,14 +24,6 @@ const getVideoIdFromUrlYoutube = (urls) => {
   return '';
 }
 
-const formatStringToNewLineInTexarea = (arrStr) => {
-	let finalStr = ''
-	arrStr.map((str) => {
-		return finalStr = finalStr + `${str}\r\n`
-	})
-	return finalStr
-}
-
 const formatDate = () => {
 	return 'DD/MM/YYYY'
 }
@@ -80,15 +72,20 @@ const getResultDiffDate = (date1, date2) => {
 	}
 }
 
+const formatWithTimeDate = (initDate) => {
+	const copy = new Date(initDate)
+	return moment(copy).format('mm:HH DD/MM/YYYY');
+}
+
 
 export const formatCommon = {
 	formatNumberic,
 	combineComponentOfAddress,
 	getVideoIdFromUrlYoutube,
-	formatStringToNewLineInTexarea,
 	formatDate,
 	addDate,
 	getResultDiffDate,
 	convertStringNumricToNumber,
-	getVideoIdFromUrlYoutube
+	getVideoIdFromUrlYoutube,
+	formatWithTimeDate
 }

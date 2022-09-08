@@ -16,7 +16,7 @@ import moment from "moment";
 
 const InputBox = ({ mode, placeholder, data,
 	name, getValueDropList, onChange,
-	maxlength, minlength, row, type, value, title, disable, addItem }) => {
+	maxlength, minlength, row, type, value, title, disable, addItem,icon,clickIcon }) => {
 
 	const showModal = useSelector(state => state.controllDropDownModal)
 	const dispatch = useDispatch()
@@ -67,7 +67,9 @@ const InputBox = ({ mode, placeholder, data,
 							{inputValue.value.length === 0 ? `${placeholder}` : inputValue.value}
 						</div>
 					</div>
-					{currentInput.show ? <div onClick={clearInputData} className="icon-clear">
+					{icon?<div onClick={clearInputData} className="icon-clear">
+						<img src={icon}></img>
+					</div>:currentInput.show ? <div onClick={clearInputData} className="icon-clear">
 						<img src={cross}></img>
 					</div> : <div className="div-button-right">
 						<img src={down}></img>
@@ -97,6 +99,9 @@ const InputBox = ({ mode, placeholder, data,
 					</div> : type === 'calendar' ? <div className="icon-clear">
 						<img src={calendar}></img>
 					</div> : null)))}
+					{icon? <div className="icon-clear" onClick={clickIconButton}>
+						<img src={icon}></img>
+					</div>:<Fragment></Fragment>}
 				</div>
 			case inputConstant.INPUT_BIG_BOX:
 				return <div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}><textarea rows={row} id={id} type="text"
@@ -109,7 +114,8 @@ const InputBox = ({ mode, placeholder, data,
 					minLength={minlength}
 					onBlur={onFocusOutInputBox}
 					name={name}
-					disabled={disable ? disable : false}></textarea></div>
+					disabled={disable ? disable : false}></textarea>
+					</div>
 			case inputConstant.CHECK_BOX:
 				return <div className="checkbox-row">
 					<div color="#CCCCCC" className="size-checkbox">
@@ -266,6 +272,10 @@ const InputBox = ({ mode, placeholder, data,
 			setInputValue({ ...inputValue, value: formatCommon.formatNumberic(event.target.value), nameOfinput: name })
 		}
 		controllInput()
+	}
+
+	const clickIconButton=()=>{
+		clickIcon()
 	}
 
 	return <Fragment>

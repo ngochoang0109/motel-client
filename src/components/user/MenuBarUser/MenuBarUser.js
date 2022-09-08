@@ -11,7 +11,7 @@ const MenuBarUser = () => {
 	}
 	const showDropListManagement = () => {
 		return dataCommon.menuBarNewsManagement.map((el, i) => {
-			return < Link to="/trang-chu/tao-bai-viet" onClick={() => setActive({ id: i, status: !isActive.status })} key={i}>
+			return < Link to={el.to} onClick={() => setActive({ id: i, status: !isActive.status })} key={i}>
 				<div className={`${el.className} ${i === isActive.id ? `background-gray` : ''}`}>
 					<div className="item-core">
 						<div className="item-core-2">
@@ -40,7 +40,7 @@ const MenuBarUser = () => {
 			<div className='news-management' onClick={handleShowManagement}>
 				<div className='news-management-core'>
 					<div className='left'>
-						<span class="icon-left" className={showManagement ? 'color-red' : ''}>
+						<span className={`icon-left ${showManagement ? 'color-red' : ''}`}>
 							<svg fontSize="24px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M4.5 6C5.32843 6 6 5.32843 6 4.5C6 3.67157 5.32843 3 4.5 3C3.67157 3 3 3.67157 3 4.5C3 5.32843 3.67157 6 4.5 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 								<path d="M4.5 13C5.32843 13 6 12.3284 6 11.5C6 10.6716 5.32843 10 4.5 10C3.67157 10 3 10.6716 3 11.5C3 12.3284 3.67157 13 4.5 13Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

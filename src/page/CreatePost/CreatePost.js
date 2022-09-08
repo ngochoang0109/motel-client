@@ -240,7 +240,6 @@ const CreatePost = () => {
 	}
 
 	const handleCaculatedCost = (target) => {
-		console.log(target)
 		if (target.nameOfinput === 'typeOfPost') {
 			PostNewsService.getDiscountOfExpense(target.id).then((data) => {
 				setDiscounts(data)
@@ -666,7 +665,7 @@ const CreatePost = () => {
 											</div>
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
-													<div style={{ "display": "flex" }}>
+													<div style={{ "display": "flex","flexWrap":"wrap" }}>
 														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Internet'}
 															name={'internet'}
@@ -679,9 +678,7 @@ const CreatePost = () => {
 															title={'Ban công'}
 															name={'balcony'}
 															onChange={handleGetValue}></InputBox>
-													</div>
-													<div style={{ "display": "flex", "marginTop": "8px" }}>
-														<InputBox mode={inputConstant.CHECK_BOX}
+															<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Điều hòa'}
 															name={'airConditioner'}
 															onChange={handleGetValue}></InputBox>
