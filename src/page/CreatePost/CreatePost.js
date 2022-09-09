@@ -256,17 +256,11 @@ const CreatePost = () => {
 		})
 	}
 
-	console.log('Thông tin post')
-	console.log(postNews)
-	console.log('Phi bai viet')
-	console.log(cost)
-
 	const submitData = () => {
 		dispatch(message.information(true))
 		postNews.totalAmount = finalTotalAmountNeeded()
 		PostNewsService.sendRequestPostNews(postNews, cost, typesOfAcc)
 			.then((data) => {
-				console.log(data)
 				if (data) {
 					dispatch(message.information(false))
 					dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
@@ -275,7 +269,6 @@ const CreatePost = () => {
 				}
 			})
 			.catch((error)=>{
-				console.log(error)
 				dispatch(message.error(true, 'Tạo tin thất bại'))
 			})
 	}

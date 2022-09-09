@@ -12,18 +12,47 @@ import { NewsManagementService } from '../../service/NewsManagementService';
 import seo from './../../assets/seo.png'
 import "antd/dist/antd.css";
 import './NewsManagement.css'
+import { PostNewsService } from '../../service/PostNewsService';
+import { AddressApiService } from '../../service/AddressApiService';
 
 const NewsManagement = () => {
-	const [getNewsCard, setNewsCard] = useState()
+	const [getNewsCard, setNewsCard] = useState({ content: [] })
 	const dispatch = useDispatch()
 	const [isActive, setActive] = useState({ id: 0, status: false, mode: dataCommon.menuBarStatusManagement[0].mode, pageNo: 1 })
 	const [textSearch, setTextSearch] = useState({ searched: false, text: '' })
+	const [btnDurationTime, setBtnDurationTime] = useState(false)
+	const [btnTypeOfAcc, setBtnTypeOfAcc] = useState(false)
+	const [btnTypeOfNews, setBtnTypeOfNews] = useState(false)
+	const [btnProvince, setBtnProvince] = useState(false)
+	const [btnDistrict, setBtnDistrict] = useState(false)
+	const [getProvince, setProvince] = useState([])
+	const [fillterParam, setFilterParam] = useState({
+		startedDate: new Date(),
+		closedDate: new Date(),
+		typeOfAcc: [],
+		typeOfNews: [],
+		province: [],
+		district: []
+	})
 	useEffect(() => {
 		dispatch(message.information(true))
 		NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
-			dispatch(message.information(false))
 			setNewsCard(page)
 		})
+		PostNewsService.getTypeOfAcc().then((response) => {
+			console.log(response.data)
+			setFilterParam({ ...fillterParam, typeOfAcc: response.data })
+		})
+		PostNewsService.getExpenses().then((data) => {
+			const convert = data.map((el) => {
+				return { ...el, name: el.type }
+			})
+			setFilterParam({ ...fillterParam, typeOfNews: convert })
+		})
+		AddressApiService.getAllProvince().then((data) => {
+			setProvince(data)
+		})
+		dispatch(message.information(false))
 	}, [])
 
 	const showNewsCard = () => {
@@ -143,6 +172,66 @@ const NewsManagement = () => {
 		})
 	}
 
+	const chooseDurationTime = () => {
+		setBtnDurationTime(!btnDurationTime)
+		setBtnTypeOfAcc(false)
+		setBtnTypeOfNews(false)
+		setBtnProvince(false)
+		setBtnDistrict(false)
+	}
+
+	const handleSetDateFilterParam = (target) => {
+		setFilterParam({ ...fillterParam, [target.nameOfinput]: target.value })
+	}
+
+	const chooseTypeOfAcc = () => {
+		setBtnDurationTime(false)
+		setBtnTypeOfAcc(!btnTypeOfAcc)
+		setBtnTypeOfNews(false)
+		setBtnProvince(false)
+		setBtnDistrict(false)
+	}
+
+	const chooseBtnProvince = () => {
+		setBtnDurationTime(false)
+		setBtnTypeOfAcc(false)
+		setBtnTypeOfNews(false)
+		setBtnProvince(!btnProvince)
+		setBtnDistrict(false)
+	}
+
+	const chooseTypeOfNews = () => {
+		setBtnDurationTime(false)
+		setBtnTypeOfAcc(false)
+		setBtnTypeOfNews(!btnTypeOfNews)
+		setBtnProvince(false)
+		setBtnDistrict(false)
+	}
+
+	const chooseBtnDistrict = () => {
+		setBtnDurationTime(false)
+		setBtnTypeOfAcc(false)
+		setBtnTypeOfNews(false)
+		setBtnProvince(false)
+		setBtnDistrict(!btnDistrict)
+	}
+	const handleSetArrayFilterParam = (target) => {
+		if (btnTypeOfAcc) {
+			setFilterParam({ ...fillterParam, typeOfAcc: updateOrAddNewParamData(target, fillterParam.typeOfAcc) })
+		} else if (btnTypeOfNews) {
+			setFilterParam({ ...fillterParam, typeOfNews: updateOrAddNewParamData(target, fillterParam.typeOfNews) })
+		}
+	}
+
+	const updateOrAddNewParamData = (target, arr) => {
+		const arrUpdate = arr
+		const i = arrUpdate.findIndex(el => el.nameOfinput === target.nameOfinput);
+		if (i > -1) arrUpdate[i] = target
+		else arrUpdate.push(target);
+		return arrUpdate
+	}
+	console.log(fillterParam)
+
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
 		<div className="right-bar">
@@ -167,7 +256,7 @@ const NewsManagement = () => {
 								</div>
 							</div>
 						</div>
-						<button className='btn-export mr-8'>
+						<button className='btn-export mr-8' onClick={chooseDurationTime}>
 							<div className="wrapper-text">
 								<span className="icon">
 									<div>
@@ -184,7 +273,7 @@ const NewsManagement = () => {
 								<span className="text">Khoảng thời gian</span>
 							</div>
 						</button>
-						<button className='btn-export mr-8'>
+						<button className='btn-export mr-8' onClick={chooseTypeOfAcc}>
 							<div className="wrapper-text">
 								<span className="icon">
 									<div>
@@ -198,7 +287,7 @@ const NewsManagement = () => {
 								<span className="text">Loại bất động sản</span>
 							</div>
 						</button>
-						<button className='btn-export mr-8'>
+						<button className='btn-export mr-8' onClick={chooseTypeOfNews}>
 							<div className="wrapper-text">
 								<span className="icon">
 									<div>
@@ -213,7 +302,7 @@ const NewsManagement = () => {
 								<span className="text">Loại tin đăng</span>
 							</div>
 						</button>
-						<button className='btn-export mr-8'>
+						<button className='btn-export mr-8' onClick={chooseBtnProvince}>
 							<div className="wrapper-text">
 								<span className="icon">
 									<div>
@@ -227,7 +316,7 @@ const NewsManagement = () => {
 								<span className="text">Tỉnh/ Thành phố</span>
 							</div>
 						</button>
-						<button className='btn-export mr-8'>
+						<button className='btn-export mr-8' onClick={chooseBtnDistrict}>
 							<div className="wrapper-text">
 								<span className="icon">
 									<div>
@@ -257,52 +346,65 @@ const NewsManagement = () => {
 							</div>
 						</button>
 					</div>
-					<div className='wrapper-data-filter'>
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Bãi đổ xe'}
-							name={'parking'}
-						></InputBox>
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Bãi đổ xe'}
-							name={'parking'}
-						></InputBox>
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Internet'}
-							name={'internet'}
-						></InputBox>
-						<InputBox mode={inputConstant.CHECK_BOX}
-							title={'Bãi đổ xe'}
-							name={'parking'}
-						></InputBox>
-					</div>
+					{btnDurationTime ? <div className='wrapper-data-filter'>
+						<div className="wrapper-input-level-1">
+							<div className="wrapper-input-level-2">
+								<div className="label-input">
+									Ngày bắt đầu
+									<div className="sc-kstrdz kihuz">&nbsp;*</div>
+								</div>
+								<div className="input-selection">
+									<div className="input-selection-level-one" style={{ width: '100%' }}>
+										<InputBox mode={inputConstant.CALENDAR_BOX}
+											name='startedDate'
+											onChange={handleSetDateFilterParam}
+											disable={false}></InputBox>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div className="wrapper-input-level-1">
+							<div className="wrapper-input-level-2">
+								<div className="label-input">
+									Ngày kết thúc
+									<div className="sc-kstrdz kihuz">&nbsp;*</div>
+								</div>
+								<div className="input-selection">
+									<div className="input-selection-level-one" style={{ width: '100%' }}>
+										<InputBox mode={inputConstant.CALENDAR_BOX}
+											name='closedDate'
+											onChange={handleSetDateFilterParam}
+											disable={false}></InputBox>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> : <Fragment></Fragment>}
+					{btnTypeOfAcc ? <div className='wrapper-data-filter'>
+						{console.log(fillterParam.typeOfAcc)}
+						{fillterParam.typeOfAcc.map((el) => {
+							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
+								title={el.name}
+								name={el.name}
+								onChange={handleSetArrayFilterParam}></InputBox>
+						})}
+					</div> : <Fragment></Fragment>}
+					{btnTypeOfNews ? <div className='wrapper-data-filter'>
+						{fillterParam.typeOfNews.map((el) => {
+							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
+								title={el.name}
+								name={el.name}
+								onChange={handleSetArrayFilterParam}></InputBox>
+						})}
+					</div> : <Fragment></Fragment>}
+					{btnProvince ? <div className='wrapper-data-filter'>
+						{getProvince.map((el) => {
+							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
+								title={el.name}
+								name={el.name}
+								onChange={handleSetArrayFilterParam}></InputBox>
+						})}
+					</div> : <Fragment></Fragment>}
 				</div>
 			</div>
 			<div className="table-data">
@@ -317,12 +419,12 @@ const NewsManagement = () => {
 			<div className='table-data' style={{ "marginTop": "16px" }}>
 				{showNewsCard()}
 			</div>
-			<div className='table-data' style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
+			{getNewsCard.content.length !== 0 ? <div className='table-data' style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
 				<Pagination current={isActive.pageNo}
 					total={getNewsCard ? getNewsCard.totalPages * 10 : 0}
 					onChange={handleChoosePage}
 					showSizeChanger={false} />
-			</div>
+			</div> : <Fragment></Fragment>}
 		</div>
 	</Fragment>
 }
