@@ -76,7 +76,6 @@ const getNewsExpriedOfUser = (pageNo,pageSize,sort,mode) => {
 
 const getNewsByTextSearch = (pageNo,pageSize,sort,mode, status, textSearh) => {
 	const headers = headerCommon();
-	console.log(`news-management/get-news-text-search?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}&status=${status}&textSearch=${textSearh}`)
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-text-search?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}&status=${status}&textSearch=${textSearh}`,
 		'GET', {}).then((response) => {

@@ -143,19 +143,18 @@ const InputBox = ({ mode, placeholder, data,
 			case inputConstant.CALENDAR_BOX:
 				return <DatePicker format={formatCommon.formatDate()}
 					defaultValue={moment(inputValue.value.toString().length !== 0 ? new Date(inputValue.value) : new Date())}
-					disabledDate={disabledDate}
-					onChange={onChangeCalendar}
-					placeholder=''></DatePicker>
+					disabledDate={!disable?false:disabledDate}
+					onChange={onChangeCalendar}></DatePicker>
 		}
 	}
 
 	function disabledDate(current) {
-		// Can not select days before today and today
-		return current && current.valueOf() < Date.now();
+		const temp =new Date()
+		temp.setDate(temp.getDate()-1)
+		return current && current.valueOf() < temp;
 	}
 
 	const onChangeCalendar = (value) => {
-		console.log(value)
 		if (value.length === 0) {
 			return
 		}
