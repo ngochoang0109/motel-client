@@ -56,7 +56,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Chỉnh sửa</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa</span></span>
+							<span>Xóa bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -72,7 +72,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Chỉnh sửa</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa</span></span>
+							<span>Xóa bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -88,7 +88,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Ẩn bài viết</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa</span></span>
+							<span>Xóa bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -106,7 +106,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Chỉnh sửa</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa</span></span>
+							<span>Xóa bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -124,7 +124,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Chỉnh sửa</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa</span></span>
+							<span>Xóa bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
