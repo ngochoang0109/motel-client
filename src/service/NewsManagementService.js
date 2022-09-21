@@ -79,22 +79,22 @@ const getNewsByTextSearch = async (pageNo, pageSize, sort, mode, status, textSea
 	const headers = headerCommon();
 	const strDistricts = []
 	const strProvinces = []
-	await fillterParam.province.forEach((el) => {
-		AddressApiService.getProvinceById(el).then(data => strProvinces.push(data.name))
-	})
-	if (fillterParam.province.length === 1) {
-		fillterParam.district.forEach((el) => {
-			AddressApiService.getDistrictById(fillterParam.province[0], el).then(data => strDistricts.push(data.name))
-		})
-	}
-	fillterParam.province = strProvinces
-	fillterParam.district = strDistricts
-	console.log(fillterParam)
+	// await fillterParam.province.forEach((el) => {
+	// 	AddressApiService.getProvinceById(el).then(data => strProvinces.push(data.name))
+	// })
+	// if (fillterParam.province.length === 1) {
+	// 	fillterParam.district.forEach((el) => {
+	// 		AddressApiService.getDistrictById(fillterParam.province[0], el).then(data => strDistricts.push(data.name))
+	// 	})
+	// }
+	// fillterParam.province = strProvinces
+	// fillterParam.district = strDistricts
+	// console.log(fillterParam)
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-text-search?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}&status=${status}&textSearch=${textSearh}`,
 		'GET', fillterParam).then((response) => {
 			return response.data;
-		})
+	})
 }
 
 export const NewsManagementService = {
