@@ -1,8 +1,9 @@
 import headerCommon from "../common/header.common";
 import httpClient from "../common/httpClient";
 import { storageKey } from "../constant/storageKey";
+import { AddressApiService } from "./AddressApiService";
 
-const getAllPostOfUser = (pageNo,pageSize,sort,mode) => {
+const getAllPostOfUser = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-all-of-user?pageNo=${pageNo}&pageSize=${pageSize}&sort=${sort}&mode=${mode}`,
@@ -11,7 +12,7 @@ const getAllPostOfUser = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getWaittingApproved = (pageNo,pageSize,sort,mode) => {
+const getWaittingApproved = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-waitting-approved?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -20,7 +21,7 @@ const getWaittingApproved = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getNewsRejected = (pageNo,pageSize,sort,mode) => {
+const getNewsRejected = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-reject?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -29,7 +30,7 @@ const getNewsRejected = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getDontPayment = (pageNo,pageSize,sort,mode) => {
+const getDontPayment = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-dont-payment?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -38,7 +39,7 @@ const getDontPayment = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getWaittingShowOfUser = (pageNo,pageSize,sort,mode) => {
+const getWaittingShowOfUser = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-waitting-show?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -47,7 +48,7 @@ const getWaittingShowOfUser = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getNewsShowOfUser = (pageNo,pageSize,sort,mode) => {
+const getNewsShowOfUser = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-showing?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -56,7 +57,7 @@ const getNewsShowOfUser = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getNewsHiddenOfUser = (pageNo,pageSize,sort,mode) => {
+const getNewsHiddenOfUser = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-hidden?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -65,7 +66,7 @@ const getNewsHiddenOfUser = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getNewsExpriedOfUser = (pageNo,pageSize,sort,mode) => {
+const getNewsExpriedOfUser = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-expried?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}`,
@@ -74,13 +75,26 @@ const getNewsExpriedOfUser = (pageNo,pageSize,sort,mode) => {
 		})
 }
 
-const getNewsByTextSearch = (pageNo,pageSize,sort,mode, status, textSearh) => {
+const getNewsByTextSearch = async (pageNo, pageSize, sort, mode, status, textSearh, fillterParam) => {
 	const headers = headerCommon();
+	const strDistricts = []
+	const strProvinces = []
+	// await fillterParam.province.forEach((el) => {
+	// 	AddressApiService.getProvinceById(el).then(data => strProvinces.push(data.name))
+	// })
+	// if (fillterParam.province.length === 1) {
+	// 	fillterParam.district.forEach((el) => {
+	// 		AddressApiService.getDistrictById(fillterParam.province[0], el).then(data => strDistricts.push(data.name))
+	// 	})
+	// }
+	// fillterParam.province = strProvinces
+	// fillterParam.district = strDistricts
+	// console.log(fillterParam)
 	return httpClient(headers, storageKey.API,
 		`news-management/get-news-text-search?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}&status=${status}&textSearch=${textSearh}`,
-		'GET', {}).then((response) => {
+		'GET', fillterParam).then((response) => {
 			return response.data;
-		})
+	})
 }
 
 export const NewsManagementService = {

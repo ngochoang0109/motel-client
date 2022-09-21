@@ -66,11 +66,33 @@ const checkDistrictOfProvince = (provinceId, districtName) => {
 	})
 }
 
-const getLocationFromAddress=(strQuery)=>{
-	return httpClient({},storageKey.HEADER_URL_GOOGLE_API,`${strQuery}${storageKey.FOOTER_URL_GOOGLE_API}`,'GET',{})
-				.then((response)=>{
-					return response.data
-				})
+const getDistrictById = async (provinceId, districtId) => {
+	let strDistrict=''
+	await getAllDistricByProvinceId(provinceId).then((districts) => {
+		const index = districts.findIndex(el => el.id === districtId)
+		if (index !== -1) {
+			strDistrict= districts[index]
+		}
+	})
+	return strDistrict
+}
+
+const getLocationFromAddress = (strQuery) => {
+	return httpClient({}, storageKey.HEADER_URL_GOOGLE_API, `${strQuery}${storageKey.FOOTER_URL_GOOGLE_API}`, 'GET', {})
+		.then((response) => {
+			return response.data
+		})
+}
+
+const getProvinceById = async (provinceId) => {
+	let strProvince=''
+	await getAllProvince().then((provinces)=>{
+		const index=provinces.findIndex(el=>el.id===provinceId)
+		if (index !== -1) {
+			strProvince= provinces[index]
+		}
+	})
+	return strProvince
 }
 
 
@@ -79,5 +101,7 @@ export const AddressApiService = {
 	getAllDistricByProvinceId,
 	checkDistrictOfProvince,
 	getAllWardByDistrictId,
-	getLocationFromAddress
+	getLocationFromAddress,
+	getDistrictById,
+	getProvinceById
 }

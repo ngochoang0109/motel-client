@@ -10,7 +10,7 @@ import { inputConstant } from '../../constant/inputConstant';
 import { modeNews } from '../../constant/mode.news';
 import { NewsManagementService } from '../../service/NewsManagementService';
 import seo from './../../assets/seo.png'
-import "antd/dist/antd.css";
+import 'antd/dist/antd.min.css';
 import './NewsManagement.css'
 import { PostNewsService } from '../../service/PostNewsService';
 import { AddressApiService } from '../../service/AddressApiService';
@@ -18,7 +18,12 @@ import { AddressApiService } from '../../service/AddressApiService';
 const NewsManagement = () => {
 	const [getNewsCard, setNewsCard] = useState({ content: [] })
 	const dispatch = useDispatch()
-	const [isActive, setActive] = useState({ id: 0, status: false, mode: dataCommon.menuBarStatusManagement[0].mode, pageNo: 1 })
+	const [isActive, setActive] = useState({
+		status: false,
+		mode: dataCommon.menuBarStatusManagement[0].mode,
+		pageNo: 0,
+		totalPages: 0
+	})
 	const [textSearch, setTextSearch] = useState({ searched: false, text: '' })
 	const [btnDurationTime, setBtnDurationTime] = useState(false)
 	const [btnTypeOfAcc, setBtnTypeOfAcc] = useState(false)
@@ -26,7 +31,10 @@ const NewsManagement = () => {
 	const [btnProvince, setBtnProvince] = useState(false)
 	const [btnDistrict, setBtnDistrict] = useState(false)
 	const [getProvince, setProvince] = useState([])
-	const [fillterParam, setFilterParam] = useState({
+	const [getDistrict, setDistrict]=useState([])
+	const [typeOfAcc, setTypeOfAcc] = useState([])
+	const [typeOfNews, setTypeOfNews] = useState([])
+	const [filterParam, setFilterParam] = useState({
 		startedDate: new Date(),
 		closedDate: new Date(),
 		typeOfAcc: [],
@@ -38,21 +46,23 @@ const NewsManagement = () => {
 		dispatch(message.information(true))
 		NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
 			setNewsCard(page)
+			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+			dispatch(message.information(false))
 		})
 		PostNewsService.getTypeOfAcc().then((response) => {
-			console.log(response.data)
-			setFilterParam({ ...fillterParam, typeOfAcc: response.data })
+			setTypeOfAcc(response.data)
+			dispatch(message.information(false))
 		})
 		PostNewsService.getExpenses().then((data) => {
 			const convert = data.map((el) => {
 				return { ...el, name: el.type }
 			})
-			setFilterParam({ ...fillterParam, typeOfNews: convert })
+			setTypeOfNews(convert)
 		})
 		AddressApiService.getAllProvince().then((data) => {
 			setProvince(data)
+			dispatch(message.information(false))
 		})
-		dispatch(message.information(false))
 	}, [])
 
 	const showNewsCard = () => {
@@ -78,12 +88,13 @@ const NewsManagement = () => {
 
 	const selectedItemMenuBar = async (event, i, el) => {
 		setActive({ id: i, status: !isActive.status, mode: el.mode, pageNo: 1 })
+		console.log(el.mode)
 		getNewsDataList(el.mode, 1)
 	}
 
 	const showMenuBarStatus = () => {
 		return dataCommon.menuBarStatusManagement.map((el, i) => {
-			return <button className={`col-table-data ${i === isActive.id ? el.className : ''}`}
+			return <button className={`col-table-data ${el.mode === isActive.mode ? el.className : ''}`}
 				onClick={(event) => selectedItemMenuBar(event, i, el)}
 				key={i}>
 				<div className="wrapper-text-col">
@@ -104,6 +115,8 @@ const NewsManagement = () => {
 			NewsManagementService.getNewsByTextSearch(page - 1, 5, 'startedDate', 2, mode, textSearch.text).then((page) => {
 				setNewsCard(page)
 				dispatch(message.information(false))
+				setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: mode })
+				console.log(isActive)
 			})
 			return
 		}
@@ -111,48 +124,58 @@ const NewsManagement = () => {
 			case modeNews.NEWS_ALL:
 				await NewsManagementService.getAllPostOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					setNewsCard(page)
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_ALL })
 					dispatch(message.information(false))
 				})
 				return
 			case modeNews.WAITING_APROVED:
 				await NewsManagementService.getWaittingApproved(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.WAITING_APROVED })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.NEWS_REJECT:
 				await NewsManagementService.getNewsRejected(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_REJECT })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.NEWS_WAIT_PAYMENT:
 				await NewsManagementService.getDontPayment(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_WAIT_PAYMENT })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.WAITING_SHOW:
 				await NewsManagementService.getWaittingShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.WAITING_SHOW })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.SHOWING:
 				await NewsManagementService.getNewsShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
-					dispatch(message.information(false))
+					console.log(page)
+					console.log("adsffffffffffffffffff"+page.totalPages)
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
 					setNewsCard(page)
+					dispatch(message.information(false))
 				})
 				return
 			case modeNews.EXPRIED:
 				await NewsManagementService.getNewsExpriedOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					dispatch(message.information(false))
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.EXPRIED })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.HINDDEN:
 				await NewsManagementService.getNewsHiddenOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					setNewsCard(page)
+					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.HINDDEN })
 					dispatch(message.information(false))
 				})
 				return
@@ -167,7 +190,9 @@ const NewsManagement = () => {
 		dispatch(message.information(true))
 		setTextSearch({ ...textSearch, searched: true })
 		NewsManagementService.getNewsByTextSearch(0, 5, 'startedDate', 2, isActive.mode, textSearch.text).then((page) => {
+			console.log(page)
 			setNewsCard(page)
+			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
 			dispatch(message.information(false))
 		})
 	}
@@ -181,7 +206,7 @@ const NewsManagement = () => {
 	}
 
 	const handleSetDateFilterParam = (target) => {
-		setFilterParam({ ...fillterParam, [target.nameOfinput]: target.value })
+		setFilterParam({ ...filterParam, [target.nameOfinput]: target.value })
 	}
 
 	const chooseTypeOfAcc = () => {
@@ -215,22 +240,56 @@ const NewsManagement = () => {
 		setBtnProvince(false)
 		setBtnDistrict(!btnDistrict)
 	}
-	const handleSetArrayFilterParam = (target) => {
+
+	const handleSetArrayFilterParam = (target, id) => {
 		if (btnTypeOfAcc) {
-			setFilterParam({ ...fillterParam, typeOfAcc: updateOrAddNewParamData(target, fillterParam.typeOfAcc) })
-		} else if (btnTypeOfNews) {
-			setFilterParam({ ...fillterParam, typeOfNews: updateOrAddNewParamData(target, fillterParam.typeOfNews) })
+			setFilterParam({ ...filterParam, typeOfAcc: addOrDeleteParam(target, id, filterParam.typeOfAcc) })
+		}
+		else if (btnTypeOfNews) {
+			setFilterParam({ ...filterParam, typeOfNews: addOrDeleteParam(target, id, filterParam.typeOfNews) })
+		}
+		else if (btnProvince){
+			const newChecked=addOrDeleteParam(target, id, filterParam.province)
+			setFilterParam({...filterParam, province: newChecked})
+			if(newChecked.length===1){
+				AddressApiService.getAllDistricByProvinceId(newChecked[0]).then((data)=>{
+					setDistrict(data)
+				})
+			}else{
+				setDistrict([])
+			}
+		}else if(btnDistrict){
+			setFilterParam({...filterParam, district: addOrDeleteParam(target, id, filterParam.district)})
 		}
 	}
 
-	const updateOrAddNewParamData = (target, arr) => {
-		const arrUpdate = arr
-		const i = arrUpdate.findIndex(el => el.nameOfinput === target.nameOfinput);
-		if (i > -1) arrUpdate[i] = target
-		else arrUpdate.push(target);
-		return arrUpdate
+	const addOrDeleteParam = (target, id, arr) => {
+		console.log(id)
+		const updateArr = arr
+		const i = arr.findIndex(el => el === id)
+		if (target.value) {
+			if (i > -1) {
+				updateArr[i] = arr[i].id
+			} else {
+				updateArr.push(id)
+			}
+		} else {
+			updateArr.splice(i, 1)
+		}
+		return updateArr
 	}
-	console.log(fillterParam)
+
+	const filterData=()=>{
+		dispatch(message.information(true))
+		setTextSearch({ ...textSearch, searched: true })
+		NewsManagementService.getNewsByTextSearch(0, 5, 'startedDate', 2, isActive.mode, textSearch.text, filterParam).then((page) => {
+			console.log(page)
+			setNewsCard(page)
+			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+			dispatch(message.information(false))
+		})
+	}
+	console.log(filterParam)
 
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
@@ -330,6 +389,18 @@ const NewsManagement = () => {
 								<span className="text">Quận/ Huyện</span>
 							</div>
 						</button>
+						<button className='btn-export mr-8' onClick={filterData}>
+							<div className="wrapper-text">
+								<span className="icon">
+									<div>
+										<svg width="100px" height="100px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+											<path style={{fill: '#09ee09', stroke: '#007300', strokeWidth: 3}} d="M 4,36 C 8,42 26,73 31,93 38,82 44,63 98,12 78,22 51,44 33,60 26,55 18,44 4,36 z" />
+      								</svg>
+									</div>
+								</span>
+								<span className="text">Áp dụng</span>
+							</div>
+						</button>
 						<button className='btn-export'>
 							<div className="wrapper-text">
 								<span className="icon">
@@ -381,20 +452,22 @@ const NewsManagement = () => {
 						</div>
 					</div> : <Fragment></Fragment>}
 					{btnTypeOfAcc ? <div className='wrapper-data-filter'>
-						{console.log(fillterParam.typeOfAcc)}
-						{fillterParam.typeOfAcc.map((el) => {
+						{console.log(filterParam.typeOfAcc)}
+						{typeOfAcc.map((el) => {
 							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
 								title={el.name}
 								name={el.name}
-								onChange={handleSetArrayFilterParam}></InputBox>
+								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
+								checked={filterParam.typeOfAcc.indexOf(el.id)!==-1?true:false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 					{btnTypeOfNews ? <div className='wrapper-data-filter'>
-						{fillterParam.typeOfNews.map((el) => {
+						{typeOfNews.map((el) => {
 							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
 								title={el.name}
 								name={el.name}
-								onChange={handleSetArrayFilterParam}></InputBox>
+								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
+								checked={filterParam.typeOfNews.indexOf(el.id)!==-1?true:false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 					{btnProvince ? <div className='wrapper-data-filter'>
@@ -402,7 +475,17 @@ const NewsManagement = () => {
 							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
 								title={el.name}
 								name={el.name}
-								onChange={handleSetArrayFilterParam}></InputBox>
+								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
+								checked={filterParam.province.indexOf(el.id)!==-1?true:false}></InputBox>
+						})}
+					</div> : <Fragment></Fragment>}
+					{btnDistrict ? <div className='wrapper-data-filter'>
+						{getDistrict.map((el) => {
+							return <InputBox key={el.id} mode={inputConstant.CHECK_BOX}
+								title={el.name}
+								name={el.name}
+								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
+								checked={filterParam.district.indexOf(el.id)!==-1?true:false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 				</div>
@@ -419,9 +502,11 @@ const NewsManagement = () => {
 			<div className='table-data' style={{ "marginTop": "16px" }}>
 				{showNewsCard()}
 			</div>
-			{getNewsCard.content.length !== 0 ? <div className='table-data' style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
+			{getNewsCard.content.length !== 0 ? <div className='table-data'
+				style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
+					{console.log(isActive)}
 				<Pagination current={isActive.pageNo}
-					total={getNewsCard ? getNewsCard.totalPages * 10 : 0}
+					total={isActive.totalPages}
 					onChange={handleChoosePage}
 					showSizeChanger={false} />
 			</div> : <Fragment></Fragment>}

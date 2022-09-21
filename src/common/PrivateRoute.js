@@ -7,9 +7,9 @@ import { AuthService } from '../service/AuthService';
 
 
 
-const PrivateRoute=({ children })=> {
+const PrivateRoute = ({ children }) => {
 
-    const dispatch = useDispatch()
+	const dispatch = useDispatch()
 
 	useEffect(() => {
 		if (AuthService.getTokenOfLocalStorage()) {
@@ -18,13 +18,13 @@ const PrivateRoute=({ children })=> {
 			dispatch(authentication.logout())
 		}
 	}, [])
-    
-    if (!AuthService.getTokenOfLocalStorage()) {
-        dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
-        return <Fragment></Fragment>
-    }
 
-    // authorized so return child components
-    return children;
+	if (!AuthService.getTokenOfLocalStorage()) {
+		dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
+		return <Fragment></Fragment>
+	}
+
+	// authorized so return child components
+	return children;
 }
 export default PrivateRoute

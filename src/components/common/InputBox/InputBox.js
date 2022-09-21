@@ -11,12 +11,12 @@ import down from './../../../assets/down.png'
 import add from './../../../assets/add.png'
 import calendar from './../../../assets/calendar.png'
 import { DatePicker } from "antd";
-import "antd/dist/antd.css";
+import 'antd/dist/antd.min.css';
 import moment from "moment";
 
 const InputBox = ({ mode, placeholder, data,
 	name, getValueDropList, onChange,
-	maxlength, minlength, row, type, value, title, disable, addItem,icon,clickIcon }) => {
+	maxlength, minlength, row, type, value, title, disable, addItem,icon,clickIcon, checked }) => {
 
 	const showModal = useSelector(state => state.controllDropDownModal)
 	const dispatch = useDispatch()
@@ -121,8 +121,8 @@ const InputBox = ({ mode, placeholder, data,
 					<div color="#CCCCCC" className="size-checkbox">
 						<input type='checkbox'
 							className="check-box"
-							onClick={clickCheckBox}
-							value={inputValue.value} />
+							onChange={clickCheckBox}
+							checked={checked} />
 						<div className="mr-l-8">
 							<div className="text-of-checkbox">{title}</div>
 						</div>

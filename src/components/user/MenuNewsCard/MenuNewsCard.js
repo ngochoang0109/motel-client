@@ -8,7 +8,7 @@ import { message } from './../../../action/message'
 
 const MenuNewsCard = () => {
 	const messageStatus = useSelector(state => state.controllMessage)
-	const [getNewsCard, setNewsCard] = useState()
+	const [getNewsCard, setNewsCard] = useState({content:[],totalElements:0})
 	const dispatch = useDispatch()
 	useEffect(() => {
 		if (!messageStatus.show) {
@@ -16,6 +16,7 @@ const MenuNewsCard = () => {
 		}
 		HomeService.getMenuNewsCard(0, 10, 'startedDate', 2).then((page) => {
 			dispatch(message.information(false))
+			console.log(page)
 			setNewsCard(page)
 		})
 	}, [])
@@ -44,7 +45,7 @@ const MenuNewsCard = () => {
 			<a className="re__link-se" href="/nha-dat-cho-thue" title="Nhà đất cho thuê tại Việt Nam">Tất cả BĐS trên toàn quốc</a>
 		</div>
 		<h1 className="re__srp-title">Cho thuê nhà đất  trên toàn quốc</h1>
-		<span className="re__srp-total-count">Hiện có <span id="count-number">25,191</span> bất động sản. </span>
+		<span className="re__srp-total-count">Hiện có <span id="count-number">{getNewsCard.totalElements}</span> bất động sản. </span>
 		<div className='re_sort'>
 			<div style={{ "display": "flex", "justifyContent": "right" }}>
 				<div className="input-selection">
