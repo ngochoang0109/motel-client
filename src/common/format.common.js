@@ -68,7 +68,7 @@ const getResultDiffDate = (date1, date2) => {
 		return `${getDifferenceInDays(date1, date2)} ngày`
 	}
 	else {
-		return formatDate(date1);
+		return moment(date1).format(formatCommon.formatDate());
 	}
 }
 
@@ -77,6 +77,17 @@ const formatWithTimeDate = (initDate) => {
 	return moment(copy).format('mm:HH DD/MM/YYYY');
 }
 
+const getQueryStringParams = query => {
+	return query  ? (/^[?#]/.test(query) ? query.slice(1) : query)
+			  .split('&')
+			  .reduce((params, param) => {
+						 let [key, value] = param.split('=');
+						 params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
+						 return params;
+					}, {}
+			  )
+		 : {}
+};
 
 export const formatCommon = {
 	formatNumberic,
@@ -87,5 +98,6 @@ export const formatCommon = {
 	getResultDiffDate,
 	convertStringNumricToNumber,
 	getVideoIdFromUrlYoutube,
-	formatWithTimeDate
+	formatWithTimeDate,
+	getQueryStringParams
 }

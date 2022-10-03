@@ -94,7 +94,7 @@
   width: 600px;
   height: 300px;
   position: absolute;
-  z-index: 1000;
+  z-index: 10000;
   display: inline-block;
   overflow: hidden;
   background: #f1f2f3;

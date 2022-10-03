@@ -20,8 +20,7 @@ const Layout = () => {
 				<Routes>
 					<Route path="/register" element={<Register></Register>}></Route>
 					<Route path="/login" element={<Login></Login>}></Route>
-					<Route path="/" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
-					<Route path="/home" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
+					<Route path={["/","trang-chu"]} element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="trang-chu/tao-bai-viet"
 						element={
 							<PrivateRoute>

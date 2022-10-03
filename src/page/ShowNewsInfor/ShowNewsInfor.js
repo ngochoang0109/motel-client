@@ -1,12 +1,480 @@
+import { wait } from '@testing-library/user-event/dist/utils';
+import { InputNumber, Slider } from 'antd';
+import Modal from 'antd/lib/modal/Modal';
+import { Button } from 'antd/lib/radio';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { formatCommon } from '../../common/format.common';
 import InputBox from '../../components/common/InputBox/InputBox';
 import MenuNewsCard from '../../components/user/MenuNewsCard/MenuNewsCard';
 import SideFilterBox from '../../components/user/SideFilterBox/SideFilterBox';
 import { inputConstant } from '../../constant/inputConstant';
+import { AddressApiService } from '../../service/AddressApiService';
+import { PostNewsService } from '../../service/PostNewsService';
 import seo from './../../assets/seo.png'
 import './ShowNewsInfor.css'
+
 const ShowNewsInfor = () => {
+
+	const [visible, setVisible] = useState(false)
+	const [modeModal, setModeModal] = useState(0)
+	const [accType, setAccType] = useState([])
+	const [provinces, setProvinces] = useState([])
+	const [district, setDistrict] = useState([])
+	const [ward, setWard] = useState([])
+	const [queryParam, setQueryParam] = useState({
+		type: {
+			title: 'Loại BĐS',
+			value: 0
+		}, province: {
+			title: 'Khu vực',
+			value: ''
+		}, district: {
+			title: '',
+			value: ''
+		}, ward: {
+			title: '',
+			value: ''
+		},
+		priceFrom: 0,
+		priceTo: 100000000,
+		areaFrom: 0,
+		areaTo: 1000,
+		mode: 2,
+		pageNo: "0",
+		pageSize: "5",
+		field: 'startedDate'
+	})
+	const location = useLocation()
+	const [initPage, setInitPage] = useState(true)
+	const [sortMode, setSortMode] = useState([{ id: 0, name: 'Tin mới nhất' },
+	{ id: 1, name: 'Giá thấp đến cao' }, { id: 2, name: 'Giá cao đến thấp' },
+	{ id: 3, name: 'Diện tích thấp đến cao' }, { id: 4, name: 'Diện tích cao đến thấp' }])
+
+	useEffect(() => {
+		setInitPage(false)
+		if (location.search.length !== 0) {
+			const obj = formatCommon.getQueryStringParams(location.search)
+			console.log(obj)
+			const updateQueryParam = queryParam
+			PostNewsService.getTypeOfAcc().then((data) => {
+				setAccType(data.data)
+				data.data.map((el) => {
+					if (Number(obj.type) === el.id) {
+						updateQueryParam.type.title = el.name
+						updateQueryParam.type.value = el.id
+						return
+					}
+				})
+			})
+			AddressApiService.getAllProvince().then((data) => {
+				setProvinces(data.reverse())
+			})
+
+			updateQueryParam.province = { title: obj.province.length===0?'Khu vực':obj.province, value: obj.province }
+			updateQueryParam.district = { title: obj.district, value: obj.district }
+			updateQueryParam.ward = { title: obj.ward, value: obj.ward }
+			updateQueryParam.priceFrom = Number(obj.priceFrom)
+			updateQueryParam.priceTo = Number(obj.priceTo)
+			updateQueryParam.areaFrom = Number(obj.areaFrom)
+			updateQueryParam.areaTo = Number(obj.areaTo)
+			updateQueryParam.mode = Number(obj.mode)
+			updateQueryParam.field = obj.sort
+			setQueryParam(updateQueryParam)
+		} else {
+			PostNewsService.getTypeOfAcc().then((data) => {
+				setAccType(data.data)
+			})
+			AddressApiService.getAllProvince().then((data) => {
+				setProvinces(data.reverse())
+			})
+		}
+	}, [location.search])
+
+	const showModal = (mode) => {
+		setModeModal(mode)
+		setVisible(true)
+	}
+
+	const handleCancel = e => {
+		setVisible(false)
+	}
+	const onAfterChangePrice = (value) => {
+		setQueryParam({ ...queryParam, priceFrom: value[0], priceTo: value[1] })
+	};
+
+	const updateParamQuery = (value, name) => {
+		let param = queryParam
+		if (name === 'type') {
+			param.type.value = value.id
+			param.type.title = value.name
+			setVisible(false)
+		} else if (name === 'province') {
+			param.province.title = value.name
+			param.province.value = value.name
+			AddressApiService.getAllDistricByProvinceId(value.id).then((data) => {
+				setDistrict(data)
+			})
+		} else if (name === 'district') {
+			param.district.title = value.name
+			param.district.value = value.name
+			AddressApiService.getAllWardByDistrictId(value.id).then((data) => {
+				setWard(data)
+			})
+		} else if (name === 'ward') {
+			param.ward.title = value.name
+			param.ward.value = value.name
+			setVisible(false)
+		}
+		setQueryParam(param)
+	}
+
+	const contentModalAddress = (arr, mode) => {
+		return arr.map((el) => {
+			return <li itemProp="itemListElement"
+				className="Styles_option__1f2OH" key={el.id}
+				onClick={() => updateParamQuery(el, mode)}>
+				<div className="Styles_tagLink__w5_mC">
+					<span>{el.name}</span>
+					<img src="https://static.chotot.com/storage/chotot-icons/svg/grey-next.svg"
+						alt="next" height="14px" width="5px" style={{ marginLeft: 'auto' }} />
+				</div>
+			</li>
+		})
+	}
+
+	const previousAddress = () => {
+		let param = queryParam
+		if (ward.length !== 0) {
+			param.ward.title = ''
+			param.ward.value = ''
+			setWard([])
+			setQueryParam(param)
+		} else if (district.length !== 0) {
+			param.district.title = ''
+			param.district.value = ''
+			setDistrict([])
+			setQueryParam(param)
+		}
+	}
+
+	const resetAddress = () => {
+		setWard([])
+		setDistrict([])
+		setQueryParam({
+			...queryParam, province: {
+				title: 'Khu vực',
+				value: ''
+			}, district: {
+				title: '',
+				value: ''
+			}, ward: {
+				title: '',
+				value: ''
+			}
+		})
+	}
+
+	const resetPrice = () => {
+		setQueryParam({ ...queryParam, priceFrom: 0, priceTo: 100000000 })
+	}
+
+	const onChangeMinPrice = (value) => {
+		if (value === null) {
+			setQueryParam({ ...queryParam, priceFrom: 0 })
+			return
+		}
+		setQueryParam({ ...queryParam, priceFrom: value })
+	}
+	const onChangeMaxPrice = (value) => {
+		if (value === null) {
+			setQueryParam({ ...queryParam, priceTo: 0 })
+			return
+		}
+		setQueryParam({ ...queryParam, priceTo: value })
+	}
+	const onChangeMinArea = (value) => {
+		if (value === null) {
+			setQueryParam({ ...queryParam, areaFrom: 0 })
+			return
+		}
+		setQueryParam({ ...queryParam, areaFrom: value })
+	}
+	const onChangeMaxArea = (value) => {
+		if (value === null) {
+			setQueryParam({ ...queryParam, areaTo: 0 })
+			return
+		}
+		setQueryParam({ ...queryParam, areaTo: value })
+	}
+	const onAfterChangeArea = (value) => {
+		setQueryParam({ ...queryParam, areaFrom: value[0], areaTo: value[1] })
+	}
+
+	const resetArea = () => {
+		setQueryParam({ ...queryParam, areaFrom: 0, areaTo: 1000 })
+	}
+
+	const resetQueryParam = () => {
+		setWard([])
+		setDistrict([])
+		setQueryParam({
+			type: {
+				title: 'Loại BĐS',
+				value: 0
+			}, province: {
+				title: 'Khu vực',
+				value: ''
+			}, district: {
+				title: '',
+				value: ''
+			}, ward: {
+				title: '',
+				value: ''
+			},
+			priceFrom: 0,
+			priceTo: 100000000,
+			areaFrom: 0,
+			areaTo: 1000,
+			mode: 2,
+			field: 'startedDate'
+		})
+	}
+	const renderModalContent = () => {
+		switch (modeModal) {
+			case 1:
+				return <Modal title='Chọn danh mục'
+					visible={visible}
+					centered footer={null}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "200px" }}
+					style={{ top: -152 }}><div className="styles_modal-body__1C3xw undefined">
+						<div className="Styles_bodyCustom__1gL0v">
+							<div className="Styles_body__4HzMi">
+								<ul>
+									{accType.map((el) => {
+										return <li key={el.id}
+											onClick={() => updateParamQuery(el, 'type')}
+											className="Styles_option__1f2OH" >
+											<div className="Styles_tagLink__w5_mC " to={el.id === 1 ? '/nha-nguyen-can' : el.id === 2 ? '/can-ho-chung-cu' : '/phong-tro'}>
+												<span>{el.name}</span>
+												<img src="https://static.chotot.com/storage/chotot-icons/svg/grey-next.svg"
+													alt="next" height="14px" width="5px" style={{ marginLeft: 'auto' }} />
+											</div>
+										</li>
+									})}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</Modal>
+			case 2:
+				return <Modal title="Chọn khu vực"
+					visible={visible}
+					centered footer={[
+						<Button onClick={previousAddress}>
+							Trước
+						</Button>,
+						<Button onClick={resetAddress}>
+							Đặt lại
+						</Button>]}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "400px" }}
+					style={{ top: -26 }}><div className="styles_modal-body__1C3xw">
+						<div className="Styles_bodyCustom__1gL0v">
+							<div className="Styles_body__4HzMi">
+								<ul>
+									{ward.length !== 0 ? contentModalAddress(ward, 'ward') : district.length !== 0 ? contentModalAddress(district, 'district') : contentModalAddress(provinces, 'province')}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</Modal>
+			case 3:
+				return <Modal title="Giá thuê"
+					visible={visible}
+					centered footer={null}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "180px" }}
+					style={{ top: -162 }}>
+					<div className='re__listing-filter-position'>
+						<div className="re__listing-filter-popup js__filter-more-popup re__show">
+							<div className="Styles_rangerWrapper__1crim">
+								<div className="Styles_priceFromTo__2dRzg">
+									<div>Giá từ <b>{formatCommon.formatNumberic(queryParam.priceFrom.toString())} VNĐ</b> đến <b>{formatCommon.formatNumberic(queryParam.priceTo.toString())} VNĐ</b></div>
+								</div>
+								<div className="Styles_Range__2Ywfj">
+									<div className="range-input-number-main">
+										<InputNumber
+											className="min-input-main"
+											min={0}
+											max={100000000}
+											controls={false}
+											style={{ borderRadius: "4px", width: "100px" }}
+											onChange={onChangeMinPrice}
+											value={queryParam.priceFrom}
+										/>
+										<span className="range-span">&ensp; Đến&ensp; </span>
+										<InputNumber
+											className="min-input-main"
+											min={0}
+											max={100000000}
+											controls={false}
+											style={{ borderRadius: "4px", width: "100px" }}
+											onChange={onChangeMaxPrice}
+											value={queryParam.priceTo}
+										/>
+									</div>
+									<Slider
+										range
+										step={500000}
+										max={100000000}
+										min={0}
+										value={[queryParam.priceFrom, queryParam.priceTo]}
+										onAfterChange={onAfterChangePrice}
+										onChange={onAfterChangePrice}
+									/>
+								</div>
+							</div>
+							<div className="re__listing-filter-popup-footer">
+								<Link className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+									<i className="re__icon-refresh" />
+									<span></span>
+								</Link>
+								<Link className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
+									onClick={resetPrice}>
+									<i className="re__icon-search--sm" />
+									<span>Đặt lại</span>
+								</Link>
+							</div>
+						</div>
+					</div>
+				</Modal>
+			case 4:
+				return <Modal title="Diện tích"
+					visible={visible}
+					centered footer={null}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "180px" }}
+					style={{ top: -128 }}>
+					<div className='re__listing-filter-position'>
+						<div className="re__listing-filter-popup js__filter-more-popup re__show">
+							<div className="Styles_rangerWrapper__1crim">
+								<div className="Styles_priceFromTo__2dRzg">
+									<div>Diện tích từ <b>{queryParam.areaFrom} m²</b> đến <b>{queryParam.areaTo} m²</b></div>
+								</div>
+								<div className="Styles_Range__2Ywfj">
+									<div className="range-input-number-main">
+										<InputNumber
+											className="min-input-main"
+											min={0}
+											max={1000}
+											controls={false}
+											style={{ borderRadius: "4px", width: "100px" }}
+											value={queryParam.areaFrom}
+											onChange={onChangeMinArea}
+										/>
+										<span className="range-span">&ensp; Đến&ensp; </span>
+										<InputNumber
+											className="min-input-main"
+											min={0}
+											max={1000}
+											controls={false}
+											style={{ borderRadius: "4px", width: "100px" }}
+											value={queryParam.areaTo}
+											onChange={onChangeMaxArea}
+										/>
+									</div>
+									<Slider
+										range
+										step={5}
+										max={1000}
+										min={0}
+										value={[queryParam.areaFrom, queryParam.areaTo]}
+										onAfterChange={onAfterChangeArea}
+										onChange={onAfterChangeArea}
+									/>
+								</div>
+							</div>
+							<div className="re__listing-filter-popup-footer">
+								<Link className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+									<i className="re__icon-refresh" />
+									<span></span>
+								</Link>
+								<Link className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
+									onClick={resetArea}>
+									<i className="re__icon-search--sm" />
+									<span>Đặt lại</span>
+								</Link>
+							</div>
+						</div>
+					</div>
+
+				</Modal>
+			case 5:
+				return <Modal title="Lọc thêm"
+					visible={visible}
+					centered footer={null}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "376px" }}
+					style={{ top: -64 }}>
+					<div className='re__listing-filter-position'>
+						<div className="re__listing-filter-popup js__filter-more-popup re__show">
+							<div className="re__listing-filter-popup-body">
+								<span className="re__listing-filter-popup-title">Số phòng ngủ</span>
+								<div className="re__listing-search-tag-container js__listing-search-tag-container">
+									<div className="re__listing-search-tag-list js__listing-search-tag-list">
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">1</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">2</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">3</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">4</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">5+</div>
+									</div>
+									<input id="RoomNumersAsString" name="RoomNumersAsString" type="hidden" defaultValue />
+								</div>
+								<span className="re__listing-filter-popup-title">Hướng nhà</span>
+								<div className="re__listing-search-tag-container js__listing-search-tag-container">
+									<div className="re__listing-search-tag-list js__listing-search-tag-list">
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Đông</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Tây</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Nam</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Bắc</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Đông - Bắc</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Tây - Bắc</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Tây - Nam</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Đông - Nam</div>
+									</div>
+									<input id="DirectionsAsString" name="DirectionsAsString" type="hidden" defaultValue />
+								</div>
+								<span className="re__listing-filter-popup-title">Nội dung tin có</span>
+								<div className="re__listing-search-tag-container js__listing-search-tag-container">
+									<div className="re__listing-search-tag-list js__listing-search-tag-list">
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Hình ảnh</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Video</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">3D &amp; 360°</div>
+									</div>
+									<input id="MediasAsString" name="MediasAsString" type="hidden" defaultValue />
+								</div>
+							</div>
+							<div className="re__listing-filter-popup-footer">
+								<Link className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+									<i className="re__icon-refresh" />
+									<span>Đặt lại</span>
+								</Link>
+								<Link className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button">
+									<i className="re__icon-search--sm" />
+									<span>Tìm kiếm</span>
+								</Link>
+							</div>
+						</div>
+					</div>
+				</Modal>
+		}
+	}
+
 	return <div className='flex-col'>
-		<form id="boxSearchForm">
+		{renderModalContent()}
+		<div id="boxSearchForm">
 			<div className='container-search-form' >
 				<div className="input-selection ml-12">
 					<div className="input-selection-level-one" style={{ width: '100%' }}>
@@ -19,20 +487,24 @@ const ShowNewsInfor = () => {
 					</div>
 				</div>
 				<div className="re__filter-wall"></div>
-				<button className='btn-export ml-12'>
+				<button className='btn-export ml-12' onClick={() => showModal(1)}>
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
-								<svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="-275 367 60 60" style={{ enableBackground: 'new -275 367 60 60' }} xmlSpace="preserve" width={512} height={512}><style type="text/css" dangerouslySetInnerHTML={{ __html: "\n\t.st0{fill:#FFFFFF;fill-opacity:0;}\n\t.st1{fill:#ECF4F7;}\n\t.st2{fill:#FF7474;}\n\t.st3{fill:#AAB1BA;}\n\t.st4{fill:#80D6FA;}\n\t.st5{fill:#50DD8E;}\n\t.st6{fill:#51565F;}\n" }} /><title>motel</title><desc>Created with Sketch.</desc><g id="Travel">	<g id="motel">		<g id="fill" transform="translate(1.000000, 3.000000)">			<path id="Combined-Shape" className="st1" d="M-265,421c1.1,0,2-0.9,2-2s-0.9-2-2-2c-0.4,0-0.8,0.1-1.1,0.3c-0.3-1.3-1.5-2.3-2.9-2.3     s-2.6,1-2.9,2.3c-0.3-0.2-0.7-0.3-1.1-0.3v-34h44v4h2v34H-265z" />			<path id="Fill-3" className="st2" d="M-223,367c3.3,0,6,2.7,6,6s-2.7,6-6,6s-6-2.7-6-6S-226.3,367-223,367L-223,367z" />			<path id="Combined-Shape_1_" className="st3" d="M-237,397h4v-6h-4V397z M-267,409h4v-6h-4V409z M-247,397h4v-6h-4V397z M-257,409h4     v-6h-4V409z M-257,397h4v-6h-4V397z M-267,397h4v-6h-4V397z" />			<polygon id="Fill-11" className="st4" points="-235,410 -235,419 -243,419 -243,403 -235,403    " />			<path id="Fill-14" className="st5" d="M-265,417c1.1,0,2,0.9,2,2s-0.9,2-2,2h-8c-1.1,0-2-0.9-2-2s0.9-2,2-2c0.4,0,0.8,0.1,1.1,0.3     c0.3-1.3,1.5-2.3,2.9-2.3s2.6,1,2.9,2.3C-265.8,417.1-265.4,417-265,417" />			<polygon id="Fill-2" className="st1" points="-223,383 -229,383 -229,387 -227,387 -223,387 -217,387 -217,383    " />		</g>		<path className="st6" d="M-222,424.5c-0.3,0-0.5-0.2-0.5-0.5v-33.5h-5.5c-0.3,0-0.5-0.2-0.5-0.5v-4c0-0.3,0.2-0.5,0.5-0.5h5.5v-3    c-3.4-0.3-6-3.1-6-6.5c0-3.6,2.9-6.5,6.5-6.5s6.5,2.9,6.5,6.5c0,3.4-2.6,6.2-6,6.5v3h5.5c0.3,0,0.5,0.2,0.5,0.5v4    c0,0.3-0.2,0.5-0.5,0.5h-5.5V424C-221.5,424.3-221.7,424.5-222,424.5z M-222,389.5h5.5v-3h-11v3H-222z M-222,370.5    c-3,0-5.5,2.5-5.5,5.5s2.5,5.5,5.5,5.5s5.5-2.5,5.5-5.5S-219,370.5-222,370.5z M-226,424.5c-0.3,0-0.5-0.2-0.5-0.5v-1.5H-258    c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5h32c0.3,0,0.5,0.2,0.5,0.5v2C-225.5,424.3-225.7,424.5-226,424.5z M-264,424.5    c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5c0.8,0,1.5-0.7,1.5-1.5s-0.7-1.5-1.5-1.5c-0.3,0-0.6,0.1-0.8,0.2c-0.1,0.1-0.3,0.1-0.5,0    c-0.2-0.1-0.3-0.2-0.3-0.4c-0.3-1.1-1.3-1.9-2.4-1.9s-2.2,0.8-2.4,1.9c0,0.2-0.1,0.3-0.3,0.4c-0.2,0.1-0.3,0-0.5,0    c-0.2-0.2-0.5-0.2-0.8-0.2c-0.8,0-1.5,0.7-1.5,1.5s0.7,1.5,1.5,1.5c0.3,0,0.5,0.2,0.5,0.5s-0.2,0.5-0.5,0.5    c-1.4,0-2.5-1.1-2.5-2.5s1.1-2.5,2.5-2.5c0.3,0,0.5,0,0.8,0.1c0.5-1.3,1.8-2.1,3.2-2.1s2.7,0.9,3.2,2.1c0.3-0.1,0.5-0.1,0.8-0.1    c1.4,0,2.5,1.1,2.5,2.5S-262.6,424.5-264,424.5z M-226,418.5c-0.3,0-0.5-0.2-0.5-0.5v-24c0-0.3,0.2-0.5,0.5-0.5s0.5,0.2,0.5,0.5    v24C-225.5,418.3-225.7,418.5-226,418.5z M-234,418.5c-0.3,0-0.5-0.2-0.5-0.5v-4.5h-1.5c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5    h1.5v-6h-7V418c0,0.3-0.2,0.5-0.5,0.5s-0.5-0.2-0.5-0.5v-11.5h-1.5c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5h12    c0.3,0,0.5,0.2,0.5,0.5s-0.2,0.5-0.5,0.5h-1.5V418C-233.5,418.3-233.7,418.5-234,418.5z M-272,416.5c-0.3,0-0.5-0.2-0.5-0.5v-32    c0-0.3,0.2-0.5,0.5-0.5s0.5,0.2,0.5,0.5v1.5h39.5c0.3,0,0.5,0.2,0.5,0.5s-0.2,0.5-0.5,0.5h-39.5V416    C-271.5,416.3-271.7,416.5-272,416.5z M-252,412.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6    C-251.5,412.3-251.7,412.5-252,412.5z M-255.5,411.5h3v-5h-3V411.5z M-262,412.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6    c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-261.5,412.3-261.7,412.5-262,412.5z M-265.5,411.5h3v-5h-3V411.5z M-232,400.5    h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-231.5,400.3-231.7,400.5-232,400.5z     M-235.5,399.5h3v-5h-3V399.5z M-242,400.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6    C-241.5,400.3-241.7,400.5-242,400.5z M-245.5,399.5h3v-5h-3V399.5z M-252,400.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6    c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-251.5,400.3-251.7,400.5-252,400.5z M-255.5,399.5h3v-5h-3V399.5z M-262,400.5    h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-261.5,400.3-261.7,400.5-262,400.5z     M-265.5,399.5h3v-5h-3V399.5z M-220,378.5c-0.3,0-0.5-0.2-0.5-0.5v-2.8l-1.1,1.1c-0.2,0.2-0.5,0.2-0.7,0l-1.1-1.1v2.8    c0,0.3-0.2,0.5-0.5,0.5s-0.5-0.2-0.5-0.5v-4c0-0.2,0.1-0.4,0.3-0.5c0.2-0.1,0.4,0,0.5,0.1l1.6,1.6l1.6-1.6    c0.1-0.1,0.4-0.2,0.5-0.1c0.2,0.1,0.3,0.3,0.3,0.5v4C-219.5,378.3-219.7,378.5-220,378.5z" />	</g></g>
+								<svg version="1.1" id="Capa_1" x="0px" y="0px" viewBox="-275 367 60 60"
+									style={{ enableBackground: 'new -275 367 60 60' }}
+									xmlSpace="preserve" width={512} height={512}><style
+										type="text/css"
+										dangerouslySetInnerHTML={{ __html: "\n\t.st0{fill:#FFFFFF;fill-opacity:0;}\n\t.st1{fill:#ECF4F7;}\n\t.st2{fill:#FF7474;}\n\t.st3{fill:#AAB1BA;}\n\t.st4{fill:#80D6FA;}\n\t.st5{fill:#50DD8E;}\n\t.st6{fill:#51565F;}\n" }} /><title>motel</title><desc>Created with Sketch.</desc><g id="Travel">	<g id="motel">		<g id="fill" transform="translate(1.000000, 3.000000)">			<path id="Combined-Shape" className="st1" d="M-265,421c1.1,0,2-0.9,2-2s-0.9-2-2-2c-0.4,0-0.8,0.1-1.1,0.3c-0.3-1.3-1.5-2.3-2.9-2.3     s-2.6,1-2.9,2.3c-0.3-0.2-0.7-0.3-1.1-0.3v-34h44v4h2v34H-265z" />			<path id="Fill-3" className="st2" d="M-223,367c3.3,0,6,2.7,6,6s-2.7,6-6,6s-6-2.7-6-6S-226.3,367-223,367L-223,367z" />			<path id="Combined-Shape_1_" className="st3" d="M-237,397h4v-6h-4V397z M-267,409h4v-6h-4V409z M-247,397h4v-6h-4V397z M-257,409h4     v-6h-4V409z M-257,397h4v-6h-4V397z M-267,397h4v-6h-4V397z" />			<polygon id="Fill-11" className="st4" points="-235,410 -235,419 -243,419 -243,403 -235,403    " />			<path id="Fill-14" className="st5" d="M-265,417c1.1,0,2,0.9,2,2s-0.9,2-2,2h-8c-1.1,0-2-0.9-2-2s0.9-2,2-2c0.4,0,0.8,0.1,1.1,0.3     c0.3-1.3,1.5-2.3,2.9-2.3s2.6,1,2.9,2.3C-265.8,417.1-265.4,417-265,417" />			<polygon id="Fill-2" className="st1" points="-223,383 -229,383 -229,387 -227,387 -223,387 -217,387 -217,383    " />		</g>		<path className="st6" d="M-222,424.5c-0.3,0-0.5-0.2-0.5-0.5v-33.5h-5.5c-0.3,0-0.5-0.2-0.5-0.5v-4c0-0.3,0.2-0.5,0.5-0.5h5.5v-3    c-3.4-0.3-6-3.1-6-6.5c0-3.6,2.9-6.5,6.5-6.5s6.5,2.9,6.5,6.5c0,3.4-2.6,6.2-6,6.5v3h5.5c0.3,0,0.5,0.2,0.5,0.5v4    c0,0.3-0.2,0.5-0.5,0.5h-5.5V424C-221.5,424.3-221.7,424.5-222,424.5z M-222,389.5h5.5v-3h-11v3H-222z M-222,370.5    c-3,0-5.5,2.5-5.5,5.5s2.5,5.5,5.5,5.5s5.5-2.5,5.5-5.5S-219,370.5-222,370.5z M-226,424.5c-0.3,0-0.5-0.2-0.5-0.5v-1.5H-258    c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5h32c0.3,0,0.5,0.2,0.5,0.5v2C-225.5,424.3-225.7,424.5-226,424.5z M-264,424.5    c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5c0.8,0,1.5-0.7,1.5-1.5s-0.7-1.5-1.5-1.5c-0.3,0-0.6,0.1-0.8,0.2c-0.1,0.1-0.3,0.1-0.5,0    c-0.2-0.1-0.3-0.2-0.3-0.4c-0.3-1.1-1.3-1.9-2.4-1.9s-2.2,0.8-2.4,1.9c0,0.2-0.1,0.3-0.3,0.4c-0.2,0.1-0.3,0-0.5,0    c-0.2-0.2-0.5-0.2-0.8-0.2c-0.8,0-1.5,0.7-1.5,1.5s0.7,1.5,1.5,1.5c0.3,0,0.5,0.2,0.5,0.5s-0.2,0.5-0.5,0.5    c-1.4,0-2.5-1.1-2.5-2.5s1.1-2.5,2.5-2.5c0.3,0,0.5,0,0.8,0.1c0.5-1.3,1.8-2.1,3.2-2.1s2.7,0.9,3.2,2.1c0.3-0.1,0.5-0.1,0.8-0.1    c1.4,0,2.5,1.1,2.5,2.5S-262.6,424.5-264,424.5z M-226,418.5c-0.3,0-0.5-0.2-0.5-0.5v-24c0-0.3,0.2-0.5,0.5-0.5s0.5,0.2,0.5,0.5    v24C-225.5,418.3-225.7,418.5-226,418.5z M-234,418.5c-0.3,0-0.5-0.2-0.5-0.5v-4.5h-1.5c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5    h1.5v-6h-7V418c0,0.3-0.2,0.5-0.5,0.5s-0.5-0.2-0.5-0.5v-11.5h-1.5c-0.3,0-0.5-0.2-0.5-0.5s0.2-0.5,0.5-0.5h12    c0.3,0,0.5,0.2,0.5,0.5s-0.2,0.5-0.5,0.5h-1.5V418C-233.5,418.3-233.7,418.5-234,418.5z M-272,416.5c-0.3,0-0.5-0.2-0.5-0.5v-32    c0-0.3,0.2-0.5,0.5-0.5s0.5,0.2,0.5,0.5v1.5h39.5c0.3,0,0.5,0.2,0.5,0.5s-0.2,0.5-0.5,0.5h-39.5V416    C-271.5,416.3-271.7,416.5-272,416.5z M-252,412.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6    C-251.5,412.3-251.7,412.5-252,412.5z M-255.5,411.5h3v-5h-3V411.5z M-262,412.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6    c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-261.5,412.3-261.7,412.5-262,412.5z M-265.5,411.5h3v-5h-3V411.5z M-232,400.5    h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-231.5,400.3-231.7,400.5-232,400.5z     M-235.5,399.5h3v-5h-3V399.5z M-242,400.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6    C-241.5,400.3-241.7,400.5-242,400.5z M-245.5,399.5h3v-5h-3V399.5z M-252,400.5h-4c-0.3,0-0.5-0.2-0.5-0.5v-6    c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-251.5,400.3-251.7,400.5-252,400.5z M-255.5,399.5h3v-5h-3V399.5z M-262,400.5    h-4c-0.3,0-0.5-0.2-0.5-0.5v-6c0-0.3,0.2-0.5,0.5-0.5h4c0.3,0,0.5,0.2,0.5,0.5v6C-261.5,400.3-261.7,400.5-262,400.5z     M-265.5,399.5h3v-5h-3V399.5z M-220,378.5c-0.3,0-0.5-0.2-0.5-0.5v-2.8l-1.1,1.1c-0.2,0.2-0.5,0.2-0.7,0l-1.1-1.1v2.8    c0,0.3-0.2,0.5-0.5,0.5s-0.5-0.2-0.5-0.5v-4c0-0.2,0.1-0.4,0.3-0.5c0.2-0.1,0.4,0,0.5,0.1l1.6,1.6l1.6-1.6    c0.1-0.1,0.4-0.2,0.5-0.1c0.2,0.1,0.3,0.3,0.3,0.5v4C-219.5,378.3-219.7,378.5-220,378.5z" />	</g></g>
 								</svg>
 							</div>
 						</span>
-						<span className="text">Loại BĐS</span>
+						<span className="text">{!initPage ? queryParam.type.title : null}</span>
 					</div>
 				</button>
 
 				<div className="re__filter-wall"></div>
-				<button className='btn-export ml-12'>
+				<button className='btn-export ml-12' onClick={() => showModal(2)}>
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
@@ -68,11 +540,13 @@ const ShowNewsInfor = () => {
 								</svg>
 							</div>
 						</span>
-						<span className="text">Khu vực</span>
+						<span className="text">{!initPage ? (queryParam.ward.title.length !== 0
+							? queryParam.ward.title : queryParam.district.title.length !== 0
+								? queryParam.district.title : queryParam.province.title) : null}</span>
 					</div>
 				</button>
 				<div className="re__filter-wall"></div>
-				<button className='btn-export ml-12'>
+				<button className='btn-export ml-12' onClick={() => showModal(3)}>
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
@@ -99,11 +573,11 @@ const ShowNewsInfor = () => {
 								</svg>
 							</div>
 						</span>
-						<span className="text">Mức giá</span>
+						<span className="text">Mức giá {!initPage ? queryParam.priceFrom / 1000000 : null}tr - {!initPage ? queryParam.priceTo / 1000000 : null}tr</span>
 					</div>
 				</button>
 				<div className="re__filter-wall"></div>
-				<button className='btn-export ml-12'>
+				<button className='btn-export ml-12' onClick={() => showModal(4)}>
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
@@ -130,11 +604,11 @@ const ShowNewsInfor = () => {
 								</svg>
 							</div>
 						</span>
-						<span className="text">Diện tích</span>
+						<span className="text">Diện tích {!initPage ? queryParam.areaFrom : null}m² - {!initPage ? queryParam.areaTo : null}m²</span>
 					</div>
 				</button>
 				<div className="re__filter-wall"></div>
-				<button className='btn-export ml-12'>
+				<button className='btn-export ml-12' onClick={() => showModal(5)}>
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
@@ -155,7 +629,7 @@ const ShowNewsInfor = () => {
 					</div>
 				</button>
 				<div className="re__filter-wall"></div>
-				<button className='btn-export ml-12'>
+				<button className='btn-export ml-12' onClick={resetQueryParam}>
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
@@ -175,13 +649,64 @@ const ShowNewsInfor = () => {
 					</div>
 				</button>
 			</div>
-		</form>
+		</div>
 		<div className='main-content'>
-			<MenuNewsCard></MenuNewsCard>
+			{console.log(queryParam)}
+			<MenuNewsCard queryParam={queryParam}
+				initPage={initPage}
+				sortMode={sortMode}
+				chooseSortMode={(mode, field) => { setQueryParam({ ...queryParam, mode: mode, field: field }) }}></MenuNewsCard>
 			<div className='main-content-right'>
-				<SideFilterBox></SideFilterBox>
-				<SideFilterBox></SideFilterBox>
-				<SideFilterBox></SideFilterBox>
+				<SideFilterBox title='Lọc theo khoảng giá'>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=1000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Dưới 1 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=1000000&priceTo=3000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>1 - 3 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=3000000&priceTo=5000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>3 - 5 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=5000000&priceTo=10000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>5 - 10 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=10000000&priceTo=40000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>10 - 40 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=40000000&priceTo=70000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>40 - 70 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=70000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>70 - 100 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=100000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Trên 100 triệu</Link>
+					</h3>
+				</SideFilterBox>
+				<SideFilterBox title='Lọc theo diện tích'>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=30`}>Dưới 30 m²</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=30&areaTo=50`}>30 - 50 m²</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=50&areaTo=80`}>50 - 80 m²</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=80&areaTo=100`}>80 - 100 m²</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=100&areaTo=150`}>100 - 150 m²</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=200&areaTo=250`}>200 - 250 m²</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=250&areaTo=1000`}>Trên 250 m²</Link>
+					</h3>
+				</SideFilterBox>
+				<SideFilterBox title='Cho thuê theo địa chỉ'></SideFilterBox>
 			</div>
 		</div >
 	</div >

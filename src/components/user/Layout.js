@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import Register from "../../page/Register/Register";
 import Header from "../common/Header/Header";
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './../../page/Login/Login';
 import Process from "../common/Process/Process";
 import PrivateRoute from "../../common/PrivateRoute";
@@ -20,8 +20,11 @@ const Layout = () => {
 				<Routes>
 					<Route path="/register" element={<Register></Register>}></Route>
 					<Route path="/login" element={<Login></Login>}></Route>
-					<Route path="/" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
-					<Route path="/home" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
+					<Route path="/" element={<Navigate to="/trang-chu" replace></Navigate>}></Route>
+					<Route path="/trang-chu" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
+					<Route path="/nha-nguyen-can" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
+					<Route path="/can-ho-chung-cu" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
+					<Route path="/phong-tro" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="trang-chu/tao-bai-viet"
 						element={
 							<PrivateRoute>

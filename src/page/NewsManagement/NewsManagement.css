@@ -86,6 +86,11 @@
 	line-height: 1;
 }
 
+.btn-export .wrapper-text svg{
+	height: 100%;
+	width: 100%;
+}
+
 .btn-export .wrapper-text .text {
 	font-family: 'Roboto', sans-serif;
 	font-size: 14px;
