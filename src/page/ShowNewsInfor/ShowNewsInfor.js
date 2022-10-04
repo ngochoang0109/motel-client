@@ -10,6 +10,7 @@ import MenuNewsCard from '../../components/user/MenuNewsCard/MenuNewsCard';
 import SideFilterBox from '../../components/user/SideFilterBox/SideFilterBox';
 import { inputConstant } from '../../constant/inputConstant';
 import { AddressApiService } from '../../service/AddressApiService';
+import { HomeService } from '../../service/HomeService';
 import { PostNewsService } from '../../service/PostNewsService';
 import seo from './../../assets/seo.png'
 import './ShowNewsInfor.css'
@@ -22,6 +23,7 @@ const ShowNewsInfor = () => {
 	const [provinces, setProvinces] = useState([])
 	const [district, setDistrict] = useState([])
 	const [ward, setWard] = useState([])
+	const [countNewsOfProvince, setCountNewsOfProvince] = useState([])
 	const [queryParam, setQueryParam] = useState({
 		type: {
 			title: 'Loại BĐS',
@@ -67,11 +69,8 @@ const ShowNewsInfor = () => {
 					}
 				})
 			})
-			AddressApiService.getAllProvince().then((data) => {
-				setProvinces(data.reverse())
-			})
 
-			updateQueryParam.province = { title: obj.province.length===0?'Khu vực':obj.province, value: obj.province }
+			updateQueryParam.province = { title: obj.province.length === 0 ? 'Khu vực' : obj.province, value: obj.province }
 			updateQueryParam.district = { title: obj.district, value: obj.district }
 			updateQueryParam.ward = { title: obj.ward, value: obj.ward }
 			updateQueryParam.priceFrom = Number(obj.priceFrom)
@@ -85,10 +84,13 @@ const ShowNewsInfor = () => {
 			PostNewsService.getTypeOfAcc().then((data) => {
 				setAccType(data.data)
 			})
-			AddressApiService.getAllProvince().then((data) => {
-				setProvinces(data.reverse())
-			})
 		}
+		AddressApiService.getAllProvince().then((data) => {
+			setProvinces(data.reverse())
+		})
+		HomeService.countByProvince().then((data) => {
+			setCountNewsOfProvince(data)
+		})
 	}, [location.search])
 
 	const showModal = (mode) => {
@@ -337,15 +339,15 @@ const ShowNewsInfor = () => {
 								</div>
 							</div>
 							<div className="re__listing-filter-popup-footer">
-								<Link className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+								<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
 									<i className="re__icon-refresh" />
 									<span></span>
-								</Link>
-								<Link className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
+								</div>
+								<div className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
 									onClick={resetPrice}>
 									<i className="re__icon-search--sm" />
 									<span>Đặt lại</span>
-								</Link>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -397,15 +399,15 @@ const ShowNewsInfor = () => {
 								</div>
 							</div>
 							<div className="re__listing-filter-popup-footer">
-								<Link className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+								<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
 									<i className="re__icon-refresh" />
 									<span></span>
-								</Link>
-								<Link className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
+								</div>
+								<div className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
 									onClick={resetArea}>
 									<i className="re__icon-search--sm" />
 									<span>Đặt lại</span>
-								</Link>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -457,14 +459,14 @@ const ShowNewsInfor = () => {
 								</div>
 							</div>
 							<div className="re__listing-filter-popup-footer">
-								<Link className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+								<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
 									<i className="re__icon-refresh" />
 									<span>Đặt lại</span>
-								</Link>
-								<Link className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button">
+								</div>
+								<div className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button">
 									<i className="re__icon-search--sm" />
 									<span>Tìm kiếm</span>
-								</Link>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -679,34 +681,34 @@ const ShowNewsInfor = () => {
 					<h3 className="re__sidebar-box-item">
 						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=70000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>70 - 100 triệu</Link>
 					</h3>
-					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=100000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Trên 100 triệu</Link>
-					</h3>
 				</SideFilterBox>
 				<SideFilterBox title='Lọc theo diện tích'>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=30`}>Dưới 30 m²</Link>
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=0&areaTo=30`}>Dưới 30 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=30&areaTo=50`}>30 - 50 m²</Link>
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=30&areaTo=50`}>30 - 50 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=50&areaTo=80`}>50 - 80 m²</Link>
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=50&areaTo=80`}>50 - 80 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=80&areaTo=100`}>80 - 100 m²</Link>
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=80&areaTo=100`}>80 - 100 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=100&areaTo=150`}>100 - 150 m²</Link>
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=100&areaTo=150`}>100 - 150 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=200&areaTo=250`}>200 - 250 m²</Link>
-					</h3>
-					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=100000000&areaFrom=250&areaTo=1000`}>Trên 250 m²</Link>
+						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=200&areaTo=250`}>200 - 250 m²</Link>
 					</h3>
 				</SideFilterBox>
-				<SideFilterBox title='Cho thuê theo địa chỉ'></SideFilterBox>
+				<SideFilterBox title='Cho thuê theo địa chỉ'>
+					{countNewsOfProvince.map((el) => {
+						return <h3 className="re__sidebar-box-item">
+							<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${el.province}&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=1000`}>{el.province} ({el.count})</Link>
+						</h3>
+					})}
+				</SideFilterBox>
 			</div>
 		</div >
 	</div >

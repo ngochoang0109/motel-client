@@ -21,7 +21,15 @@ const searchCard = (pageNo, pageSize, sort, mode, searchParam) => {
 		})
 }
 
+const countByProvince=()=>{
+	return httpClient({}, storageKey.API,
+		`auth/menu-news/total-news-province`, 'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
 export const HomeService = {
 	getMenuNewsCard,
-	searchCard
+	searchCard,
+	countByProvince
 }
