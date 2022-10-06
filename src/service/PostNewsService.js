@@ -91,7 +91,7 @@ const sendRequestPostNews = (postNews, cost, typesOfAcc) => {
 	for (let i = 0; i < postNews.images.length; i++) {
 		formData.append("images", postNews.images[i]);
 	}
-	return httpClient(headers, storageKey.API, `post-news/create`, 'POST', formData).then((response) => {
+	return httpClient(headers, storageKey.API, 'post-news/create', 'POST', formData).then((response) => {
 		return response.data;
 	})
 }

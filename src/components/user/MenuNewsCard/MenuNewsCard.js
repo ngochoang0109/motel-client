@@ -5,14 +5,13 @@ import { HomeService } from "../../../service/HomeService"
 import InputBox from "../../common/InputBox/InputBox"
 import NewsCard from './../NewsCard/NewsCard'
 import { message } from './../../../action/message'
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Pagination } from "antd"
 
-const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
+const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePage }) => {
 	const messageStatus = useSelector(state => state.controllMessage)
-	const [getNewsCard, setNewsCard] = useState({ content: [], totalElements: 0 })
+	const [getNewsCard, setNewsCard] = useState({ content: [], totalElements: 0, totalPages:0 })
 	const dispatch = useDispatch()
-	const location = useLocation()
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -21,11 +20,11 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
 		}
 		console.log(queryParam)
 		if (!initPage) {
-			HomeService.searchCard(0, 5, queryParam.field, queryParam.mode, queryParam).then((page) => {
-				console.log(page.content)
+			HomeService.searchCard(queryParam.pageNo-1, queryParam.pageSize, queryParam.field, queryParam.mode, queryParam).then((page) => {
+				console.log(page)
 				setNewsCard(page)
 
-				navigate(`/trang-chu?pageNo=${0}&pageSize=${5}
+				navigate(`/trang-chu?pageNo=${queryParam.pageNo}
 				&mode=${queryParam.mode}&sort=${queryParam.field}
 				&type=${queryParam.type.value}&province=${queryParam.province.value}
 				&district=${queryParam.district.value}&ward=${queryParam.ward.value}
@@ -37,7 +36,7 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
 	}, [queryParam.type.value, queryParam.province.value,
 	queryParam.district.value, queryParam.ward.value, queryParam.priceFrom,
 	queryParam.priceTo, queryParam.areaFrom, queryParam.areaTo, initPage,
-	queryParam.mode, queryParam.field])
+	queryParam.mode, queryParam.field, queryParam.pageNo])
 
 	const showNewsCard = () => {
 		if (getNewsCard) {
@@ -57,7 +56,6 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
 	}
 
 	const handleGetValue = (target) => {
-		console.log(target)
 		switch (target.id) {
 			case 0:
 				chooseSortMode(2, 'startedDate')
@@ -78,6 +76,10 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
 
 	}
 
+	const handleChoosePage=(pageNo)=>{
+		choosePage(pageNo)
+	}
+
 	return <div className='main-content-left'>
 		<div className='path-tree'>
 			<a className="re__link-se" href="/nha-dat-cho-thue" title="Nhà đất cho thuê tại Việt Nam">Cho thuê</a>
@@ -95,7 +97,6 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
 						data={sortMode}
 						getValueDropList={handleGetValue}
 						onChange={handleGetValue}
-					// value={postNews.typesOfAcc}
 					></InputBox>
 				</div>
 
@@ -105,10 +106,13 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode }) => {
 		<div className='list-news'>
 			{showNewsCard()}
 		</div>
-		<Pagination current={0}
-			total={50}
-			// onChange={handleChoosePage}
-			showSizeChanger={false} />
+		<div style={{"display":"flex", "justifyContent":"center"}}>
+			<Pagination current={queryParam.pageNo}
+				total={getNewsCard.totalPages*10}
+				onChange={handleChoosePage}
+				showSizeChanger={false} />
+		</div>
+
 	</div>
 }
 

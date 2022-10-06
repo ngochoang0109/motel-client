@@ -1,43 +1,57 @@
-import { Fragment } from "react";
-import Register from "../../page/Register/Register";
-import Header from "../common/Header/Header";
-import { Routes, Route } from 'react-router-dom';
-import Login from './../../page/Login/Login';
+import { Fragment, useEffect, useState } from "react";
 import Process from "../common/Process/Process";
-import PrivateRoute from "../../common/PrivateRoute";
-import CreatePost from "../../page/CreatePost/CreatePost";
 import Container from "./../common/Container/Container";
-import NewsManagement from "../../page/NewsManagement/NewsManagement";
-import ShowNewsInfor from "../../page/ShowNewsInfor/ShowNewsInfor";
+import { AuthService } from "../../service/AuthService"
+import { useDispatch } from "react-redux";
+import { authentication } from "../../action/authentication";
+import { message } from "../../action/message";
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import MenuBarUser from "./MenuBarUser";
+import DiscountMng from "../../page/admin/DiscountMng/DiscountMng";
+import NewsMng from "../../page/admin/NewsMng/NewsMng";
 
 const Layout = () => {
+
+	const [checkRole, setCheckRole] = useState(false)
+	const dispatch = useDispatch()
+	const nav= useNavigate()
+
+	useEffect(() => {
+		if (AuthService.getTokenOfLocalStorage()) {
+			dispatch(authentication.loginSuccess())
+			const index = AuthService.getRoles().findIndex((el) => {
+				return el === 'ROLE_ADMIN'
+			})
+			if (index != -1) {
+				setCheckRole(true)
+			} else {
+				showMessage()
+			}
+		} else {
+			showMessage()
+			dispatch(authentication.logout())
+		}
+	}, [])
+
+	const showMessage = () => {
+		dispatch(message.error(true, "Không có quyền truy cập"))
+		setTimeout(() => {
+			nav("/")
+		}, 3000);
+	}
 
 	return (
 		<Fragment>
 			<Process></Process>
-			<Header></Header>
 			<Container>
-				<Routes>
-					<Route path="/register" element={<Register></Register>}></Route>
-					<Route path="/login" element={<Login></Login>}></Route>
-					<Route path={["/","trang-chu"]} element={<ShowNewsInfor></ShowNewsInfor>}></Route>
-					<Route path="trang-chu/tao-bai-viet"
-						element={
-							<PrivateRoute>
-								<CreatePost />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet"
-						element={
-							<PrivateRoute>
-								<NewsManagement />
-							</PrivateRoute>
-						}>
-					</Route>
-				</Routes>
+				<MenuBarUser></MenuBarUser>
+				{checkRole ?
+					<Routes>
+						<Route path="/discount-management" element={<DiscountMng></DiscountMng>}></Route>
+						<Route path="/news-management" element={<NewsMng></NewsMng>}></Route>
+					</Routes>
+					: null}
 			</Container>
-
 		</Fragment>
 	)
 }

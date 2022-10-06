@@ -19,6 +19,14 @@ const Header = () => {
 	const navigate = useNavigate()
 	const isLogin = useSelector(state => state.authenticated.isLogin)
 
+	useEffect(() => {
+		if (AuthService.getTokenOfLocalStorage()) {
+			dispatch(authentication.loginSuccess())
+		} else {
+			dispatch(authentication.logout())
+		}
+	}, [])
+
 	const logOut = () => {
 		AuthService.logout()
 		dispatch(message.successfully(true, 'Đăng xuất thành công'))
@@ -74,7 +82,7 @@ const Header = () => {
 								<div className="all-btn">
 									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
 										<img className="icon-heart nqv" src={notification} />
-										<i className="mnu-notify-icon-unread nqv">7</i>
+										<i className="mnu-notify-icon-unread nqv">0</i>
 									</a>
 								</div>
 							</div>
@@ -88,7 +96,9 @@ const Header = () => {
 							</div>
 							<div className="menuUser">
 								<ul className="dropdown-user">
-									<li style={{ paddingLeft: '0px !important', paddingBottom: '10px !important' }} className="lv0">
+									<li style={{ paddingLeft: '0px !important', 
+													 paddingBottom: '10px !important'}} 
+													 className="lv0">
 										<div
 											onMouseEnter={showPopupOver}
 											className="user-name" >Tran Ngoc Hoang
@@ -124,7 +134,6 @@ const Header = () => {
 														<span>Đăng xuất</span></a></li>
 											</ul>
 										</div>
-
 									</li>
 								</ul>
 							</div>

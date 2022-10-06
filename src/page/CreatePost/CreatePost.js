@@ -658,7 +658,7 @@ const CreatePost = () => {
 											</div>
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
-													<div style={{ "display": "flex","flexWrap":"wrap" }}>
+													<div style={{ "display": "flex"}}>
 														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Internet'}
 															name={'internet'}

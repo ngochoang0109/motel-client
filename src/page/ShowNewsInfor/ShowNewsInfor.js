@@ -43,8 +43,8 @@ const ShowNewsInfor = () => {
 		areaFrom: 0,
 		areaTo: 1000,
 		mode: 2,
-		pageNo: "0",
-		pageSize: "5",
+		pageNo: 1,
+		pageSize: 20,
 		field: 'startedDate'
 	})
 	const location = useLocation()
@@ -57,7 +57,6 @@ const ShowNewsInfor = () => {
 		setInitPage(false)
 		if (location.search.length !== 0) {
 			const obj = formatCommon.getQueryStringParams(location.search)
-			console.log(obj)
 			const updateQueryParam = queryParam
 			PostNewsService.getTypeOfAcc().then((data) => {
 				setAccType(data.data)
@@ -79,6 +78,7 @@ const ShowNewsInfor = () => {
 			updateQueryParam.areaTo = Number(obj.areaTo)
 			updateQueryParam.mode = Number(obj.mode)
 			updateQueryParam.field = obj.sort
+			updateQueryParam.pageNo = Number(obj.pageNo)
 			setQueryParam(updateQueryParam)
 		} else {
 			PostNewsService.getTypeOfAcc().then((data) => {
@@ -653,11 +653,11 @@ const ShowNewsInfor = () => {
 			</div>
 		</div>
 		<div className='main-content'>
-			{console.log(queryParam)}
 			<MenuNewsCard queryParam={queryParam}
 				initPage={initPage}
 				sortMode={sortMode}
-				chooseSortMode={(mode, field) => { setQueryParam({ ...queryParam, mode: mode, field: field }) }}></MenuNewsCard>
+				chooseSortMode={(mode, field) => { setQueryParam({ ...queryParam, mode: mode, field: field }) }}
+				choosePage={(pageNo) => { setQueryParam({ ...queryParam, pageNo: pageNo })}}></MenuNewsCard>
 			<div className='main-content-right'>
 				<SideFilterBox title='Lọc theo khoảng giá'>
 					<h3 className="re__sidebar-box-item">
@@ -703,8 +703,8 @@ const ShowNewsInfor = () => {
 					</h3>
 				</SideFilterBox>
 				<SideFilterBox title='Cho thuê theo địa chỉ'>
-					{countNewsOfProvince.map((el) => {
-						return <h3 className="re__sidebar-box-item">
+					{countNewsOfProvince.map((el, i) => {
+						return <h3 className="re__sidebar-box-item" key={i}>
 							<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${el.province}&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=1000`}>{el.province} ({el.count})</Link>
 						</h3>
 					})}

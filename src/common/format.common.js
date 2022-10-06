@@ -74,7 +74,7 @@ const getResultDiffDate = (date1, date2) => {
 
 const formatWithTimeDate = (initDate) => {
 	const copy = new Date(initDate)
-	return moment(copy).format('mm:HH DD/MM/YYYY');
+	return moment(copy).format('HH:mm DD/MM/YYYY');
 }
 
 const getQueryStringParams = query => {

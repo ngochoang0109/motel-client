@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { authentication } from '../action/authentication';
 import { message } from '../action/message';
 import { messageConstant } from '../constant/messageConstant';
