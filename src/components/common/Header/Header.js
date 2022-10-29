@@ -4,13 +4,17 @@ import hotel from './../../../assets/hotel.png'
 import notification from './../../../assets/notification.png'
 import arrow from './../../../assets/arrow.png'
 import user from './../../../assets/user.png'
-import { Link, useNavigate } from "react-router-dom";
+import cart from './../../../assets/cart.png'
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { AuthService } from '../../../service/AuthService'
 import { authentication } from '../../../action/authentication'
 import { message } from '../../../action/message'
 import { messageConstant } from '../../../constant/messageConstant'
+import { cartConstant } from '../../../constant/cart.constant'
+import { NewsManagementService } from '../../../service/NewsManagementService'
+import { userService } from '../../../service/UserService'
 
 const Header = () => {
 
@@ -18,6 +22,9 @@ const Header = () => {
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
 	const isLogin = useSelector(state => state.authenticated.isLogin)
+	const cartOfUser = useSelector(state => state.cartReducer)
+	const location= useLocation()
+	const userInfor= useSelector(state=> state.userReducer)
 
 	useEffect(() => {
 		if (AuthService.getTokenOfLocalStorage()) {
@@ -27,22 +34,43 @@ const Header = () => {
 		}
 	}, [])
 
+	useEffect(() => {
+		userService.getCurrentUser().then((data)=>{
+			console.log(data)
+		})
+		NewsManagementService.getCartOfUser().then((data) => {
+			dispatch({
+				type: cartConstant.GET_CART,
+				data: data
+			})
+		}).catch(() => {
+			dispatch({
+				type: cartConstant.GET_CART,
+				data: {
+					idCart: 0,
+					newsCarts: [],
+					totalPriceOfCart: 0
+				}
+			})
+		})
+	}, [isLogin])
+
 	const logOut = () => {
 		AuthService.logout()
 		dispatch(message.successfully(true, 'Đăng xuất thành công'))
 		dispatch(authentication.logout())
 		setShowControll('')
-		navigate('/trang-chu',{replace:true})
+		navigate('/trang-chu', { replace: true })
 	}
 
 	const markPostnHandler = () => {
-		if (isLogin) {
+		if (!isLogin) {
 			dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
 		}
 	}
 
 	const notificationHandler = () => {
-		if (isLogin) {
+		if (!isLogin) {
 			dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
 		}
 	}
@@ -69,7 +97,7 @@ const Header = () => {
 				<div className="menu-bar pushmenu pushmenu-right floating--right">
 					<div className="control-menu">
 						<div className="login-group">
-							<div className="notification" id="notiSave" onClick={markPostnHandler}>
+							<div className="notification" onClick={markPostnHandler}>
 								<div className="all-btn">
 									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
 										<img className="icon-heart" src={heater} />
@@ -78,11 +106,21 @@ const Header = () => {
 							</div>
 						</div>
 						<div className="login-group">
-							<div className="notification" id="notiSave" onClick={notificationHandler}>
+							<div className="notification" onClick={notificationHandler}>
 								<div className="all-btn">
 									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
 										<img className="icon-heart nqv" src={notification} />
 										<i className="mnu-notify-icon-unread nqv">0</i>
+									</a>
+								</div>
+							</div>
+						</div>
+						<div className="login-group">
+							<div className="notification" onClick={notificationHandler}>
+								<div className="all-btn">
+									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
+										<img className="icon-heart nqv" src={cart} />
+										<i className="mnu-notify-icon-unread nqv">{cartOfUser.newsCarts.length}</i>
 									</a>
 								</div>
 							</div>
@@ -96,12 +134,14 @@ const Header = () => {
 							</div>
 							<div className="menuUser">
 								<ul className="dropdown-user">
-									<li style={{ paddingLeft: '0px !important', 
-													 paddingBottom: '10px !important'}} 
-													 className="lv0">
+									<li style={{
+										paddingLeft: '0px !important',
+										paddingBottom: '10px !important'
+									}}
+										className="lv0">
 										<div
 											onMouseEnter={showPopupOver}
-											className="user-name" >Tran Ngoc Hoang
+											className="user-name" >{userInfor.fullname}
 											<img style={{ paddingLeft: '6px' }}
 												src={arrow} width={16} /> </div>
 										<div onMouseLeave={closePopupOver}>
@@ -180,7 +220,7 @@ const Header = () => {
 										<div className="arrrow" />
 									</li>
 									<li className="lv0">
-										<Link to='/trang-chu/quan-ly-bai-viet' className="haslink">
+										<Link to={isLogin?'/trang-chu/quan-ly-bai-viet':location.pathname} className="haslink" onClick={notificationHandler}>
 											<span className="text">Quản lý tin đăng</span>
 										</Link>
 										<div className="arrrow" />

@@ -35,7 +35,7 @@ form#boxSearchForm {
 .main-content {
 	margin-right: auto;
 	margin-left: auto;
-	width: 990px;
+	width: 70%;
 	margin-top: 24px;
 	min-height: 600px;
 	display: flex;
@@ -55,7 +55,7 @@ form#boxSearchForm {
 }
 
 .main-content-right {
-	width: 30%;
+	width: 24%;
 	border-radius: 4px;
 }
 
@@ -570,7 +570,7 @@ svg {
 .re__btn-cyan-solid--sm {
 	color: #fff;
 	background: #009BA1;
-	border: 1px solid #009BA1;
+	/* border: 1px solid #009BA1; */
 	font-family: 'Roboto', sans-serif;
 	font-size: 14px;
 	line-height: 20px;

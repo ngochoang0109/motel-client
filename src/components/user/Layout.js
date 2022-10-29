@@ -9,6 +9,8 @@ import CreatePost from "../../page/CreatePost/CreatePost";
 import Container from "./../common/Container/Container";
 import NewsManagement from "../../page/NewsManagement/NewsManagement";
 import ShowNewsInfor from "../../page/ShowNewsInfor/ShowNewsInfor";
+import CartPage from "../../page/CartPage/CartPage";
+import PaymentComfirm from "../../page/PaymentConfirm/PaymentConfirm";
 
 const Layout = () => {
 
@@ -36,6 +38,20 @@ const Layout = () => {
 						element={
 							<PrivateRoute>
 								<NewsManagement />
+							</PrivateRoute>
+						}>
+					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet/thanh-toan/:idPost"
+						element={
+							<PrivateRoute>
+								<PaymentComfirm />
+							</PrivateRoute>
+						}>
+					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet/thanh-toan-nhieu"
+						element={
+							<PrivateRoute>
+								<CartPage />
 							</PrivateRoute>
 						}>
 					</Route>

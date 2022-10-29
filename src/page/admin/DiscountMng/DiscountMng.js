@@ -116,9 +116,9 @@ const DiscountMng = () => {
 			dataIndex: 'actionUser',
 			align: "center",
 			render: (text, row, index) => {
-				return <div style={{"display":"flex"}}>
-					<Button style={{"marginRight":"1rem"}} onClick={()=>{alert("SUA")}}>Sửa</Button>
-					<Button type="danger" onClick={()=>{alert("XOA")}}>Xóa</Button>
+				return <div style={{ "display": "flex" }}>
+					<Button style={{ "marginRight": "1rem" }} onClick={() => { alert("SUA") }}>Sửa</Button>
+					<Button type="danger" onClick={() => { alert("XOA") }}>Xóa</Button>
 				</div>
 			}
 		}
@@ -129,8 +129,10 @@ const DiscountMng = () => {
 	}
 
 	useEffect(() => {
+		dispatch(message.information(true))
 		DiscountMngService.getAllDiscount().then((data) => {
 			setData(data)
+			dispatch(message.information(false))
 		})
 		DiscountMngService.getExpense().then((data) => {
 			setExpenses(data)
@@ -139,7 +141,7 @@ const DiscountMng = () => {
 
 	const showModal = () => {
 		setIsModalOpen(true);
-	};
+	}
 
 	const handleOk = () => {
 		setIsModalOpen(false);
@@ -156,7 +158,7 @@ const DiscountMng = () => {
 				description: ''
 			})
 		})
-	};
+	}
 
 	const handleCancel = () => {
 		setIsModalOpen(false);
@@ -168,7 +170,7 @@ const DiscountMng = () => {
 			endDate: new Date(),
 			description: ''
 		})
-	};
+	}
 
 	const onChangeCalendarStart = (value) => {
 		if (value.length === 0) {
@@ -290,9 +292,9 @@ const DiscountMng = () => {
 						size="large"
 						onClick={showModal} />
 				</div>
-				<Table columns={columns} 
-							dataSource={data} 
-							onChange={onChange}/>
+				<Table columns={columns}
+					dataSource={data}
+					onChange={onChange} />
 			</div>
 		</div>
 	</div>

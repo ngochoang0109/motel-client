@@ -14,8 +14,10 @@ import { message } from "../../action/message"
 import cancel from '../../assets/cancel.png'
 import Modal from "antd/lib/modal/Modal"
 import MenuBarUser from "../../components/user/MenuBarUser/MenuBarUser"
+import { useNavigate } from "react-router-dom"
 
 const CreatePost = () => {
+	const nav= useNavigate()
 	const [typesOfAcc, setTypeOffAcc] = useState([])
 	const [expenses, setExpenses] = useState([])
 	const [getAllProvinces, setGetAllProvinces] = useState([{ id: 0, name: '' }])
@@ -72,7 +74,7 @@ const CreatePost = () => {
 				setTypeOffAcc(response.data)
 			})
 		AddressApiService.getAllProvince().then((data) => {
-			setGetAllProvinces(data)
+			setGetAllProvinces(data.reverse())
 		})
 		PostNewsService.getCurrentUserInfor().then((data) => {
 			setCurrentUser(data)
@@ -94,7 +96,7 @@ const CreatePost = () => {
 				})
 				if (existsProvince.length !== 0) {
 					AddressApiService.getAllDistricByProvinceId(target.id).then((data) => {
-						setGetAllDistrictByProvinceId(data)
+						setGetAllDistrictByProvinceId(data.reverse())
 					})
 				}
 				break
@@ -104,7 +106,7 @@ const CreatePost = () => {
 				})
 				if (existsDistrict.length !== 0) {
 					AddressApiService.getAllWardByDistrictId(target.id).then((data) => {
-						setGetAllWardByDistrictId(data)
+						setGetAllWardByDistrictId(data.reverse())
 					})
 				}
 				break
@@ -264,6 +266,7 @@ const CreatePost = () => {
 				if (data) {
 					dispatch(message.information(false))
 					dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
+					nav('trang-chu/quan-ly-bai-viet', {replace:true})
 				} else {
 					dispatch(message.error(true, 'Tạo tin thất bại'))
 				}

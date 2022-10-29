@@ -40,6 +40,7 @@ const sendRequestPostNews = (postNews, cost, typesOfAcc) => {
 
 	const jsonPostNews = JSON.stringify({
 		expense:cost.typeOfPost,
+		discount:cost.discount,
 		title: postNews.title,
 		description: postNews.description,
 		videos:postNews.videos.map((el)=>{

@@ -1,0 +1,21 @@
+.payment-container {
+	background-color: rgb(255, 255, 255);
+	box-shadow: rgb(44 44 44 / 4%) 0px 4px 6px;
+	border-radius: 4px 4px 0px 0px;
+	padding: 24px 24px 32px;
+	margin: auto;
+	width: 80%;
+	height: 100%;
+}
+
+.joNLqU {
+	margin-top: 24px;
+}
+
+.lhekIy {
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+	font-weight: 500;
+	color: rgb(44, 44, 44);
+}

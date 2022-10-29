@@ -3,7 +3,7 @@ import { InputNumber, Slider } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import { Button } from 'antd/lib/radio';
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { formatCommon } from '../../common/format.common';
 import InputBox from '../../components/common/InputBox/InputBox';
 import MenuNewsCard from '../../components/user/MenuNewsCard/MenuNewsCard';
@@ -76,7 +76,7 @@ const ShowNewsInfor = () => {
 			updateQueryParam.priceTo = Number(obj.priceTo)
 			updateQueryParam.areaFrom = Number(obj.areaFrom)
 			updateQueryParam.areaTo = Number(obj.areaTo)
-			updateQueryParam.mode = Number(obj.mode)
+			updateQueryParam.mode	 = Number(obj.mode)
 			updateQueryParam.field = obj.sort
 			updateQueryParam.pageNo = Number(obj.pageNo)
 			setQueryParam(updateQueryParam)
@@ -115,7 +115,7 @@ const ShowNewsInfor = () => {
 			param.province.title = value.name
 			param.province.value = value.name
 			AddressApiService.getAllDistricByProvinceId(value.id).then((data) => {
-				setDistrict(data)
+				setDistrict(data.reverse())
 			})
 		} else if (name === 'district') {
 			param.district.title = value.name
@@ -657,7 +657,7 @@ const ShowNewsInfor = () => {
 				initPage={initPage}
 				sortMode={sortMode}
 				chooseSortMode={(mode, field) => { setQueryParam({ ...queryParam, mode: mode, field: field }) }}
-				choosePage={(pageNo) => { setQueryParam({ ...queryParam, pageNo: pageNo })}}></MenuNewsCard>
+				choosePage={(pageNo) => { setQueryParam({ ...queryParam, pageNo: pageNo }) }}></MenuNewsCard>
 			<div className='main-content-right'>
 				<SideFilterBox title='Lọc theo khoảng giá'>
 					<h3 className="re__sidebar-box-item">

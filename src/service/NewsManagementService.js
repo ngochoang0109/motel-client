@@ -94,6 +94,62 @@ const getNewsByTextSearch = async (pageNo, pageSize, sort, mode, status, textSea
 		`news-management/get-news-text-search?pageNo=${pageNo}&pageSize=${pageSize}&$sort=${sort}&mode=${mode}&status=${status}&textSearch=${textSearh}`,
 		'GET', fillterParam).then((response) => {
 			return response.data;
+		})
+}
+
+const getAllNews = (mode) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 'admin/news-management-list-data?mode=' + mode, 'GET', {}).then((response) => {
+		return response.data;
+	})
+}
+
+const approvedNews = (id) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 'admin/news-management-list-data/approved-news?id=' + id, 'POST', {}).then((response) => {
+		return response.data;
+	})
+}
+
+const rejectedNews = (id) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 'admin/news-management-list-data/reject-news?id=' + id, 'POST', {}).then((response) => {
+		return response.data;
+	})
+}
+
+const insertReason = (formData) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 'admin/news-management-list-data/send-reason', 'POST', formData).then((response) => {
+		return response.data;
+	})
+}
+
+const showReason = (id) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 
+		'admin/news-management-list-data/show-reason?id='+id, 
+		'GET',{}).then((response) => {
+		return response.data;
+	})
+}
+
+const addNewsToCart = (idNews) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 
+		'news-management/add-item-to-cart?idNews='+idNews, 
+		'POST',{}).then((response) => {
+		return response.data;
+	})
+}
+
+const getCartOfUser=()=>{
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 
+		'news-management/get-cart', 
+		'GET',{}).then((response) => {
+		console.log(response.data)
+		return response.data;
 	})
 }
 
@@ -106,5 +162,12 @@ export const NewsManagementService = {
 	getNewsShowOfUser,
 	getNewsHiddenOfUser,
 	getNewsExpriedOfUser,
-	getNewsByTextSearch
+	getNewsByTextSearch,
+	getAllNews,
+	approvedNews,
+	rejectedNews,
+	insertReason,
+	showReason,
+	addNewsToCart,
+	getCartOfUser
 }

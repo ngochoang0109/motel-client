@@ -14,9 +14,17 @@ import 'antd/dist/antd.min.css';
 import './NewsManagement.css'
 import { PostNewsService } from '../../service/PostNewsService';
 import { AddressApiService } from '../../service/AddressApiService';
+import Modal from 'antd/lib/modal/Modal';
+import vnpayIcon from './../../assets/vnpay.icon.png'
+import Radio, { Button } from 'antd/lib/radio';
+import { cartConstant } from '../../constant/cart.constant';
+import { useNavigate } from 'react-router-dom';
 
 const NewsManagement = () => {
+	const navigate= useNavigate()
 	const [getNewsCard, setNewsCard] = useState({ content: [] })
+	const [visible, setVisible] = useState(false)
+	const [methodPayment, setMethodPayment] = useState(0)
 	const dispatch = useDispatch()
 	const [isActive, setActive] = useState({
 		status: false,
@@ -31,7 +39,7 @@ const NewsManagement = () => {
 	const [btnProvince, setBtnProvince] = useState(false)
 	const [btnDistrict, setBtnDistrict] = useState(false)
 	const [getProvince, setProvince] = useState([])
-	const [getDistrict, setDistrict]=useState([])
+	const [getDistrict, setDistrict] = useState([])
 	const [typeOfAcc, setTypeOfAcc] = useState([])
 	const [typeOfNews, setTypeOfNews] = useState([])
 	const [filterParam, setFilterParam] = useState({
@@ -65,6 +73,22 @@ const NewsManagement = () => {
 		})
 	}, [])
 
+	const handlePaymentAction = (id) => {
+		navigate(`/trang-chu/quan-ly-bai-viet/thanh-toan/${id}`)
+	}
+
+	const addToCart = (id) => {
+		NewsManagementService.addNewsToCart(id).then((data) => {
+			dispatch(message.error(true, 'Đã thêm bài viết vào giỏ'))
+			dispatch({
+				type: cartConstant.GET_CART,
+				data: data
+			})
+		}).catch((data) => {
+			dispatch(message.error(true, 'Đã có trong giỏ hàng'))
+		})
+	}
+
 	const showNewsCard = () => {
 		if (getNewsCard) {
 			return getNewsCard.content.map((el) => {
@@ -81,7 +105,9 @@ const NewsManagement = () => {
 					avatar={el.avatar}
 					mode={el.mode}
 					totalAmount={el.totalAmount}
-					id={el.id}></NewsCard>
+					id={el.id}
+					paymentAction={handlePaymentAction}
+					addToCart={addToCart}></NewsCard>
 			})
 		}
 	}
@@ -159,7 +185,7 @@ const NewsManagement = () => {
 			case modeNews.SHOWING:
 				await NewsManagementService.getNewsShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
 					console.log(page)
-					console.log("adsffffffffffffffffff"+page.totalPages)
+					console.log("adsffffffffffffffffff" + page.totalPages)
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
 					setNewsCard(page)
 					dispatch(message.information(false))
@@ -248,18 +274,18 @@ const NewsManagement = () => {
 		else if (btnTypeOfNews) {
 			setFilterParam({ ...filterParam, typeOfNews: addOrDeleteParam(target, id, filterParam.typeOfNews) })
 		}
-		else if (btnProvince){
-			const newChecked=addOrDeleteParam(target, id, filterParam.province)
-			setFilterParam({...filterParam, province: newChecked})
-			if(newChecked.length===1){
-				AddressApiService.getAllDistricByProvinceId(newChecked[0]).then((data)=>{
+		else if (btnProvince) {
+			const newChecked = addOrDeleteParam(target, id, filterParam.province)
+			setFilterParam({ ...filterParam, province: newChecked })
+			if (newChecked.length === 1) {
+				AddressApiService.getAllDistricByProvinceId(newChecked[0]).then((data) => {
 					setDistrict(data)
 				})
-			}else{
+			} else {
 				setDistrict([])
 			}
-		}else if(btnDistrict){
-			setFilterParam({...filterParam, district: addOrDeleteParam(target, id, filterParam.district)})
+		} else if (btnDistrict) {
+			setFilterParam({ ...filterParam, district: addOrDeleteParam(target, id, filterParam.district) })
 		}
 	}
 
@@ -279,7 +305,7 @@ const NewsManagement = () => {
 		return updateArr
 	}
 
-	const filterData=()=>{
+	const filterData = () => {
 		dispatch(message.information(true))
 		setTextSearch({ ...textSearch, searched: true })
 		NewsManagementService.getNewsByTextSearch(0, 5, 'startedDate', 2, isActive.mode, textSearch.text, filterParam).then((page) => {
@@ -289,11 +315,108 @@ const NewsManagement = () => {
 			dispatch(message.information(false))
 		})
 	}
+	const handleCancel = e => {
+		setVisible(false)
+	}
+	const handlePayment = () => {
+		console.log(methodPayment)
+		setVisible(false)
+	}
+
+	const chooseMethodPayment = (event) => {
+		setMethodPayment(event.target.value)
+	}
+
+	const modalChooseMethodPayment = () => {
+		return <Modal title="Chọn hình thức thanh toán"
+			visible={visible}
+			onCancel={handleCancel}
+			bodyStyle={{ height: "400px", width: "550px" }}
+			style={{ top: 120 }}
+			footer={[
+				<Button type="primary"
+					onClick={handleCancel}>
+					Thoát
+				</Button>,
+				<Button
+					onClick={handlePayment}>
+					Áp dụng
+				</Button>]}>
+			{/* 0: my wallet, 1: vnpay payment */}
+			<Radio.Group onChange={chooseMethodPayment} value={methodPayment}>
+				<div className="discount-content">
+					<div className="wrap-item" style={{ "marginBottom": "24px" }}>
+						<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 496 496" style={{ enableBackground: 'new 0 0 496 496' }} xmlSpace="preserve">
+							<path style={{ fill: '#C67217' }} d="M456,56H68.8C39.2,56,16,79.2,16,108l0,0c0,28.8,23.2,52,52.8,52H456" />
+							<path style={{ fill: '#FCA12A' }} d="M456,56v104H68.8C40,160,16,136,16,104l0,0v336l0,0c0,32,24,56,52.8,56H456V392l0,0v-28.8v-40v-65.6
+      V56L456,56z" />
+							<path style={{ fill: '#C67217' }} d="M454.4,204c14.4,0,25.6,12,25.6,25.6l0,0c0,14.4-11.2,25.6-25.6,25.6" />
+							<polygon style={{ fill: '#EF861D' }} points="456,392 456,392 456,363.2 456,344.8 280.8,345.6 264.8,396.8 362.4,496 456,496 " />
+							<path style={{ fill: '#F4DBA8' }} d="M264,256h190.4c14.4,0,25.6-11.2,25.6-25.6l0,0v140v1.6c0,14.4-12,28-25.6,28H264v-56l0,0v-12.8v4.8
+      v-32" />
+							<path style={{ fill: '#E5BD76' }} d="M453.6,258.4c14.4,0,25.6-12.8,25.6-26.4v-0.8v140v1.6c0,14.4-12,28-25.6,28H264v-56l0,0V332v68" />
+							<circle style={{ fill: '#3CC676' }} cx={328} cy="327.2" r="32.8" />
+							<path style={{ fill: '#0AA06E' }} d="M354.4,308c11.2,14.4,8,34.4-6.4,45.6s-34.4,8-45.6-6.4" />
+							<path style={{ fill: '#A0520B' }} d="M456,120H92.8c-9.6,0-16.8-6.4-16.8-16l0,0c0-9.6,8-16,16.8-16H456" />
+							<rect x={112} style={{ fill: '#3CC676' }} width={248} height={120} />
+							<polyline style={{ fill: '#2EAF62' }} points="360,0 360,120 112,120 " />
+							<rect x={144} y={32} style={{ fill: '#0AA06E' }} width={184} height={88} />
+							<polyline style={{ fill: '#078457' }} points="328,32 328,120 144,120 " /><g /><g /><g /><g /><g /><g /><g /><g /><g /><g /><g /><g /><g /><g /><g />
+						</svg>
+						<div className="discount-infor">
+							<div className="discount-right">
+								<div className="mpTlYm">
+									<label className="jjBnhm"
+										style={{
+											"fontFamily": "'Roboto', sans-serif",
+											"fontWeight": "500",
+											"fontSize": "16px",
+											"marginLeft": "28px"
+										}}>Thanh toán ví tài khoản</label>
+								</div>
+							</div>
+							<div className="discount-left">
+								<div className="Sw3kAk">
+									<Radio type="radio"
+										name='paymentMethod'
+										value={0}
+									></Radio>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div className="wrap-item" style={{ "marginBottom": "24px" }}>
+						<img src={vnpayIcon}></img>
+						<div className="discount-infor">
+							<div className="discount-right">
+								<span className="jjBnhm"
+									style={{
+										"fontFamily": "'Roboto', sans-serif",
+										"fontWeight": "500",
+										"fontSize": "16px",
+										"marginLeft": "28px"
+									}}>Thanh toán online VNPAY</span>
+							</div>
+							<div className="discount-left">
+								<div className="Sw3kAk">
+									<Radio
+										name='paymentMethod'
+										value={1}
+									></Radio>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</Radio.Group>
+		</Modal>
+	}
 	console.log(filterParam)
 
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
 		<div className="right-bar">
+			{modalChooseMethodPayment()}
 			<div className="container-header">
 				<div className='container-center'>
 					<div className="title">
@@ -394,8 +517,8 @@ const NewsManagement = () => {
 								<span className="icon">
 									<div>
 										<svg width="100px" height="100px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
-											<path style={{fill: '#09ee09', stroke: '#007300', strokeWidth: 3}} d="M 4,36 C 8,42 26,73 31,93 38,82 44,63 98,12 78,22 51,44 33,60 26,55 18,44 4,36 z" />
-      								</svg>
+											<path style={{ fill: '#09ee09', stroke: '#007300', strokeWidth: 3 }} d="M 4,36 C 8,42 26,73 31,93 38,82 44,63 98,12 78,22 51,44 33,60 26,55 18,44 4,36 z" />
+										</svg>
 									</div>
 								</span>
 								<span className="text">Áp dụng</span>
@@ -458,7 +581,7 @@ const NewsManagement = () => {
 								title={el.name}
 								name={el.name}
 								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
-								checked={filterParam.typeOfAcc.indexOf(el.id)!==-1?true:false}></InputBox>
+								checked={filterParam.typeOfAcc.indexOf(el.id) !== -1 ? true : false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 					{btnTypeOfNews ? <div className='wrapper-data-filter'>
@@ -467,7 +590,7 @@ const NewsManagement = () => {
 								title={el.name}
 								name={el.name}
 								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
-								checked={filterParam.typeOfNews.indexOf(el.id)!==-1?true:false}></InputBox>
+								checked={filterParam.typeOfNews.indexOf(el.id) !== -1 ? true : false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 					{btnProvince ? <div className='wrapper-data-filter'>
@@ -476,7 +599,7 @@ const NewsManagement = () => {
 								title={el.name}
 								name={el.name}
 								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
-								checked={filterParam.province.indexOf(el.id)!==-1?true:false}></InputBox>
+								checked={filterParam.province.indexOf(el.id) !== -1 ? true : false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 					{btnDistrict ? <div className='wrapper-data-filter'>
@@ -485,7 +608,7 @@ const NewsManagement = () => {
 								title={el.name}
 								name={el.name}
 								onChange={(target) => handleSetArrayFilterParam(target, el.id)}
-								checked={filterParam.district.indexOf(el.id)!==-1?true:false}></InputBox>
+								checked={filterParam.district.indexOf(el.id) !== -1 ? true : false}></InputBox>
 						})}
 					</div> : <Fragment></Fragment>}
 				</div>
@@ -504,7 +627,7 @@ const NewsManagement = () => {
 			</div>
 			{getNewsCard.content.length !== 0 ? <div className='table-data'
 				style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
-					{console.log(isActive)}
+				{console.log(isActive)}
 				<Pagination current={isActive.pageNo}
 					total={isActive.totalPages}
 					onChange={handleChoosePage}
