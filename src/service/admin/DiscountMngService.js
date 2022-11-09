@@ -12,7 +12,6 @@ const getAllDiscount = () => {
 const getExpense = () => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API, 'discount-management-get-expense', 'GET', {}).then((response) => {
-		console.log(response.data)
 		return response.data;
 	})
 }

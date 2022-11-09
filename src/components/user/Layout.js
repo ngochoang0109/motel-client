@@ -48,7 +48,7 @@ const Layout = () => {
 							</PrivateRoute>
 						}>
 					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/thanh-toan-nhieu"
+					<Route path="trang-chu/quan-ly-bai-viet/gio-tin"
 						element={
 							<PrivateRoute>
 								<CartPage />

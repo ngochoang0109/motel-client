@@ -72,11 +72,7 @@ const NewsManagement = () => {
 			dispatch(message.information(false))
 		})
 	}, [])
-
-	const handlePaymentAction = (id) => {
-		navigate(`/trang-chu/quan-ly-bai-viet/thanh-toan/${id}`)
-	}
-
+	
 	const addToCart = (id) => {
 		NewsManagementService.addNewsToCart(id).then((data) => {
 			dispatch(message.error(true, 'Đã thêm bài viết vào giỏ'))
@@ -85,7 +81,7 @@ const NewsManagement = () => {
 				data: data
 			})
 		}).catch((data) => {
-			dispatch(message.error(true, 'Đã có trong giỏ hàng'))
+			dispatch(message.error(true, 'Đã có trong giỏ tin'))
 		})
 	}
 
@@ -106,7 +102,6 @@ const NewsManagement = () => {
 					mode={el.mode}
 					totalAmount={el.totalAmount}
 					id={el.id}
-					paymentAction={handlePaymentAction}
 					addToCart={addToCart}></NewsCard>
 			})
 		}

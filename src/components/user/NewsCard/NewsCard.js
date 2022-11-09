@@ -3,13 +3,9 @@ import { modeNews } from "../../../constant/mode.news";
 
 const NewsCard = ({ title, price, area, province, district, description,
 	fullName, phone, startedDate, closedDate,
-	avatar, mode, totalAmount, id, paymentAction, addToCart }) => {
+	avatar, mode, totalAmount, id, addToCart }) => {
 
-	const clickPaymentBtn = () => {
-		paymentAction(id)
-	}
-
-	const clickAddItemToCart=()=>{
+	const clickAddItemToCart = () => {
 		addToCart(id)
 	}
 
@@ -60,15 +56,11 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatNumberic(totalAmount)} VNĐ </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" onClick={clickPaymentBtn}>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" onClick={clickAddItemToCart}>
 							<span>Thanh toán</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
-							style={{ "background": "#228B22"}}
-							onClick={clickAddItemToCart}>
-							<span>Thêm vào giỏ</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Chỉnh sửa</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A"}}>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
 							<span>Xóa bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />

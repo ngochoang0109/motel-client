@@ -30,7 +30,7 @@ const formatDate = () => {
 
 const addDate = (initDate, numDate) => {
 	const copy = new Date(initDate)
-	copy.setDate(initDate.getDate() + numDate)
+	copy.setDate(copy.getDate() + numDate)
 	return moment(copy).format(formatCommon.formatDate());
 }
 
@@ -89,6 +89,12 @@ const getQueryStringParams = query => {
 		 : {}
 };
 
+function disabledDate(current) {
+	const temp =new Date(current._i)
+	temp.setDate(temp.getDate()-1)
+	return current && current.valueOf() < temp;
+}
+
 export const formatCommon = {
 	formatNumberic,
 	combineComponentOfAddress,
@@ -99,5 +105,6 @@ export const formatCommon = {
 	convertStringNumricToNumber,
 	getVideoIdFromUrlYoutube,
 	formatWithTimeDate,
-	getQueryStringParams
+	getQueryStringParams,
+	disabledDate
 }

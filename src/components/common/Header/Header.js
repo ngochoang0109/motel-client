@@ -15,6 +15,7 @@ import { messageConstant } from '../../../constant/messageConstant'
 import { cartConstant } from '../../../constant/cart.constant'
 import { NewsManagementService } from '../../../service/NewsManagementService'
 import { userService } from '../../../service/UserService'
+import { authenticationConstant } from '../../../constant/Authentication.constant'
 
 const Header = () => {
 
@@ -36,7 +37,10 @@ const Header = () => {
 
 	useEffect(() => {
 		userService.getCurrentUser().then((data)=>{
-			console.log(data)
+			dispatch({
+				type: authenticationConstant.GET_CURRENT_USER,
+				data: data
+			})
 		})
 		NewsManagementService.getCartOfUser().then((data) => {
 			dispatch({
@@ -53,6 +57,7 @@ const Header = () => {
 				}
 			})
 		})
+
 	}, [isLogin])
 
 	const logOut = () => {
@@ -72,6 +77,14 @@ const Header = () => {
 	const notificationHandler = () => {
 		if (!isLogin) {
 			dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
+		}
+	}
+
+	const goToCart=()=>{
+		if (!isLogin) {
+			dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
+		}else{
+			navigate('trang-chu/quan-ly-bai-viet/gio-tin')
 		}
 	}
 
@@ -116,7 +129,7 @@ const Header = () => {
 							</div>
 						</div>
 						<div className="login-group">
-							<div className="notification" onClick={notificationHandler}>
+							<div className="notification" onClick={goToCart}>
 								<div className="all-btn">
 									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
 										<img className="icon-heart nqv" src={cart} />

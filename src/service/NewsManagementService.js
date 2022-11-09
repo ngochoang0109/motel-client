@@ -148,7 +148,6 @@ const getCartOfUser=()=>{
 	return httpClient(headers, storageKey.API, 
 		'news-management/get-cart', 
 		'GET',{}).then((response) => {
-		console.log(response.data)
 		return response.data;
 	})
 }

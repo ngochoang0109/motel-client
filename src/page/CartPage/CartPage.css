@@ -1,0 +1,135 @@
+.negmo {
+	flex: 1 1 910px;
+}
+
+.jKLiJX {
+	background: rgb(255, 255, 255);
+	padding: 9px 16px;
+	border-radius: 4px;
+	color: rgb(36, 36, 36);
+	font-weight: 400;
+	font-size: 13px;
+	margin-bottom: 12px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.label {
+	font-family: 'Roboto', sans-serif;
+	font-size: 13px;
+	line-height: 20px;
+	font-weight: 500;
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.kJwXxa {
+	background: rgb(255, 255, 255);
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.kJwXxa .sellers__sub-title {
+	display: block;
+	margin-bottom: 10px;
+}
+
+.kJwXxa .sellers__icon-home {
+	width: 18px;
+	height: 18px;
+	margin-right: 5px;
+}
+
+.col-1 img {
+	max-width: 100%;
+}
+
+.col-1 img {
+	border-style: none;
+}
+
+.kJwXxa .sellers__name {
+	font-family: 'Roboto', sans-serif;
+	font-size: 13px;
+	line-height: 20px;
+	font-weight: 600;
+	text-transform: uppercase;
+	color: rgb(36, 36, 36);
+}
+
+[type="checkbox"],
+[type="radio"] {
+	box-sizing: border-box;
+	padding: 0px;
+}
+
+.ihAmbT {
+	list-style: none;
+	margin: 32px 0px 0px;
+	background: rgb(255, 255, 255);
+}
+
+.hIODeW {
+	padding: 16px 20px;
+	display: flex;
+	-webkit-box-align: center;
+	align-items: center;
+	border-top: 1px solid rgb(242, 242, 242);
+}
+
+.eZNlgw {
+	margin-bottom: 32px;
+}
+
+.eZNlgw .row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	text-align: center;
+	margin-bottom: 16px;
+	border: 1px solid rgb(90, 90, 90);
+	padding: 9px 16px 9px 0px;
+}
+
+.eZNlgw .col-1 {
+	padding-left:  15px;
+}
+
+.eZNlgw .product__images {
+	display: flex;
+	align-items: center;
+}
+
+.product__name{
+	font-family: 'Roboto', sans-serif;
+	font-size: 13px;
+	line-height: 20px;
+	font-weight: 450;
+	color: rgb(44, 44, 44);
+}
+
+.product__name_1:hover{
+	cursor: pointer;
+}
+
+.product__img{
+	max-width: 24%;
+}
+
+.product__real-prices{
+	font-family: 'Roboto', sans-serif;
+	font-size: 13px;
+	line-height: 20px;
+	font-weight: 450;
+	color: rgb(255, 66, 78);
+}
+
+.product__delete:hover{
+	cursor: pointer;
+}

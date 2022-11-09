@@ -1,10 +1,12 @@
 import { Fragment, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { dataCommon } from '../../../common/data.common'
 import user from './../../../assets/user.png'
 import './MenuBarUser.css'
 const MenuBarUser = () => {
 	const [isActive, setActive] = useState({ id: 0, status: false })
+	const currentUser = useSelector(state => state.userReducer)
 	
 	const showDropListManagement = () => {
 		return dataCommon.menuBarNewsManagement.map((el, i) => {
@@ -27,10 +29,10 @@ const MenuBarUser = () => {
 				</a>
 				<div className='fullname-infor'>
 					<a className='fullname'>
-						<h4>Tran Ngoc Hoang</h4>
+						<h4>{currentUser.fullname}</h4>
 					</a>
 					<div className='phone-number'>
-						<h2>0329846639</h2>
+						<h2>{currentUser.phone}</h2>
 					</div>
 				</div>
 			</div>
