@@ -76,7 +76,7 @@ const ShowNewsInfor = () => {
 			updateQueryParam.priceTo = Number(obj.priceTo)
 			updateQueryParam.areaFrom = Number(obj.areaFrom)
 			updateQueryParam.areaTo = Number(obj.areaTo)
-			updateQueryParam.mode	 = Number(obj.mode)
+			updateQueryParam.mode = Number(obj.mode)
 			updateQueryParam.field = obj.sort
 			updateQueryParam.pageNo = Number(obj.pageNo)
 			setQueryParam(updateQueryParam)
@@ -411,7 +411,6 @@ const ShowNewsInfor = () => {
 							</div>
 						</div>
 					</div>
-
 				</Modal>
 			case 5:
 				return <Modal title="Lọc thêm"

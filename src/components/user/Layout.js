@@ -41,7 +41,7 @@ const Layout = () => {
 							</PrivateRoute>
 						}>
 					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/thanh-toan/:idPost"
+					<Route path="trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan"
 						element={
 							<PrivateRoute>
 								<PaymentComfirm />

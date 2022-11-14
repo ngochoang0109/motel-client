@@ -1,5 +1,5 @@
 import { Radio } from "antd";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { dataCommon } from "../../common/data.common";
 import MenuBarUser from "../../components/user/MenuBarUser/MenuBarUser";
@@ -8,7 +8,10 @@ import "./PaymentConfirm.css"
 const PaymentComfirm = () => {
 
 	const currentUser = useSelector(state => state.userReducer)
-	console.log(currentUser)
+
+	useEffect(()=>{
+		
+	},[])
 
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
@@ -20,7 +23,7 @@ const PaymentComfirm = () => {
 					</div>
 				</div>
 			</div>
-			<div className="payment-container" style={{ "marginTop": "16px" }}>
+			<div className="payment-container" style={{ "marginTop": "16px","borderRadius": "4px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"}}>
 				<h3 className="lhekIy">Thông tin người tạo</h3>
 				<div style={{ "display": "flex", "alignItems": "center", "justifyContent": "space-between" }}>
 					<div style={{ "display": "flex", "flexDirection": "column", "marginRight": "2rem" }}>
@@ -47,7 +50,7 @@ const PaymentComfirm = () => {
 					</div>
 				</div>
 			</div>
-			<div className="payment-container" style={{ "marginTop": "16px" }}>
+			<div className="payment-container" style={{ "marginTop": "16px","boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"}}>
 				<h3 className="lhekIy">Thông tin đơn hàng</h3>
 				<div className="w6riq3">
 					<div className="-JzzK5">
@@ -83,7 +86,7 @@ const PaymentComfirm = () => {
 								</div>
 							</div>
 						</div>
-						<div className="BbOmi+">
+						<div className="BbOmi+" style={{ "marginLeft": "auto", "marginRight": "auto", "width": "100%", "backgroundColor": "#eecda3" }}>
 							<div className="lYtB1r">
 								<div className="_4nelpz wXtDZ">Tổng số tiền (2 sản phẩm):</div>
 								<div className="_31ayp3">37.500 Đ</div>
@@ -92,7 +95,7 @@ const PaymentComfirm = () => {
 					</div>
 				</div>
 			</div>
-			<div className="payment-container" style={{ "marginTop": "16px" }}>
+			<div className="payment-container" style={{ "marginTop": "16px","boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"}}>
 				<div style={{ "display": "flex" }}>
 					<h3 className="lhekIy" style={{ "marginRight": "2rem" }}>Chọn hình thức thanh toán</h3>
 					<Radio.Group defaultValue="a" size="large">

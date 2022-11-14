@@ -133,3 +133,11 @@
 .product__delete:hover{
 	cursor: pointer;
 }
+
+.confirm-message-modal>*{
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+	font-weight: 450;
+	text-align: center;
+}

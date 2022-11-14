@@ -9,16 +9,22 @@ import moment from "moment";
 import { DatePicker, InputNumber } from "antd";
 import { cartConstant } from "../../constant/cart.constant";
 import { NewsManagementService } from "../../service/NewsManagementService";
+import Modal from "antd/lib/modal/Modal";
+import { CartService } from "../../service/CartService";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
 
 	const cartOfUser = useSelector(state => state.cartReducer)
 	const currentUser = useSelector(state => state.userReducer)
 	const dispatch = useDispatch()
-	const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  
-	console.log(cartOfUser)
+	const [open, setOpen] = useState(false)
+	const [id, setId] = useState(0)
+	const [confirmLoading, setConfirmLoading] = useState(false)
+	const nav = useNavigate()
+
+	/*1: deleted, 2: confirm*/
+	const [modalMode, setModalMode] = useState(0)
 
 	useEffect(() => {
 		NewsManagementService.getCartOfUser()
@@ -30,31 +36,41 @@ const CartPage = () => {
 			})
 	}, [])
 
-	const numDateOnBlur = (event, id) => {
-		console.log(event, id)
+	const numDateOnBlur = (event, id, checked, startedDate) => {
+		dispatch(message.information(true))
 		const numDate = parseInt(event.target.value)
 		if (numDate < 1) {
+			dispatch(message.information(false))
 			dispatch(message.error(true, 'Số ngày rao tin không hợp lệ'))
 		} else {
-			dispatch({
-				type: cartConstant.UPDATE_CART,
-				data: {
-					id: id,
-					[event.target.name]: numDate
-				}
+			const updateItemOfCart = {
+				checked: checked,
+				numDate: numDate,
+				startedDate: startedDate
+			}
+			CartService.updateItemOfCart(updateItemOfCart, cartOfUser.idCart, id).then((data) => {
+				dispatch({
+					type: cartConstant.GET_CART,
+					data: data
+				})
+				dispatch(message.information(false))
 			})
 		}
 	}
 
-	const startedDateOnChange = (momentObj, dateString, name, id) => {
-		console.log(momentObj)
-		console.log(moment(momentObj._d).utc(true).format())
-		dispatch({
-			type: cartConstant.UPDATE_CART,
-			data: {
-				id: id,
-				[name]: moment(momentObj._d).utc(true).format()
-			}
+	const startedDateOnChange = (momentObj, id, checked, numDate) => {
+		dispatch(message.information(true))
+		const updateItemOfCart = {
+			checked: checked,
+			numDate: numDate,
+			startedDate: moment(momentObj._d).utc(true).format()
+		}
+		CartService.updateItemOfCart(updateItemOfCart, cartOfUser.idCart, id).then((data) => {
+			dispatch({
+				type: cartConstant.GET_CART,
+				data: data
+			})
+			dispatch(message.information(false))
 		})
 	}
 
@@ -71,61 +87,134 @@ const CartPage = () => {
 	}
 
 	const checkedAllCheckBox = (event) => {
+		dispatch(message.information(true))
 		const checked = event.target.checked
+		let listItemUpdate = []
 		for (let i = 0; i < cartOfUser.newsCarts.length; i++) {
-			dispatch({
-				type: cartConstant.UPDATE_CART,
-				data: {
-					id: cartOfUser.newsCarts[i].id,
-					'checked': checked
-				}
-			})
+			const updateItemOfCart = {
+				id: cartOfUser.newsCarts[i].id,
+				checked: checked,
+				numDate: cartOfUser.newsCarts[i].numDate,
+				startedDate: cartOfUser.newsCarts[i].startedDate
+			}
+			listItemUpdate.push(updateItemOfCart)
 		}
+		CartService.updateItemsOfCart(listItemUpdate, cartOfUser.idCart)
+			.then((data) => {
+				dispatch({
+					type: cartConstant.GET_CART,
+					data: data
+				})
+				dispatch(message.information(false))
+			})
 	}
 
-	const getTotalChecked=()=>{
+	const getTotalChecked = () => {
 		let count = 0
 		for (let i = 0; i < cartOfUser.newsCarts.length; i++) {
-			if(cartOfUser.newsCarts[i].checked){
-				count= count + 1
+			if (cartOfUser.newsCarts[i].checked) {
+				count = count + 1
 			}
 		}
 		return count
 	}
 
-	const onChangeCheckedItem = (event, id) => {
-		dispatch({
-			type: cartConstant.UPDATE_CART,
-			data: {
-				id: id,
-				[event.target.name]: event.target.checked
-			}
+	const onChangeCheckedItem = (event, id, numDate, startedDate) => {
+		// call api update cart
+		dispatch(message.information(true))
+		const updateItemOfCart = {
+			checked: event.target.checked,
+			numDate: numDate,
+			startedDate: startedDate
+		}
+		CartService.updateItemOfCart(updateItemOfCart, cartOfUser.idCart, id).then((data) => {
+			dispatch({
+				type: cartConstant.GET_CART,
+				data: data
+			})
+			dispatch(message.information(false))
 		})
 	}
 
-	const caculatedAmount=()=>{
-		let amount= 0
+	const caculatedAmount = () => {
+		let amount = 0
 		for (let i = 0; i < cartOfUser.newsCarts.length; i++) {
-			if(cartOfUser.newsCarts[i].checked){
-				amount= amount + cartOfUser.newsCarts[i].totalAmount
+			if (cartOfUser.newsCarts[i].checked) {
+				amount = amount + cartOfUser.newsCarts[i].totalAmount
 			}
 		}
 		return amount
 	}
 
-	const deletedItem=(id)=>{
-		
-		dispatch({
-			type: cartConstant.DELETED_ITEM,
-			data: id
+	const deletedItem = (id) => {
+		setId(id)
+		setModalMode(1)
+		showModal()
+	}
+
+	const goToPaymentPage = () => {
+		if (getTotalChecked() === 0) {
+			dispatch(message.error(true, 'Bạn vẫn chưa chọn tin để rao'))
+		} else {
+			setModalMode(2)
+			showModal()
+		}
+	}
+
+	const showModal = () => {
+		setOpen(true)
+	}
+
+	const handleCancel = () => {
+		setOpen(false)
+	}
+
+	const createPayment = () => {
+		setOpen(false)
+		nav('/trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan')
+	}
+
+	const confirmDeleted = () => {
+		setConfirmLoading(true)
+		CartService.deletedPostOfCart(cartOfUser.idCart, id).then((data) => {
+			setConfirmLoading(false)
+			setOpen(false)
+			dispatch({
+				type: cartConstant.GET_CART,
+				data: data
+			})
+		}).catch(() => {
+			setConfirmLoading(false)
 		})
 	}
 
-	const goToPaymentPage=()=>{
-		if(getTotalChecked()===0){
-			dispatch(message.error(true,'Bạn vẫn chưa chọn tin để rao'))
-		}else{
-			alert("PAYMENT PAGE")
+	const controllerModalRender = () => {
+		switch (modalMode) {
+			case 1:
+				return <Modal title="Xóa tin"
+					visible={open}
+					onOk={confirmDeleted}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "110px" }}
+					centered={true}
+					confirmLoading={confirmLoading}
+				>
+					<div className='confirm-message-modal'>
+						<p>Bạn có muốn xóa tin khỏi giỏ tin</p>
+					</div>
+				</Modal>
+			case 2:
+				return <Modal title="Rao tin"
+					visible={open}
+					onOk={createPayment}
+					onCancel={handleCancel}
+					bodyStyle={{ height: "110px" }}
+					centered={true}
+				>
+					<div className='confirm-message-modal'>
+						<p>Bạn có muốn rao tin</p>
+					</div>
+				</Modal>
 		}
 	}
 
@@ -143,12 +232,13 @@ const CartPage = () => {
 				"width": "90%", "marginLeft": "auto",
 				"marginRight": "auto", "borderRadius": "4px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"
 			}}>
+				{controllerModalRender()}
 				<div className="styles__Left-sc-1mncg38-2 negmo">
 					<div className="jKLiJX">
 						<label className="hNjxWW">
 							<Checkbox
 								onChange={(event) => checkedAllCheckBox(event)}
-								checked={getTotalChecked()===cartOfUser.newsCarts.length?true:false }></Checkbox>
+								checked={getTotalChecked() === cartOfUser.newsCarts.length ? true : false}></Checkbox>
 							<span className="label"
 								style={{ "width": "280px" }}>Tất cả ({cartOfUser.newsCarts.length} bài viết)
 							</span>
@@ -158,7 +248,7 @@ const CartPage = () => {
 						<span className="label" style={{ "width": "140px" }}>Ngày bắt đầu</span>
 						<span className="label" style={{ "width": "100px" }}>Mã giảm giá</span>
 						<span className="label" style={{ "width": "80px" }}>Thành tiền</span>
-						<span className="remove-all label" onClick={()=>deletedItem()}>
+						<span className="remove-all label">
 							<img src="https://frontend.tikicdn.com/_desktop-next/static/img/icons/trash.svg" />
 						</span>
 					</div>
@@ -191,7 +281,7 @@ const CartPage = () => {
 																<Checkbox style={{ "margin": "0px 12px 0px 0px" }}
 																	name='checked'
 																	checked={el.checked}
-																	onChange={(event, id) => onChangeCheckedItem(event, el.id)}></Checkbox>
+																	onChange={(event, id, numDate, startedDate) => onChangeCheckedItem(event, el.id, el.numDate, el.startedDate)}></Checkbox>
 															</label>
 														</div>
 														<a className="product__img" style={{ "marginRight": "15px" }}>
@@ -222,7 +312,7 @@ const CartPage = () => {
 																		min={1}
 																		max={120}
 																		controls={false}
-																		onBlur={(event, id) => numDateOnBlur(event, el.id)}
+																		onBlur={(event, id, checked, startedDate) => numDateOnBlur(event, el.id, el.checked, el.startedDate)}
 																		name='numDate'>
 																	</InputNumber>
 																</div>
@@ -239,7 +329,7 @@ const CartPage = () => {
 																		format={formatCommon.formatDate()}
 																		value={moment(el.startedDate)}
 																		disabledDate={formatCommon.disabledDate}
-																		onChange={(momentObj, dateString, name, id) => startedDateOnChange(momentObj, dateString, 'startedDate', el.id)}
+																		onChange={(momentObj, id, checked, numDate) => startedDateOnChange(momentObj, el.id, el.checked, el.numDate)}
 																		name='startedDate'
 																	></DatePicker>
 																</div>
@@ -252,11 +342,11 @@ const CartPage = () => {
 												</div>
 												<div style={{ "width": "120px" }}>
 													<div className="product-qty">
-														<div className="product__name_1 dqTjzx" onClick={() => {
+														<div className="product__name_1 dqTjzx" onClick={el.discountDatasource == null ? () => { } : () => {
 															dispatch(message.successfully(true,
 																`Được giảm: ${renderPriceDiscount(el.totalAmount, el.discountDatasource, el.expenseDatasource, el.numDate)}Đ`))
 														}}>
-															{el.discountDatasource.code}
+															{el.discountDatasource == null ? "Không có mã được áp dụng" : el.discountDatasource.code}
 														</div>
 													</div>
 												</div>
@@ -268,7 +358,7 @@ const CartPage = () => {
 													</div>
 												</div>
 												<div>
-													<span className="product__delete" onClick={(id)=>deletedItem(el.id)}>
+													<span className="product__delete" onClick={(id) => deletedItem(el.id)}>
 														<img src="https://frontend.tikicdn.com/_desktop-next/static/img/icons/trash.svg" />
 													</span>
 												</div>
@@ -290,7 +380,7 @@ const CartPage = () => {
 													<span className="dUUUwk">Thoát</span>
 												</div>
 											</button>
-											<button className="btn-left" onClick={()=>goToPaymentPage()}>
+											<button className="btn-left" onClick={() => goToPaymentPage()}>
 												<div className="bKiBMa">
 													<span className="dUUUwk">Tiếp tục</span>
 													<span className="jBNrga">

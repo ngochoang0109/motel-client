@@ -263,10 +263,11 @@ const CreatePost = () => {
 		postNews.totalAmount = finalTotalAmountNeeded()
 		PostNewsService.sendRequestPostNews(postNews, cost, typesOfAcc)
 			.then((data) => {
+				console.log(data)
 				if (data) {
 					dispatch(message.information(false))
 					dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
-					nav('trang-chu/quan-ly-bai-viet', {replace:true})
+					nav("/trang-chu/quan-ly-bai-viet",{replace:true})
 				} else {
 					dispatch(message.error(true, 'Tạo tin thất bại'))
 				}

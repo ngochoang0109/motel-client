@@ -127,29 +127,29 @@ const insertReason = (formData) => {
 
 const showReason = (id) => {
 	const headers = headerCommon();
-	return httpClient(headers, storageKey.API, 
-		'admin/news-management-list-data/show-reason?id='+id, 
-		'GET',{}).then((response) => {
-		return response.data;
-	})
+	return httpClient(headers, storageKey.API,
+		'admin/news-management-list-data/show-reason?id=' + id,
+		'GET', {}).then((response) => {
+			return response.data;
+		})
 }
 
 const addNewsToCart = (idNews) => {
 	const headers = headerCommon();
-	return httpClient(headers, storageKey.API, 
-		'news-management/add-item-to-cart?idNews='+idNews, 
-		'POST',{}).then((response) => {
-		return response.data;
-	})
+	return httpClient(headers, storageKey.API,
+		'news-management/add-item-to-cart?idNews=' + idNews,
+		'POST', {}).then((response) => {
+			return response.data;
+		})
 }
 
-const getCartOfUser=()=>{
+const getCartOfUser = () => {
 	const headers = headerCommon();
-	return httpClient(headers, storageKey.API, 
-		'news-management/get-cart', 
-		'GET',{}).then((response) => {
-		return response.data;
-	})
+	return httpClient(headers, storageKey.API,
+		'news-management/get-cart',
+		'GET', {}).then((response) => {
+			return response.data;
+		})
 }
 
 export const NewsManagementService = {
