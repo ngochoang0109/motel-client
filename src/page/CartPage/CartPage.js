@@ -171,7 +171,16 @@ const CartPage = () => {
 
 	const createPayment = () => {
 		setOpen(false)
-		nav('/trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan')
+		dispatch(message.information(true))
+		CartService.createPayment(cartOfUser.idCart).then((idPayment)=>{
+			console.log(idPayment)
+			dispatch(message.information(false))
+			dispatch(message.successfully(true, "Tạo đơn thanh toán thành công"))
+			nav(`/trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan/${idPayment}`)
+		}).catch(()=>{
+			dispatch(message.information(false))
+			dispatch(message.error(true, "Tạo đơn thanh toán thất bại"))
+		})
 	}
 
 	const confirmDeleted = () => {

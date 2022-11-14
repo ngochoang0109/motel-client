@@ -1,17 +1,39 @@
 import { Radio } from "antd";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router-dom";
 import { dataCommon } from "../../common/data.common";
+import { formatCommon } from "../../common/format.common";
 import MenuBarUser from "../../components/user/MenuBarUser/MenuBarUser";
+import { CartService } from "../../service/CartService";
 import "./PaymentConfirm.css"
 
 const PaymentComfirm = () => {
 
 	const currentUser = useSelector(state => state.userReducer)
+	const param = useParams()
+	const [paymentDetail, setPaymentDetail] = useState({
+		id: 0,
+		totalAmount: 0,
+		orderDetailPayloads: [{
+			image: '',
+			title: '',
+			orginalAmount: '',
+			postAmount: '',
+			discounted: ''
+		}]
+	})
+	const [methodPayment, setMethodPayment] = useState(0)
 
-	useEffect(()=>{
-		
-	},[])
+	useEffect(() => {
+		CartService.getPaymentById(param.id).then((data) => {
+			setPaymentDetail(data)
+		})
+	}, [])
+
+	const selectedMethodPayment=(event)=>{
+		setMethodPayment(parseInt(event.target.value))
+	}
 
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
@@ -23,7 +45,7 @@ const PaymentComfirm = () => {
 					</div>
 				</div>
 			</div>
-			<div className="payment-container" style={{ "marginTop": "16px","borderRadius": "4px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"}}>
+			<div className="payment-container" style={{ "marginTop": "16px", "borderRadius": "4px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)" }}>
 				<h3 className="lhekIy">Thông tin người tạo</h3>
 				<div style={{ "display": "flex", "alignItems": "center", "justifyContent": "space-between" }}>
 					<div style={{ "display": "flex", "flexDirection": "column", "marginRight": "2rem" }}>
@@ -42,7 +64,7 @@ const PaymentComfirm = () => {
 						<div style={{ "display": "flex", "marginBottom": "4px", "flexWrap": "nowrap" }}>
 							<div className="font-stand" style={{ "minWidth": "20rem" }}>Địa chỉ</div>
 							<div className="font-stand"
-								style={{ "color": "rgb(255, 66, 78)"}}>{`${currentUser.address}`}</div>
+								style={{ "color": "rgb(255, 66, 78)" }}>{`${currentUser.address}`}</div>
 						</div>
 					</div>
 					<div className="lhekIy dqTjzx hover-point" style={{ "minWidth": "5rem" }}>
@@ -50,7 +72,7 @@ const PaymentComfirm = () => {
 					</div>
 				</div>
 			</div>
-			<div className="payment-container" style={{ "marginTop": "16px","boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"}}>
+			<div className="payment-container" style={{ "marginTop": "16px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)" }}>
 				<h3 className="lhekIy">Thông tin đơn hàng</h3>
 				<div className="w6riq3">
 					<div className="-JzzK5">
@@ -67,50 +89,53 @@ const PaymentComfirm = () => {
 								<div className="yknSi4">
 									<div />
 								</div>
-								<div className="CZ6uu2">
-									<div className="_6kMvNg ka6CzP">
-										<div className="_4MGXB1 c7N4lb">
-											<img className="GCGEKm"
-												src="https://cf.shopee.vn/file/9458c3e630bcbf12903e8a7007126a5a_tn"
-												width={40} height={40} />
-											<span className="F8X-cZ">
-												<span className="tPzkNt wXtDZ">
-													Tấm lót R7 size 25x20cm-Loại Mousepad Speed (hình game ngẫu nhiên)
+								{paymentDetail.orderDetailPayloads.map((post, index) => {
+									return <div className="CZ6uu2" key={index}>
+										<div className="_6kMvNg ka6CzP">
+											<div className="_4MGXB1 c7N4lb">
+												<img className="GCGEKm"
+													src={post.image}
+													width={40} height={40} />
+												<span className="F8X-cZ">
+													<span className="tPzkNt wXtDZ">
+														{post.title}
+													</span>
 												</span>
-											</span>
+											</div>
+											<div className="_4MGXB1 wXtDZ">{formatCommon.formatNumberic(post.orginalAmount)} Đ</div>
+											<div className="_4MGXB1 wXtDZ">{formatCommon.formatNumberic(post.discounted)}</div>
+											<div className="_4MGXB1 _8fgmps wXtDZ" style={{ "color": "#05a" }}>{formatCommon.formatNumberic(post.postAmount)} Đ</div>
 										</div>
-										<div className="_4MGXB1 wXtDZ">10.000 Đ</div>
-										<div className="_4MGXB1 wXtDZ">1</div>
-										<div className="_4MGXB1 _8fgmps wXtDZ" style={{ "color": "#05a" }}>10.000 Đ</div>
 									</div>
-								</div>
+								})}
+
 							</div>
 						</div>
 						<div className="BbOmi+" style={{ "marginLeft": "auto", "marginRight": "auto", "width": "100%", "backgroundColor": "#eecda3" }}>
 							<div className="lYtB1r">
-								<div className="_4nelpz wXtDZ">Tổng số tiền (2 sản phẩm):</div>
-								<div className="_31ayp3">37.500 Đ</div>
+								<div className="_4nelpz wXtDZ">Tổng số tiền ({paymentDetail.orderDetailPayloads.length} sản phẩm):</div>
+								<div className="_31ayp3">{formatCommon.formatNumberic(paymentDetail.totalAmount)} Đ</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div className="payment-container" style={{ "marginTop": "16px","boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)"}}>
+			<div className="payment-container" style={{ "marginTop": "16px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)" }}>
 				<div style={{ "display": "flex" }}>
 					<h3 className="lhekIy" style={{ "marginRight": "2rem" }}>Chọn hình thức thanh toán</h3>
-					<Radio.Group defaultValue="a" size="large">
-						<Radio.Button value="a">Tài khoản</Radio.Button>
-						<Radio.Button value="b">VNPAY</Radio.Button>
+					<Radio.Group defaultValue="0" size="large" onChange={(event)=>selectedMethodPayment(event)}>
+						<Radio.Button value="0">Tài khoản</Radio.Button>
+						<Radio.Button value="1">VNPAY</Radio.Button>
 					</Radio.Group>
 				</div>
-				<div id="topup-list-bank" class="sc-iibxZb cZTPMK">
-					{dataCommon.bankList.map((el) => {
-						return <div class="sc-gQZORr hLfgIb">
+				{methodPayment == 1 ? <div id="topup-list-bank" className="sc-iibxZb cZTPMK">
+					{dataCommon.bankList.map((el, i) => {
+						return <div className="sc-gQZORr hLfgIb" key={i}>
 							<img src={el.img}
-								class="sc-WdzTA icDWSI" />
+								className="sc-WdzTA icDWSI" />
 						</div>
 					})}
-				</div>
+				</div> :<Fragment></Fragment>}
 			</div>
 			<div className="footer-button" style={{ "width": "80%", "margin": "auto", "zIndex": "2" }}>
 				<div className="wrap-button">

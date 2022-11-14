@@ -30,8 +30,28 @@ const updateItemsOfCart = (updateItemCart, cartId, postId) => {
 		})
 }
 
+const createPayment = (cartId) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		`payment/create-payment/${cartId}`,
+		'POST', {}).then((response) => {
+			return response.data;
+		})
+}
+
+const getPaymentById=(paymentId)=>{
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		`payment/get-payment/${paymentId}`,
+		'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
 export const CartService = {
 	deletedPostOfCart,
 	updateItemOfCart,
-	updateItemsOfCart
+	updateItemsOfCart,
+	createPayment,
+	getPaymentById
 }
