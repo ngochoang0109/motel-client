@@ -1,4 +1,3 @@
-import { wait } from '@testing-library/user-event/dist/utils';
 import { InputNumber, Slider } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import { Button } from 'antd/lib/radio';
@@ -41,7 +40,7 @@ const ShowNewsInfor = () => {
 		priceFrom: 0,
 		priceTo: 100000000,
 		areaFrom: 0,
-		areaTo: 1000,
+		areaTo: 100,
 		mode: 2,
 		pageNo: 1,
 		pageSize: 20,
@@ -343,7 +342,9 @@ const ShowNewsInfor = () => {
 									<i className="re__icon-refresh" />
 									<span></span>
 								</div>
-								<div className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button"
+								<div className="re__btn re__btn-pr-solid--sm 
+									re__btn-icon-left--sm 
+									js__lfilter-more-search-button"
 									onClick={resetPrice}>
 									<i className="re__icon-search--sm" />
 									<span>Đặt lại</span>

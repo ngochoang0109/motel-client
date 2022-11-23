@@ -7,6 +7,7 @@ import NewsCard from './../NewsCard/NewsCard'
 import { message } from './../../../action/message'
 import { useNavigate } from "react-router-dom"
 import { Pagination } from "antd"
+import { modeNews } from "../../../constant/mode.news"
 
 const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePage }) => {
 	const messageStatus = useSelector(state => state.controllMessage)
@@ -50,7 +51,9 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePag
 					fullName={el.fullName}
 					phone={el.phone}
 					startedDate={el.startedDate}
-					avatar={el.avatar}></NewsCard>
+					avatar={el.avatar}
+					id={el.id}
+					mode={modeNews.SHOWING}></NewsCard>
 			})
 		}
 	}

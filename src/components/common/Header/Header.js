@@ -1,5 +1,4 @@
 import './Header.css'
-import heater from './../../../assets/heart.png'
 import hotel from './../../../assets/hotel.png'
 import notification from './../../../assets/notification.png'
 import arrow from './../../../assets/arrow.png'
@@ -24,8 +23,8 @@ const Header = () => {
 	const navigate = useNavigate()
 	const isLogin = useSelector(state => state.authenticated.isLogin)
 	const cartOfUser = useSelector(state => state.cartReducer)
-	const location= useLocation()
-	const userInfor= useSelector(state=> state.userReducer)
+	const location = useLocation()
+	const userInfor = useSelector(state => state.userReducer)
 
 	useEffect(() => {
 		if (AuthService.getTokenOfLocalStorage()) {
@@ -36,7 +35,7 @@ const Header = () => {
 	}, [])
 
 	useEffect(() => {
-		userService.getCurrentUser().then((data)=>{
+		userService.getCurrentUser().then((data) => {
 			dispatch({
 				type: authenticationConstant.GET_CURRENT_USER,
 				data: data
@@ -80,10 +79,10 @@ const Header = () => {
 		}
 	}
 
-	const goToCart=()=>{
+	const goToCart = () => {
 		if (!isLogin) {
 			dispatch(message.error(true, messageConstant.msgAutheticatedFalse))
-		}else{
+		} else {
 			navigate('trang-chu/quan-ly-bai-viet/gio-tin')
 		}
 	}
@@ -109,25 +108,6 @@ const Header = () => {
 			<header className="full-menu header nohome js__menu-bar hover-menu">
 				<div className="menu-bar pushmenu pushmenu-right floating--right">
 					<div className="control-menu">
-						<div className="login-group">
-							<div className="notification" onClick={markPostnHandler}>
-								<div className="all-btn">
-									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
-										<img className="icon-heart" src={heater} />
-									</a>
-								</div>
-							</div>
-						</div>
-						<div className="login-group">
-							<div className="notification" onClick={notificationHandler}>
-								<div className="all-btn">
-									<a className="btn btn-se-ghost--md btn-icon--md iconNotiSave">
-										<img className="icon-heart nqv" src={notification} />
-										<i className="mnu-notify-icon-unread nqv">0</i>
-									</a>
-								</div>
-							</div>
-						</div>
 						<div className="login-group">
 							<div className="notification" onClick={goToCart}>
 								<div className="all-btn">
@@ -233,7 +213,7 @@ const Header = () => {
 										<div className="arrrow" />
 									</li>
 									<li className="lv0">
-										<Link to={isLogin?'/trang-chu/quan-ly-bai-viet':location.pathname} className="haslink" onClick={notificationHandler}>
+										<Link to={isLogin ? '/trang-chu/quan-ly-bai-viet' : location.pathname} className="haslink" onClick={notificationHandler}>
 											<span className="text">Quản lý tin đăng</span>
 										</Link>
 										<div className="arrrow" />

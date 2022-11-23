@@ -95,6 +95,21 @@ function disabledDate(current) {
 	return current && current.valueOf() < temp;
 }
 
+const convertPriceToStringVn = (price) => {
+	let strPrice = '' + price.toString()
+	if(strPrice.length >= 7 && strPrice.length <= 9){
+		if(strPrice.length == 7){
+			return `${strPrice[0]} triệu`
+		}
+		if(strPrice.length == 8){
+			return `${strPrice[0]}${strPrice[1]} triệu`
+		}
+		if(strPrice.length == 9){
+			return `${strPrice[0]}${strPrice[1]}${strPrice[2]} triệu`
+		}
+	}
+}
+
 export const formatCommon = {
 	formatNumberic,
 	combineComponentOfAddress,
@@ -106,5 +121,6 @@ export const formatCommon = {
 	getVideoIdFromUrlYoutube,
 	formatWithTimeDate,
 	getQueryStringParams,
-	disabledDate
+	disabledDate,
+	convertPriceToStringVn
 }

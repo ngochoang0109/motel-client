@@ -1,7 +1,8 @@
 import { Radio } from "antd";
+import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { dataCommon } from "../../common/data.common";
 import { formatCommon } from "../../common/format.common";
 import MenuBarUser from "../../components/user/MenuBarUser/MenuBarUser";
@@ -12,6 +13,7 @@ const PaymentComfirm = () => {
 
 	const currentUser = useSelector(state => state.userReducer)
 	const param = useParams()
+	const nav = useNavigate()
 	const [paymentDetail, setPaymentDetail] = useState({
 		id: 0,
 		totalAmount: 0,
@@ -24,15 +26,36 @@ const PaymentComfirm = () => {
 		}]
 	})
 	const [methodPayment, setMethodPayment] = useState(0)
+	const [vnPay, setVnPay] = useState({
+		paymentId: param.id,
+		bankCode: '',
+		ipUser: ''
+	})
 
 	useEffect(() => {
 		CartService.getPaymentById(param.id).then((data) => {
 			setPaymentDetail(data)
 		})
+		axios({
+			method: 'GET',
+			url: 'https://geolocation-db.com/json/'
+		}).then((res) => {
+			setVnPay({
+				paymentId: param.id,
+				bankCode: '',
+				ipUser: res.data.IPv4
+			})
+		})
 	}, [])
 
-	const selectedMethodPayment=(event)=>{
+	const selectedMethodPayment = (event) => {
 		setMethodPayment(parseInt(event.target.value))
+	}
+
+	const paymentSubmit = () => {
+		CartService.getUrlVnpay(vnPay).then((data)=>{
+			window.location.assign(`https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?${data}`)
+		})
 	}
 
 	return <Fragment>
@@ -123,29 +146,34 @@ const PaymentComfirm = () => {
 			<div className="payment-container" style={{ "marginTop": "16px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)" }}>
 				<div style={{ "display": "flex" }}>
 					<h3 className="lhekIy" style={{ "marginRight": "2rem" }}>Chọn hình thức thanh toán</h3>
-					<Radio.Group defaultValue="0" size="large" onChange={(event)=>selectedMethodPayment(event)}>
+					<Radio.Group defaultValue="0" size="large" onChange={(event) => selectedMethodPayment(event)}>
 						<Radio.Button value="0">Tài khoản</Radio.Button>
 						<Radio.Button value="1">VNPAY</Radio.Button>
 					</Radio.Group>
 				</div>
 				{methodPayment == 1 ? <div id="topup-list-bank" className="sc-iibxZb cZTPMK">
 					{dataCommon.bankList.map((el, i) => {
-						return <div className="sc-gQZORr hLfgIb" key={i}>
+						return <div className="sc-gQZORr hLfgIb" key={i} style={vnPay.bankCode === el.code?{"border":"1px solid rgb(44, 44, 44)"}:null}
+										onClick={() => {
+											setVnPay({...vnPay, bankCode:el.code})
+										}}>
 							<img src={el.img}
-								className="sc-WdzTA icDWSI" />
+								className="icDWSI" />
 						</div>
 					})}
-				</div> :<Fragment></Fragment>}
+				</div> : <Fragment></Fragment>}
 			</div>
 			<div className="footer-button" style={{ "width": "80%", "margin": "auto", "zIndex": "2" }}>
 				<div className="wrap-button">
 					<div className="flex-between">
-						<button className="btn-right">
+						<button className="btn-right" onClick={()=>{
+							nav(-1)
+						}}>
 							<div className="bKiBMa">
 								<span className="dUUUwk">Thoát</span>
 							</div>
 						</button>
-						<button className="btn-left">
+						<button className="btn-left" onClick={paymentSubmit}>
 							<div className="bKiBMa">
 								<span className="dUUUwk">Tiếp tục</span>
 								<span className="jBNrga">

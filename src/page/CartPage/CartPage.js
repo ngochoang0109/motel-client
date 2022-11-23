@@ -382,8 +382,7 @@ const CartPage = () => {
 										<div className="flex-between" style={{
 											"display": "flex",
 											"justifyContent": "space-between",
-											"marginTop": "16px"
-										}}>
+											"marginTop":"16px"										}}>
 											<button className="btn-right">
 												<div className="bKiBMa">
 													<span className="dUUUwk">Thoát</span>

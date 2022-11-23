@@ -21,7 +21,7 @@ import { cartConstant } from '../../constant/cart.constant';
 import { useNavigate } from 'react-router-dom';
 
 const NewsManagement = () => {
-	const navigate= useNavigate()
+	const navigate = useNavigate()
 	const [getNewsCard, setNewsCard] = useState({ content: [] })
 	const [visible, setVisible] = useState(false)
 	const [methodPayment, setMethodPayment] = useState(0)
@@ -72,7 +72,7 @@ const NewsManagement = () => {
 			dispatch(message.information(false))
 		})
 	}, [])
-	
+
 	const addToCart = (id) => {
 		NewsManagementService.addNewsToCart(id).then((data) => {
 			dispatch(message.error(true, 'Đã thêm bài viết vào giỏ'))
@@ -507,33 +507,6 @@ const NewsManagement = () => {
 								<span className="text">Quận/ Huyện</span>
 							</div>
 						</button>
-						<button className='btn-export mr-8' onClick={filterData}>
-							<div className="wrapper-text">
-								<span className="icon">
-									<div>
-										<svg width="100px" height="100px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
-											<path style={{ fill: '#09ee09', stroke: '#007300', strokeWidth: 3 }} d="M 4,36 C 8,42 26,73 31,93 38,82 44,63 98,12 78,22 51,44 33,60 26,55 18,44 4,36 z" />
-										</svg>
-									</div>
-								</span>
-								<span className="text">Áp dụng</span>
-							</div>
-						</button>
-						<button className='btn-export'>
-							<div className="wrapper-text">
-								<span className="icon">
-									<div>
-										<svg role="img" xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 24 24" aria-labelledby="downloadIconTitle" stroke="#2329D6" strokeWidth={1} strokeLinecap="square" strokeLinejoin="miter" fill="none" color="#2329D6">
-											<title id="downloadIconTitle">Download</title>
-											<path d="M12,3 L12,16" />
-											<polyline points="7 12 12 17 17 12" />
-											<path d="M20,21 L4,21" />
-										</svg>
-									</div>
-								</span>
-								<span className="text">Excel</span>
-							</div>
-						</button>
 					</div>
 					{btnDurationTime ? <div className='wrapper-data-filter'>
 						<div className="wrapper-input-level-1">
@@ -617,11 +590,15 @@ const NewsManagement = () => {
 					</div>
 				</div>
 			</div>
-			<div className='table-data' style={{ "marginTop": "16px" }}>
+			<div className='table-data' style={{ "paddingTop": "16px" }}>
 				{showNewsCard()}
 			</div>
 			{getNewsCard.content.length !== 0 ? <div className='table-data'
-				style={{ "marginTop": "16px", "marginBottom": "16px", "display": "flex", "justifyContent": "center" }}>
+				style={{
+					"paddingTop": "16px",
+					"marginBottom": "16px", "display": "flex",
+					"justifyContent": "center"
+				}}>
 				{console.log(isActive)}
 				<Pagination current={isActive.pageNo}
 					total={isActive.totalPages}

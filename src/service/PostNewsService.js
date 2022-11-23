@@ -39,14 +39,14 @@ const sendRequestPostNews = (postNews, cost, typesOfAcc) => {
 	postNews.price = formatCommon.convertStringNumricToNumber(postNews.price)
 
 	const jsonPostNews = JSON.stringify({
-		expense:cost.typeOfPost,
-		discount:cost.discount,
+		expense: cost.typeOfPost,
+		discount: cost.discount,
 		title: postNews.title,
 		description: postNews.description,
-		videos:postNews.videos.map((el)=>{
+		videos: postNews.videos.map((el) => {
 			return formatCommon.getVideoIdFromUrlYoutube(el)
 		}),
-		totalAmount:postNews.totalAmount
+		totalAmount: postNews.totalAmount
 	})
 	const blobPostNews = new Blob([jsonPostNews], {
 		type: 'application/json'
@@ -97,10 +97,18 @@ const sendRequestPostNews = (postNews, cost, typesOfAcc) => {
 	})
 }
 
+const getPostDetail = (postId) => {
+	return httpClient({}, storageKey.API,
+		`auth/get-post-detail/${postId}`, 'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
 export const PostNewsService = {
 	getTypeOfAcc,
 	getCurrentUserInfor,
 	getExpenses,
 	getDiscountOfExpense,
-	sendRequestPostNews
+	sendRequestPostNews,
+	getPostDetail
 }

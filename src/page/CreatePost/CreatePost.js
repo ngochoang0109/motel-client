@@ -57,7 +57,9 @@ const CreatePost = () => {
 		images: [],
 		videos: [],
 		tower: '',
-		totalAmount: 0
+		totalAmount: 0,
+		directionHouse: '',
+		directionBalcony: ''
 	})
 	const [cost, setCost] = useState({
 		typeOfPost: '',
@@ -207,9 +209,6 @@ const CreatePost = () => {
 							style={{ height: '100%', width: 'auto', transform: `rotate(${image.name === rollImage.name ? rollImage.number : 0}deg)` }} />
 					</div>
 					<div className="user-controll">
-						{/* <button style={{ marginRight: '4px' }}>
-							<img src={rotation} onClick={(event)=>rotationImage(event, image.name)}></img>
-						</button> */}
 						<button>
 							<img src={cancel} onClick={(event) => cancelImage(event, image.name)}></img>
 						</button>
@@ -227,14 +226,6 @@ const CreatePost = () => {
 			...postNews,
 			images: newArr
 		})
-	}
-
-	const rotationImage = (event, image) => {
-		let newRotation = rollImage.number + 90;
-		if (newRotation >= 360) {
-			newRotation = - 360;
-		}
-		setRollImage({ number: newRotation, name: image })
 	}
 
 	const handleUpdateVideo = (target) => {
@@ -630,6 +621,7 @@ const CreatePost = () => {
 														placeholder={`Chọn hướng nhà`}
 														data={dataCommon.getDirections}
 														getValueDropList={handleGetValue}
+														onChange={handleGetValue}
 														name='directionHouse'></InputBox>
 												</div>
 											</div>
@@ -647,6 +639,7 @@ const CreatePost = () => {
 														placeholder={`Chọn hướng ban công`}
 														data={dataCommon.getDirections}
 														getValueDropList={handleGetValue}
+														onChange={handleGetValue}
 														name='directionBalcony'></InputBox>
 												</div>
 											</div>

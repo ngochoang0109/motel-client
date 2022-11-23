@@ -162,8 +162,6 @@ const NewsCard = ({ title, price, area, province, district, description,
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
 							<span>Hiện thị lại</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Chỉnh sửa</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
 							<span>Xóa bài</span></span>
 					</div>

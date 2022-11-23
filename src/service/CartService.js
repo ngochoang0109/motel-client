@@ -39,10 +39,37 @@ const createPayment = (cartId) => {
 		})
 }
 
-const getPaymentById=(paymentId)=>{
+const getPaymentById = (paymentId) => {
 	const headers = headerCommon();
 	return httpClient(headers, storageKey.API,
 		`payment/get-payment/${paymentId}`,
+		'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
+const getUrlVnpay = (vnPay) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		"payment/pay-vnpay",
+		'POST', { paymentId: vnPay.paymentId, bankCode: vnPay.bankCode, ipUser: vnPay.ipUser }).then((response) => {
+			return response.data;
+		})
+}
+
+const checkUpdatePayment = (paymentId, payDate, responseCode) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		`payment/update-payment-vnpay?paymentId=${paymentId}&payDate=${payDate}&responseCode=${responseCode}`,
+		'POST', {}).then((response) => {
+			return response.data;
+		})
+}
+
+const getHistoryPayment = () =>{
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		'payment/history',
 		'GET', {}).then((response) => {
 			return response.data;
 		})
@@ -53,5 +80,8 @@ export const CartService = {
 	updateItemOfCart,
 	updateItemsOfCart,
 	createPayment,
-	getPaymentById
+	getPaymentById,
+	getUrlVnpay,
+	checkUpdatePayment,
+	getHistoryPayment
 }

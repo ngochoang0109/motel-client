@@ -11,6 +11,8 @@ import NewsManagement from "../../page/NewsManagement/NewsManagement";
 import ShowNewsInfor from "../../page/ShowNewsInfor/ShowNewsInfor";
 import CartPage from "../../page/CartPage/CartPage";
 import PaymentComfirm from "../../page/PaymentConfirm/PaymentConfirm";
+import HistoryPayment from "../../page/HistoryPayment/HistoryPayment";
+import NewsDetail from "../../page/NewsDetail/NewsDetail";
 
 const Layout = () => {
 
@@ -24,6 +26,7 @@ const Layout = () => {
 					<Route path="/login" element={<Login></Login>}></Route>
 					<Route path="/" element={<Navigate to="/trang-chu" replace></Navigate>}></Route>
 					<Route path="/trang-chu" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
+					<Route path="/trang-chu/chi-tiet-bai-viet/:id" element={<NewsDetail></NewsDetail>}></Route>
 					<Route path="/nha-nguyen-can" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="/can-ho-chung-cu" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="/phong-tro" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
@@ -52,6 +55,13 @@ const Layout = () => {
 						element={
 							<PrivateRoute>
 								<CartPage />
+							</PrivateRoute>
+						}>
+					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet/lich-su-giao-dich"
+						element={
+							<PrivateRoute>
+								<HistoryPayment />
 							</PrivateRoute>
 						}>
 					</Route>

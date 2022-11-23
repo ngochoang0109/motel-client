@@ -197,7 +197,7 @@ HTDM2R:first-child {
 	border: 1px solid rgb(242, 242, 242);
 	box-shadow: rgb(44 44 44 / 4%) 0px 4px 6px;
 	border-radius: 4px;
-	height: 48px;
+	height: 62px;
 	display: flex;
 	-webkit-box-align: center;
 	align-items: center;
@@ -207,6 +207,6 @@ HTDM2R:first-child {
 	flex-basis: calc(12.5% - 10.5px);
 }
 .icDWSI {
-	width: 84px;
-	height: 32px;
+	width: 100%;
+	height: 100%;
 }

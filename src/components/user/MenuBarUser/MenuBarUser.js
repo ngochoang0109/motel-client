@@ -1,20 +1,23 @@
 import { Fragment, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { dataCommon } from '../../../common/data.common'
 import user from './../../../assets/user.png'
 import './MenuBarUser.css'
+
 const MenuBarUser = () => {
-	const [isActive, setActive] = useState({ id: 0, status: false })
 	const currentUser = useSelector(state => state.userReducer)
+	const location = useLocation()
+
+	console.log(location)
 	
 	const showDropListManagement = () => {
 		return dataCommon.menuBarNewsManagement.map((el, i) => {
-			return < Link to={el.to} onClick={() => setActive({ id: i, status: !isActive.status })} key={i}>
-				<div className={`${el.className} ${i === isActive.id ? `background-gray` : ''}`}>
+			return < Link to={el.to} key={i}>
+				<div className={`${el.className} ${location.pathname === el.to ? `background-gray` : ''}`}>
 					<div className="item-core">
 						<div className="item-core-2">
-							<div className={i === isActive.id ? 'color-red' : ''}>{el.title}</div>
+							<div className={location.pathname === el.to ? 'color-red' : ''}>{el.title}</div>
 						</div>
 					</div>
 				</div>
