@@ -1,13 +1,14 @@
+import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { formatCommon } from "../../../common/format.common";
 import { modeNews } from "../../../constant/mode.news";
 
 const NewsCard = ({ title, price, area, province, district, description,
 	fullName, phone, startedDate, closedDate,
-	avatar, mode, totalAmount, id, addToCart }) => {
+	avatar, mode, totalAmount, id, addToCart, fromCalled }) => {
 
 	const location = useLocation()
-		
+
 	const clickAddItemToCart = () => {
 		addToCart(id)
 	}
@@ -83,17 +84,26 @@ const NewsCard = ({ title, price, area, province, district, description,
 			case modeNews.SHOWING:
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
-						<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
-						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
-						<span className="re__card-published-info-published-at"> --- &ensp;</span>
-						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
+						{fromCalled === "HOME" ? <Fragment>
+							<span className="re__card-published-info-published-at"> Đăng bởi: {fullName}&ensp;&ensp;</span>
+							<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())} trước</span>
+						</Fragment> : <Fragment>
+							<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
+							<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
+							<span className="re__card-published-info-published-at"> --- &ensp;</span>
+							<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
+						</Fragment>}
 					</div>
-					<div className="re__card-contact-button">
+					{fromCalled === "HOME" ? <div className="re__card-contact-button">
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
+							<span>Liên hệ: {formatCommon.phoneNumberFormat(phone).slice(0, 8)} ***</span>
+						</span>
+					</div> : <div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
 							<span>Ẩn bài viết</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
 							<span>Xóa bài</span></span>
-					</div>
+					</div>}
 					<div style={{ clear: 'left' }} />
 				</div>
 
@@ -121,6 +131,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
+
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
 							<span>Hiện thị lại</span></span>
@@ -144,7 +155,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 		}
 	}
 	return <div className="re__card-full re__card-full-no-label vip5 re__vip-5">
-		<Link className="link-item" to={mode === modeNews.SHOWING ? `/trang-chu/chi-tiet-bai-viet/${id}`: location.pathname}>
+		<Link className="link-item" to={mode === modeNews.SHOWING ? `/trang-chu/chi-tiet-bai-viet/${id}` : location.pathname}>
 			<div className="re__card-image re__card-image-no-image">
 				<img src={avatar} />
 				<div className="re__card-image-feature" />

@@ -5,7 +5,7 @@ const formatNumberic = (price) => {
 	return (resutl || resutl === 0) ? resutl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
 }
 
-const convertStringNumricToNumber=(strNumberic)=>{
+const convertStringNumricToNumber = (strNumberic) => {
 	let resutl = strNumberic.toString().replace(/[^0-9]/g, '')
 	return parseFloat(resutl);
 }
@@ -18,10 +18,10 @@ const combineComponentOfAddress = (province, district, ward, street) => {
 }
 /*input: String contains url youtube*/
 const getVideoIdFromUrlYoutube = (urls) => {
-  if (urls) {
-    return urls.split("v=")[1].split("&")[0];
-  }
-  return '';
+	if (urls) {
+		return urls.split("v=")[1].split("&")[0];
+	}
+	return '';
 }
 
 const formatDate = () => {
@@ -55,6 +55,10 @@ function getDifferenceInSeconds(date1, date2) {
 }
 
 const getResultDiffDate = (date1, date2) => {
+	console.log(getDifferenceInSeconds(date1, date2))
+	console.log(getDifferenceInMinutes(date1, date2))
+	console.log(getDifferenceInHours(date1, date2))
+	console.log(getDifferenceInDays(date1, date2))
 	if (getDifferenceInSeconds(date1, date2) < 60) {
 		return `${getDifferenceInSeconds(date1, date2)} giây`
 	}
@@ -78,36 +82,45 @@ const formatWithTimeDate = (initDate) => {
 }
 
 const getQueryStringParams = query => {
-	return query  ? (/^[?#]/.test(query) ? query.slice(1) : query)
-			  .split('&')
-			  .reduce((params, param) => {
-						 let [key, value] = param.split('=');
-						 params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
-						 return params;
-					}, {}
-			  )
-		 : {}
+	return query ? (/^[?#]/.test(query) ? query.slice(1) : query)
+		.split('&')
+		.reduce((params, param) => {
+			let [key, value] = param.split('=');
+			params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
+			return params;
+		}, {}
+		)
+		: {}
 };
 
 function disabledDate(current) {
-	const temp =new Date(current._i)
-	temp.setDate(temp.getDate()-1)
+	const temp = new Date(current._i)
+	temp.setDate(temp.getDate() - 1)
 	return current && current.valueOf() < temp;
 }
 
 const convertPriceToStringVn = (price) => {
 	let strPrice = '' + price.toString()
-	if(strPrice.length >= 7 && strPrice.length <= 9){
-		if(strPrice.length == 7){
+	if (strPrice.length >= 7 && strPrice.length <= 9) {
+		if (strPrice.length == 7) {
 			return `${strPrice[0]} triệu`
 		}
-		if(strPrice.length == 8){
+		if (strPrice.length == 8) {
 			return `${strPrice[0]}${strPrice[1]} triệu`
 		}
-		if(strPrice.length == 9){
+		if (strPrice.length == 9) {
 			return `${strPrice[0]}${strPrice[1]}${strPrice[2]} triệu`
 		}
 	}
+}
+
+const phoneNumberFormat = (phoneNumberString) => {
+	var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+	var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+	if (match) {
+		return ' ' + match[1] + ' ' + match[2] + ' ' + match[3];
+	}
+	return null;
 }
 
 export const formatCommon = {
@@ -122,5 +135,6 @@ export const formatCommon = {
 	formatWithTimeDate,
 	getQueryStringParams,
 	disabledDate,
-	convertPriceToStringVn
+	convertPriceToStringVn,
+	phoneNumberFormat
 }

@@ -104,11 +104,35 @@ const getPostDetail = (postId) => {
 		})
 }
 
+const getRelatedNewsOfDistrict = (type, district) => {
+	return httpClient({}, storageKey.API,
+		`auth/get-related-type-district?type=${type}&district=${district}`, 'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
+const getHightExpenseRelated = () => {
+	return httpClient({}, storageKey.API,
+		`auth/get-hight-expense-news`, 'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
+const getRelatedNews = (province, district) => {
+	return httpClient({}, storageKey.API,
+		`auth/get-related?province=${province}&district=${district}`, 'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
 export const PostNewsService = {
 	getTypeOfAcc,
 	getCurrentUserInfor,
 	getExpenses,
 	getDiscountOfExpense,
 	sendRequestPostNews,
-	getPostDetail
+	getPostDetail,
+	getRelatedNewsOfDistrict,
+	getHightExpenseRelated,
+	getRelatedNews
 }

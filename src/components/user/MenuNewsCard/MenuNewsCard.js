@@ -53,7 +53,8 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePag
 					startedDate={el.startedDate}
 					avatar={el.avatar}
 					id={el.id}
-					mode={modeNews.SHOWING}></NewsCard>
+					mode={modeNews.SHOWING}
+					fromCalled= "HOME" ></NewsCard>
 			})
 		}
 	}

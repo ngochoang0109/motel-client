@@ -18,17 +18,18 @@ const HistoryPayment = () => {
 		if (Object.keys(obj).length !== 0) {
 			CartService.checkUpdatePayment(obj.vnp_OrderInfo, obj.vnp_PayDate, obj.vnp_ResponseCode)
 				.then((data) => {
+					dispatch(message.information(false))
 					dispatch(message.successfully(true, "Thanh toán thành công, xem lại giao dịch"))
 					CartService.getHistoryPayment().then((res) => {
 						setHistory(res)
-						dispatch(message.information(false))
+						
 					})
 				})
 				.catch((data) => {
+					dispatch(message.information(false))
 					dispatch(message.error(true, "Thanh toán thất bại, vui lòng thử lại"))
 					CartService.getHistoryPayment().then((res) => {
 						setHistory(res)
-						dispatch(message.information(false))
 					})
 				})
 		}
