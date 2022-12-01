@@ -3,6 +3,7 @@ import Modal from 'antd/lib/modal/Modal';
 import { Button } from 'antd/lib/radio';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { dataCommon } from '../../common/data.common';
 import { formatCommon } from '../../common/format.common';
 import InputBox from '../../components/common/InputBox/InputBox';
 import MenuNewsCard from '../../components/user/MenuNewsCard/MenuNewsCard';
@@ -40,17 +41,22 @@ const ShowNewsInfor = () => {
 		priceFrom: 0,
 		priceTo: 100000000,
 		areaFrom: 0,
-		areaTo: 100,
-		mode: 2,
+		areaTo: 150,
+		mode: 1,
 		pageNo: 1,
 		pageSize: 20,
-		field: 'startedDate'
+		field: 'startedDate',
+		numbeds: [],
+		directionHouse: '',
+		media: 0
 	})
 	const location = useLocation()
 	const [initPage, setInitPage] = useState(true)
 	const [sortMode, setSortMode] = useState([{ id: 0, name: 'Tin mới nhất' },
 	{ id: 1, name: 'Giá thấp đến cao' }, { id: 2, name: 'Giá cao đến thấp' },
 	{ id: 3, name: 'Diện tích thấp đến cao' }, { id: 4, name: 'Diện tích cao đến thấp' }])
+
+	console.log(location)
 
 	useEffect(() => {
 		setInitPage(false)
@@ -67,7 +73,7 @@ const ShowNewsInfor = () => {
 					}
 				})
 			})
-
+			console.log(obj)
 			updateQueryParam.province = { title: obj.province.length === 0 ? 'Khu vực' : obj.province, value: obj.province }
 			updateQueryParam.district = { title: obj.district, value: obj.district }
 			updateQueryParam.ward = { title: obj.ward, value: obj.ward }
@@ -185,35 +191,35 @@ const ShowNewsInfor = () => {
 			setQueryParam({ ...queryParam, priceFrom: 0 })
 			return
 		}
-		setQueryParam({ ...queryParam, priceFrom: value })
+		setQueryParam({ ...queryParam, priceFrom: value.target.value })
 	}
 	const onChangeMaxPrice = (value) => {
 		if (value === null) {
 			setQueryParam({ ...queryParam, priceTo: 0 })
 			return
 		}
-		setQueryParam({ ...queryParam, priceTo: value })
+		setQueryParam({ ...queryParam, priceTo: value.target.value })
 	}
 	const onChangeMinArea = (value) => {
 		if (value === null) {
 			setQueryParam({ ...queryParam, areaFrom: 0 })
 			return
 		}
-		setQueryParam({ ...queryParam, areaFrom: value })
+		setQueryParam({ ...queryParam, areaFrom: value.target.value })
 	}
 	const onChangeMaxArea = (value) => {
 		if (value === null) {
 			setQueryParam({ ...queryParam, areaTo: 0 })
 			return
 		}
-		setQueryParam({ ...queryParam, areaTo: value })
+		setQueryParam({ ...queryParam, areaTo: value.target.value })
 	}
 	const onAfterChangeArea = (value) => {
 		setQueryParam({ ...queryParam, areaFrom: value[0], areaTo: value[1] })
 	}
 
 	const resetArea = () => {
-		setQueryParam({ ...queryParam, areaFrom: 0, areaTo: 1000 })
+		setQueryParam({ ...queryParam, areaFrom: 0, areaTo: 150 })
 	}
 
 	const resetQueryParam = () => {
@@ -236,9 +242,11 @@ const ShowNewsInfor = () => {
 			priceFrom: 0,
 			priceTo: 100000000,
 			areaFrom: 0,
-			areaTo: 1000,
+			areaTo: 150,
 			mode: 2,
-			field: 'startedDate'
+			field: 'startedDate',
+			pageNo: 1,
+			pageSize: 20
 		})
 	}
 	const renderModalContent = () => {
@@ -312,7 +320,7 @@ const ShowNewsInfor = () => {
 											max={100000000}
 											controls={false}
 											style={{ borderRadius: "4px", width: "100px" }}
-											onChange={onChangeMinPrice}
+											onBlur={onChangeMinPrice}
 											value={queryParam.priceFrom}
 										/>
 										<span className="range-span">&ensp; Đến&ensp; </span>
@@ -322,7 +330,7 @@ const ShowNewsInfor = () => {
 											max={100000000}
 											controls={false}
 											style={{ borderRadius: "4px", width: "100px" }}
-											onChange={onChangeMaxPrice}
+											onBlur={onChangeMaxPrice}
 											value={queryParam.priceTo}
 										/>
 									</div>
@@ -371,27 +379,27 @@ const ShowNewsInfor = () => {
 										<InputNumber
 											className="min-input-main"
 											min={0}
-											max={1000}
+											max={150}
 											controls={false}
 											style={{ borderRadius: "4px", width: "100px" }}
 											value={queryParam.areaFrom}
-											onChange={onChangeMinArea}
+											onBlur={onChangeMinArea}
 										/>
 										<span className="range-span">&ensp; Đến&ensp; </span>
 										<InputNumber
 											className="min-input-main"
 											min={0}
-											max={1000}
+											max={150}
 											controls={false}
 											style={{ borderRadius: "4px", width: "100px" }}
 											value={queryParam.areaTo}
-											onChange={onChangeMaxArea}
+											onBlur={onChangeMaxArea}
 										/>
 									</div>
 									<Slider
 										range
 										step={5}
-										max={1000}
+										max={150}
 										min={0}
 										value={[queryParam.areaFrom, queryParam.areaTo]}
 										onAfterChange={onAfterChangeArea}
@@ -426,34 +434,51 @@ const ShowNewsInfor = () => {
 								<span className="re__listing-filter-popup-title">Số phòng ngủ</span>
 								<div className="re__listing-search-tag-container js__listing-search-tag-container">
 									<div className="re__listing-search-tag-list js__listing-search-tag-list">
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">1</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">2</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">3</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">4</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">5+</div>
+										{dataCommon.getNumberBeds.map((el) => {
+											return <div className="re__listing-search-tag-list-item js__listing-search-tag-list-item"
+												style={queryParam.numbeds.includes(el.id) ? { "backgroundColor": "#eecda3" } : null}
+												onClick={() => {
+													let arr = queryParam.numbeds
+													if (!arr.includes(el.id)) {
+														arr.push(el.id);
+													} else {
+														arr.splice(arr.indexOf(el.id), 1);
+													}
+													setQueryParam({ ...queryParam, numbeds: arr })
+												}}>{el.name}</div>
+										})}
 									</div>
 									<input id="RoomNumersAsString" name="RoomNumersAsString" type="hidden" defaultValue />
 								</div>
 								<span className="re__listing-filter-popup-title">Hướng nhà</span>
 								<div className="re__listing-search-tag-container js__listing-search-tag-container">
 									<div className="re__listing-search-tag-list js__listing-search-tag-list">
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Đông</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Tây</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Nam</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Bắc</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Đông - Bắc</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Tây - Bắc</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Tây - Nam</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Đông - Nam</div>
+										{dataCommon.getDirections.map((el) => {
+											return <div className="re__listing-search-tag-list-item js__listing-search-tag-list-item"
+												style={el.name === queryParam.directionHouse ? { "backgroundColor": "#eecda3" } : null}
+												key={el.name} onClick={() => {
+													const directionHouse = queryParam.directionHouse === el.name ? '' : el.name
+													setQueryParam({ ...queryParam, directionHouse: directionHouse })
+												}}>{el.name}</div>
+										})}
 									</div>
 									<input id="DirectionsAsString" name="DirectionsAsString" type="hidden" defaultValue />
 								</div>
 								<span className="re__listing-filter-popup-title">Nội dung tin có</span>
 								<div className="re__listing-search-tag-container js__listing-search-tag-container">
 									<div className="re__listing-search-tag-list js__listing-search-tag-list">
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Hình ảnh</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">Video</div>
-										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item ">3D &amp; 360°</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item "
+											style={1 === queryParam.mode ? { "backgroundColor": "#eecda3" } : null}
+											onClick={() => {
+												const mode = queryParam.mode === 1 ? 0 : 1
+												setQueryParam({ ...queryParam, mode: mode })
+											}}>Hình ảnh</div>
+										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item "
+											style={2 === queryParam.mode ? { "backgroundColor": "#eecda3" } : null}
+											onClick={() => {
+												const mode = queryParam.mode === 2 ? 0 : 2
+												setQueryParam({ ...queryParam, mode: mode })
+											}}>Video</div>
 									</div>
 									<input id="MediasAsString" name="MediasAsString" type="hidden" defaultValue />
 								</div>
@@ -510,7 +535,7 @@ const ShowNewsInfor = () => {
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
-								<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 297.5 297.5" style={{ enableBackground: 'new 0 0 297.5 297.5' }} xmlSpace="preserve"><g>	<g id="XMLID_47_">		<g>			<path style={{ fill: '#F4AF30' }} d="M111.3,116.27h74.91c-4.12,16.86-19.35,29.41-37.46,29.41
+								<svg x="0px" y="0px" viewBox="0 0 297.5 297.5" style={{ enableBackground: 'new 0 0 297.5 297.5' }} xmlSpace="preserve"><g>	<g id="XMLID_47_">		<g>			<path style={{ fill: '#F4AF30' }} d="M111.3,116.27h74.91c-4.12,16.86-19.35,29.41-37.46,29.41
 				C130.65,145.68,115.42,133.13,111.3,116.27z" />			<path style={{ fill: '#F4AF30' }} d="M240.36,243.44c14.079,5.59,15.59,10.06,15.609,10.06c-0.14,0.75-1.649,2.82-5.99,5.49
 				c-4.34,2.68-11.529,5.939-23.029,9.06c-21.061,5.72-48.83,8.87-78.2,8.87c-29.36,0-57.13-3.15-78.19-8.87
 				c-23-6.24-28.75-13.06-29.029-14.45c0.01-0.04,1.449-4.529,15.609-10.159c11.49-4.561,27.16-8.171,45.431-10.48
@@ -552,7 +577,7 @@ const ShowNewsInfor = () => {
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
-								<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style={{ enableBackground: 'new 0 0 512 512' }} xmlSpace="preserve"><path style={{ fill: '#BDBCBC' }} d="M153.768,37.436v116.212c0,4.416-3.58,7.996-7.996,7.996H60.479c-4.416,0-7.996-3.58-7.996-7.996
+								<svg x="0px" y="0px" viewBox="0 0 512 512" style={{ enableBackground: 'new 0 0 512 512' }} xmlSpace="preserve"><path style={{ fill: '#BDBCBC' }} d="M153.768,37.436v116.212c0,4.416-3.58,7.996-7.996,7.996H60.479c-4.416,0-7.996-3.58-7.996-7.996
 	V37.436C52.483,37.436,153.768,37.436,153.768,37.436z" /><path style={{ fill: '#A7A6A6' }} d="M81.802,37.436v124.208H60.479c-4.416,0-7.996-3.58-7.996-7.996V37.436
 	C52.483,37.436,81.802,37.436,81.802,37.436z" /><path style={{ fill: '#E9E9E9' }} d="M43.42,0.653h119.41c4.416,0,7.996,3.58,7.996,7.996v34.117c0,4.416-3.58,7.996-7.996,7.996H43.42
 	c-4.416,0-7.996-3.58-7.996-7.996V8.65C35.424,4.234,39.004,0.653,43.42,0.653z" /><path style={{ fill: '#6DDAE1' }} d="M508.836,189.924L261.486,2.279c-2.857-2.168-6.809-2.168-9.665,0L4.471,189.924
@@ -583,7 +608,7 @@ const ShowNewsInfor = () => {
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
-								<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style={{ enableBackground: 'new 0 0 512 512' }} xmlSpace="preserve"><circle style={{ fill: '#00CC96' }} cx={256} cy={256} r={256} /><path style={{ fill: '#07B587' }} d="M276.77,511.34L143.578,377.983l-7.089-16.979L108.96,318.97l-12.364-58.024l8.242-51.761
+								<svg x="0px" y="0px" viewBox="0 0 512 512" style={{ enableBackground: 'new 0 0 512 512' }} xmlSpace="preserve"><circle style={{ fill: '#00CC96' }} cx={256} cy={256} r={256} /><path style={{ fill: '#07B587' }} d="M276.77,511.34L143.578,377.983l-7.089-16.979L108.96,318.97l-12.364-58.024l8.242-51.761
 	l24.067-52.915l56.376-42.529l58.024-16.979l58.024,6.099l77.641,40.387l132.204,132.368
 	c-9.396,125.445-109.29,225.67-234.571,235.725L276.77,511.34L276.77,511.34z" /><path style={{ fill: '#E84F4F' }} d="M131.214,366.115c-25.88-29.341-41.705-67.915-41.705-110.114
 	c0-65.277,37.419-121.654,92.146-149.018L256,256L131.214,366.115z" /><path style={{ fill: '#FFFFFF' }} d="M256,89.674c91.982,0,166.491,74.509,166.491,166.491S347.982,422.655,256,422.655
@@ -614,7 +639,7 @@ const ShowNewsInfor = () => {
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
-								<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style={{ enableBackground: 'new 0 0 512 512' }} xmlSpace="preserve"><path style={{ fill: '#1E0478' }} d="M512,77.649v37.477c0,17.555-14.286,31.841-31.841,31.841H465.65L301.087,311.52v75.495
+								<svg x="0px" y="0px" viewBox="0 0 512 512" style={{ enableBackground: 'new 0 0 512 512' }} xmlSpace="preserve"><path style={{ fill: '#1E0478' }} d="M512,77.649v37.477c0,17.555-14.286,31.841-31.841,31.841H465.65L301.087,311.52v75.495
 	c0,2.823-1.114,5.519-3.099,7.504l-68.564,68.564c-2.027,2.027-4.744,3.11-7.504,3.11c-1.369,0-2.749-0.265-4.065-0.807
 	c-3.959-1.645-6.549-5.519-6.549-9.807V311.52L46.742,146.966H31.841C14.286,146.966,0,132.681,0,115.126V77.649
 	c0-17.555,14.286-31.841,31.841-31.841h448.318C497.714,45.808,512,60.094,512,77.649z M490.773,115.126V77.649
@@ -635,7 +660,7 @@ const ShowNewsInfor = () => {
 					<div className="wrapper-text">
 						<span className="icon">
 							<div>
-								<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 496.158 496.158" style={{ enableBackground: 'new 0 0 496.158 496.158' }} xmlSpace="preserve"><path style={{ fill: '#EB9783' }} d="M496.158,248.085c0-137.021-111.07-248.082-248.076-248.082C111.07,0.003,0,111.063,0,248.085
+								<svg x="0px" y="0px" viewBox="0 0 496.158 496.158" style={{ enableBackground: 'new 0 0 496.158 496.158' }} xmlSpace="preserve"><path style={{ fill: '#EB9783' }} d="M496.158,248.085c0-137.021-111.07-248.082-248.076-248.082C111.07,0.003,0,111.063,0,248.085
 	c0,137.002,111.07,248.07,248.082,248.07C385.088,496.155,496.158,385.087,496.158,248.085z" /><g>	<path style={{ fill: '#D63232' }} d="M373.299,154.891c-19.558-26.212-47.401-46.023-78.401-55.787c-0.759-0.238-1.588-0.103-2.229,0.369
 		c-0.643,0.471-1.021,1.22-1.021,2.016l0.16,40.256c0,1.074,0.514,2.06,1.332,2.562c31.732,19.456,66.504,47,66.504,103.237
 		c0,61.515-50.047,111.56-111.562,111.56c-61.517,0-111.566-50.045-111.566-111.56c0-58.737,35.199-84.661,67.615-103.917
@@ -657,55 +682,59 @@ const ShowNewsInfor = () => {
 				initPage={initPage}
 				sortMode={sortMode}
 				chooseSortMode={(mode, field) => { setQueryParam({ ...queryParam, mode: mode, field: field }) }}
-				choosePage={(pageNo) => { setQueryParam({ ...queryParam, pageNo: pageNo }) }}></MenuNewsCard>
+				choosePage={(pageNo) => { setQueryParam({ ...queryParam, pageNo: pageNo }) }}
+				postType={location.pathname}></MenuNewsCard>
 			<div className='main-content-right'>
 				<SideFilterBox title='Lọc theo khoảng giá'>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=1000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Dưới 1 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=0&priceTo=1000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Dưới 1 triệu</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=1000000&priceTo=3000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>1 - 3 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=1000000&priceTo=3000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>1 - 3 triệu</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=3000000&priceTo=5000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>3 - 5 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=3000000&priceTo=5000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>3 - 5 triệu</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=5000000&priceTo=10000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>5 - 10 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=5000000&priceTo=10000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>5 - 10 triệu</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=10000000&priceTo=40000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>10 - 40 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=10000000&priceTo=40000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>10 - 40 triệu</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=40000000&priceTo=70000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>40 - 70 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=40000000&priceTo=70000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>40 - 70 triệu</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=70000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>70 - 100 triệu</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=70000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>70 - 100 triệu</Link>
+					</h3>
+					<h3 className="re__sidebar-box-item">
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=100000000&priceTo=100000001&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Trên 100 triệu</Link>
 					</h3>
 				</SideFilterBox>
 				<SideFilterBox title='Lọc theo diện tích'>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=0&areaTo=30`}>Dưới 30 m²</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=0&areaTo=30`}>Dưới 30 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=30&areaTo=50`}>30 - 50 m²</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=30&areaTo=50`}>30 - 50 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=50&areaTo=80`}>50 - 80 m²</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=50&areaTo=80`}>50 - 80 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=80&areaTo=100`}>80 - 100 m²</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=80&areaTo=100`}>80 - 100 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=100&areaTo=150`}>100 - 150 m²</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=100&areaTo=150`}>100 - 150 m²</Link>
 					</h3>
 					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=200&areaTo=250`}>200 - 250 m²</Link>
+						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=150&areaTo=151`}>Trên 150 m²</Link>
 					</h3>
 				</SideFilterBox>
 				<SideFilterBox title='Cho thuê theo địa chỉ'>
 					{countNewsOfProvince.map((el, i) => {
 						return <h3 className="re__sidebar-box-item" key={i}>
-							<Link className="re__link-se" to={`/trang-chu?pageNo=0&pageSize=5&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type}&province=${el.province}&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=1000`}>{el.province} ({el.count})</Link>
+							<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${el.province}&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=1000`}>{el.province} ({el.count})</Link>
 						</h3>
 					})}
 				</SideFilterBox>

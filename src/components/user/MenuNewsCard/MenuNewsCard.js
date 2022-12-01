@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { inputConstant } from "../../../constant/inputConstant"
 import { HomeService } from "../../../service/HomeService"
@@ -8,30 +8,37 @@ import { message } from './../../../action/message'
 import { useNavigate } from "react-router-dom"
 import { Pagination } from "antd"
 import { modeNews } from "../../../constant/mode.news"
+import { formatCommon } from "../../../common/format.common"
 
-const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePage }) => {
-	const messageStatus = useSelector(state => state.controllMessage)
-	const [getNewsCard, setNewsCard] = useState({ content: [], totalElements: 0, totalPages:0 })
-	const dispatch = useDispatch()
+const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePage, postType }) => {
+	const [getNewsCard, setNewsCard] = useState({ content: [], totalElements: 0, totalPages: 0 })
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (!messageStatus.show) {
-			dispatch(message.information(true))
-		}
+
 		console.log(queryParam)
 		if (!initPage) {
-			HomeService.searchCard(queryParam.pageNo-1, queryParam.pageSize, queryParam.field, queryParam.mode, queryParam).then((page) => {
+			HomeService.searchCard(queryParam.pageNo - 1, queryParam.pageSize, queryParam.field, queryParam.mode, queryParam).then((page) => {
 				console.log(page)
 				setNewsCard(page)
 
-				navigate(`/trang-chu?pageNo=${queryParam.pageNo}
+				console.log(postType)
+				let updatePostType = postType
+				if (queryParam.type.value === 0) {
+					updatePostType = '/trang-chu'
+				} else if (queryParam.type.value === 1) {
+					updatePostType = '/nha-nguyen-can'
+				} else if (queryParam.type.value === 2) {
+					updatePostType = '/can-ho-chung-cu'
+				} else if (queryParam.type.value === 3) {
+					updatePostType = '/phong-tro'
+				}
+				navigate(`${updatePostType}?pageNo=${queryParam.pageNo}
 				&mode=${queryParam.mode}&sort=${queryParam.field}
 				&type=${queryParam.type.value}&province=${queryParam.province.value}
 				&district=${queryParam.district.value}&ward=${queryParam.ward.value}
 				&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}
 				&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`)
-				dispatch(message.information(false))
 			})
 		}
 	}, [queryParam.type.value, queryParam.province.value,
@@ -54,12 +61,17 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePag
 					avatar={el.avatar}
 					id={el.id}
 					mode={modeNews.SHOWING}
-					fromCalled= "HOME" ></NewsCard>
+					fromCalled="HOME" ></NewsCard>
 			})
 		}
 	}
 
 	const handleGetValue = (target) => {
+		console.log(target)
+		if (target.value === '') {
+			chooseSortMode(1, 'startedDate')
+			return
+		}
 		switch (target.id) {
 			case 0:
 				chooseSortMode(2, 'startedDate')
@@ -77,20 +89,104 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePag
 				chooseSortMode(2, 'area')
 				break;
 		}
-
 	}
 
-	const handleChoosePage=(pageNo)=>{
+	const handleChoosePage = (pageNo) => {
 		choosePage(pageNo)
+	}
+
+	const showTitleMenuNewsInfor = () => {
+		let arrItemTitle = []
+		let title = 'Cho thuê bất động sản'
+		let result = ''
+		arrItemTitle.push(title)
+		if (queryParam.type.title !== 'Loại BĐS') {
+			arrItemTitle.push(queryParam.type.title)
+		}
+		if (queryParam.province.value) {
+			arrItemTitle.push(queryParam.province.value)
+		}
+		if (queryParam.district.value) {
+			arrItemTitle.push(queryParam.district.value)
+		}
+		if (queryParam.ward.value) {
+			arrItemTitle.push(queryParam.ward.value)
+		}
+		if (queryParam.priceFrom > 0 && queryParam.priceTo !== 100000001) {
+			arrItemTitle.push(`Từ ${formatCommon.convertPriceToStringVn(queryParam.priceFrom)} đến ${formatCommon.convertPriceToStringVn(queryParam.priceTo)}`)
+		} else if (queryParam.priceFrom === 0 && queryParam.priceTo < 100000000) {
+			arrItemTitle.push(`Khoảng dưới ${formatCommon.convertPriceToStringVn(queryParam.priceTo)}`)
+		} else if (queryParam.priceFrom >= 100000000) {
+			arrItemTitle.push(`Trên ${formatCommon.convertPriceToStringVn(queryParam.priceFrom)}`)
+		}
+		if (queryParam.areaFrom > 0 && queryParam.areaTo !== 151) {
+			arrItemTitle.push(`Từ ${queryParam.areaFrom} đến ${queryParam.areaTo}m²`)
+		} else if (queryParam.areaFrom === 0 && queryParam.areaTo < 150) {
+			arrItemTitle.push(`Khoảng dưới ${queryParam.areaTo}m²`)
+		} else if (queryParam.areaFrom >= 150) {
+			arrItemTitle.push(`Trên ${queryParam.areaFrom}m²`)
+		}
+		if (queryParam.ward.value) {
+			arrItemTitle.push(queryParam.ward.value)
+		}
+		for (let i = 0; i < arrItemTitle.length; i++) {
+			if (i == arrItemTitle.length - 1) {
+				result = result + arrItemTitle[i]
+			} else {
+				result = result + arrItemTitle[i] + ' - '
+			}
+		}
+		return result
+	}
+
+	const renderHierarchical = () => {
+		let rendering = []
+		if (queryParam.type.value === 0) {
+			rendering.push('Tất cả BĐS trên toàn quốc')
+		} else {
+			rendering.push(queryParam.type.title)
+		}
+		if (queryParam.province.value) {
+			rendering.push(queryParam.province.value)
+		}
+		if (queryParam.district.value) {
+			rendering.push(queryParam.district.value)
+		}
+		if (queryParam.ward.value) {
+			rendering.push(queryParam.ward.value)
+		}
+		console.log(rendering)
+		let updatePostType = postType
+		if (queryParam.type.value === 0) {
+			updatePostType = '/trang-chu'
+		} else if (queryParam.type.value === 1) {
+			updatePostType = '/nha-nguyen-can'
+		} else if (queryParam.type.value === 2) {
+			updatePostType = '/can-ho-chung-cu'
+		} else if (queryParam.type.value === 3) {
+			updatePostType = '/phong-tro'
+		}
+		return rendering.map((el) => {
+			return <Fragment>
+				<span>/</span>
+				<a className="re__link-se"
+					href={`${updatePostType}?pageNo=${queryParam.pageNo}
+				&mode=${queryParam.mode}&sort=${queryParam.field}
+				&type=${queryParam.type.value}&province=${queryParam.province.value}
+				&district=${queryParam.district.value}&ward=${queryParam.ward.value}
+				&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}
+				&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>
+					{el}</a>
+			</Fragment>
+		})
 	}
 
 	return <div className='main-content-left'>
 		<div className='path-tree'>
-			<a className="re__link-se" href="/nha-dat-cho-thue" title="Nhà đất cho thuê tại Việt Nam">Cho thuê</a>
-			<span>/</span>
-			<a className="re__link-se" href="/nha-dat-cho-thue" title="Nhà đất cho thuê tại Việt Nam">Tất cả BĐS trên toàn quốc</a>
+			<a className="re__link-se">Cho thuê</a>
+			{renderHierarchical()}
 		</div>
-		<h1 className="re__srp-title">{`${queryParam.type.title === 'Loại BĐS' ? 'Cho thuê bất động sản' : 'Cho thuê ' + queryParam.type.title.toLowerCase()} ${queryParam.province.value} ${queryParam.district.value}`}</h1>
+		<h1 className="re__srp-title">{showTitleMenuNewsInfor()}</h1>
 		<span className="re__srp-total-count">Hiện có <span id="count-number">{getNewsCard.totalElements}</span> bất động sản. </span>
 		<div className='re_sort'>
 			<div style={{ "display": "flex", "justifyContent": "right" }}>
@@ -110,13 +206,14 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode,choosePag
 		<div className='list-news'>
 			{showNewsCard()}
 		</div>
-		<div style={{"display":"flex", "justifyContent":"center"}}>
+		<div style={{ "display": "flex", "justifyContent": "center" }}>
 			<Pagination current={queryParam.pageNo}
-				total={getNewsCard.totalPages*10}
+				total={getNewsCard.totalPages * 10}
 				onChange={handleChoosePage}
 				showSizeChanger={false} />
 		</div>
-
+		<div style={{"marginBottom":"16px"}}>
+		</div>
 	</div>
 }
 

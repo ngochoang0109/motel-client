@@ -88,14 +88,6 @@ const AuthForm = ({ form }) => {
 		<ul className="login-more">
 			<li>
 				<span className="txt1">
-					Quên&nbsp;
-				</span>
-				<Link to={'/'} className="txt2">
-					mật khẩu?
-				</Link>
-			</li>
-			<li>
-				<span className="txt1">
 					Chưa có tài khoản&nbsp;
 				</span>
 				<Link to={`/register`} className="txt2">

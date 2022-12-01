@@ -55,10 +55,6 @@ function getDifferenceInSeconds(date1, date2) {
 }
 
 const getResultDiffDate = (date1, date2) => {
-	console.log(getDifferenceInSeconds(date1, date2))
-	console.log(getDifferenceInMinutes(date1, date2))
-	console.log(getDifferenceInHours(date1, date2))
-	console.log(getDifferenceInDays(date1, date2))
 	if (getDifferenceInSeconds(date1, date2) < 60) {
 		return `${getDifferenceInSeconds(date1, date2)} giây`
 	}

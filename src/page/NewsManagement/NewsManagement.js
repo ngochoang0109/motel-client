@@ -220,10 +220,6 @@ const NewsManagement = () => {
 
 	const chooseDurationTime = () => {
 		setBtnDurationTime(!btnDurationTime)
-		setBtnTypeOfAcc(false)
-		setBtnTypeOfNews(false)
-		setBtnProvince(false)
-		setBtnDistrict(false)
 	}
 
 	const handleSetDateFilterParam = (target) => {
@@ -231,35 +227,19 @@ const NewsManagement = () => {
 	}
 
 	const chooseTypeOfAcc = () => {
-		setBtnDurationTime(false)
-		setBtnTypeOfAcc(!btnTypeOfAcc)
-		setBtnTypeOfNews(false)
-		setBtnProvince(false)
-		setBtnDistrict(false)
+		
 	}
 
 	const chooseBtnProvince = () => {
-		setBtnDurationTime(false)
-		setBtnTypeOfAcc(false)
-		setBtnTypeOfNews(false)
-		setBtnProvince(!btnProvince)
-		setBtnDistrict(false)
+		
 	}
 
 	const chooseTypeOfNews = () => {
-		setBtnDurationTime(false)
-		setBtnTypeOfAcc(false)
-		setBtnTypeOfNews(!btnTypeOfNews)
-		setBtnProvince(false)
-		setBtnDistrict(false)
+		
 	}
 
 	const chooseBtnDistrict = () => {
-		setBtnDurationTime(false)
-		setBtnTypeOfAcc(false)
-		setBtnTypeOfNews(false)
-		setBtnProvince(false)
-		setBtnDistrict(!btnDistrict)
+		
 	}
 
 	const handleSetArrayFilterParam = (target, id) => {

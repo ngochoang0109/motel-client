@@ -195,19 +195,19 @@ const Header = () => {
 							<div className="home-header-menu">
 								<ul className="dropdown-no-art--sm dropdown-navigative-menu">
 									<li className="lv0">
-										<Link to='/nha-nguyen-can' className="haslink">
+										<Link to='/nha-nguyen-can?pageNo=1&mode=2&sort=startedDate&type=1&province=&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150' className="haslink">
 											<span className="text">Nhà nguyên căn</span>
 										</Link>
 										<div className="arrrow" />
 									</li>
 									<li className="lv0">
-										<Link to='/can-ho-chung-cu' className="haslink">
+										<Link to='/can-ho-chung-cu?pageNo=1&mode=2&sort=startedDate&type=2&province=&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150' className="haslink">
 											<span className="text">Căn hộ, chung cư</span>
 										</Link>
 										<div className="arrrow" />
 									</li>
 									<li className="lv0">
-										<Link to='/phong-tro' className="haslink">
+										<Link to='/phong-tro?pageNo=1&mode=2&sort=startedDate&type=3&province=&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150' className="haslink">
 											<span className="text">Phòng trọ</span>
 										</Link>
 										<div className="arrrow" />

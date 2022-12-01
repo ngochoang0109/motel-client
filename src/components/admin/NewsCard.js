@@ -84,8 +84,6 @@ const NewsCard = ({ title, price, area, province, district, description,
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" onClick={rejectNews}>
 							<span>Sửa lý do</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" onClick={approvedNews}>
-							<span>Duyệt bài</span></span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>

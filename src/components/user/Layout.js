@@ -13,6 +13,7 @@ import CartPage from "../../page/CartPage/CartPage";
 import PaymentComfirm from "../../page/PaymentConfirm/PaymentConfirm";
 import HistoryPayment from "../../page/HistoryPayment/HistoryPayment";
 import NewsDetail from "../../page/NewsDetail/NewsDetail";
+import UserInfor from "../../page/UserInfor/UserInfor";
 
 const Layout = () => {
 
@@ -30,22 +31,10 @@ const Layout = () => {
 					<Route path="/nha-nguyen-can" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="/can-ho-chung-cu" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="/phong-tro" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
-					<Route path="trang-chu/tao-bai-viet"
-						element={
-							<PrivateRoute>
-								<CreatePost />
-							</PrivateRoute>
-						}>
+					<Route path="trang-chu/tao-bai-viet" element={<PrivateRoute><CreatePost /></PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet"element={	<PrivateRoute>		<NewsManagement />	</PrivateRoute>}>
 					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet"
-						element={
-							<PrivateRoute>
-								<NewsManagement />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan/:id"
-						element={
+					<Route path="trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan/:id"element={
 							<PrivateRoute>
 								<PaymentComfirm />
 							</PrivateRoute>
@@ -62,6 +51,13 @@ const Layout = () => {
 						element={
 							<PrivateRoute>
 								<HistoryPayment />
+							</PrivateRoute>
+						}>
+					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet/thong-tin-ca-nhan"
+						element={
+							<PrivateRoute>
+								<UserInfor />
 							</PrivateRoute>
 						}>
 					</Route>

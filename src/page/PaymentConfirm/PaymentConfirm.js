@@ -147,7 +147,6 @@ const PaymentComfirm = () => {
 				<div style={{ "display": "flex" }}>
 					<h3 className="lhekIy" style={{ "marginRight": "2rem" }}>Chọn hình thức thanh toán</h3>
 					<Radio.Group defaultValue="0" size="large" onChange={(event) => selectedMethodPayment(event)}>
-						<Radio.Button value="0">Tài khoản</Radio.Button>
 						<Radio.Button value="1">VNPAY</Radio.Button>
 					</Radio.Group>
 				</div>
