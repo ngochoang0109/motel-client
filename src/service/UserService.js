@@ -9,6 +9,14 @@ const getCurrentUser=()=>{
 	})
 }
 
+const getListUser=()=>{
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API, 'account-management', 'GET', {}).then((response) => {
+		return response.data;
+	})
+}
+
 export const userService={
-	getCurrentUser
+	getCurrentUser,
+	getListUser
 }

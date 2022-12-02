@@ -182,7 +182,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 	console.log(reason)
 
 	return <div className="re__card-full re__card-full-no-label vip5 re__vip-5">
-		<Modal title="Tạo mã giảm giá"
+		<Modal title="Lý do từ chối bài viết"
 			visible={isModalOpen}
 			footer={[
 				<Button type="primary" onClick={handleOk}>

@@ -55,7 +55,7 @@ const HistoryPayment = () => {
 		switch (status) {
 			case 1:
 				return 'Giao dịch thành công'
-			case 2:
+			case 0:
 				return 'Giao dịch thất bại'
 		}
 	}

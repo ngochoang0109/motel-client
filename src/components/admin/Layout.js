@@ -9,6 +9,8 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import MenuBarUser from "./MenuBarUser";
 import DiscountMng from "../../page/admin/DiscountMng/DiscountMng";
 import NewsMng from "../../page/admin/NewsMng/NewsMng";
+import UserMng from "../../page/admin/UserMng/UserMng";
+import UserInfor from "../../page/admin/UserInfor/UserInfor";
 
 const Layout = () => {
 
@@ -49,6 +51,8 @@ const Layout = () => {
 					<Routes>
 						<Route path="/discount-management" element={<DiscountMng></DiscountMng>}></Route>
 						<Route path="/news-management" element={<NewsMng></NewsMng>}></Route>
+						<Route path="/account-management" element={<UserMng></UserMng>}></Route>
+						<Route path="/account-management/form" element={<UserInfor></UserInfor>}></Route>
 					</Routes>
 					: null}
 			</Container>
