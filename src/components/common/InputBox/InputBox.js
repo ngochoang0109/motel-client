@@ -16,8 +16,9 @@ import moment from "moment";
 
 const InputBox = ({ mode, placeholder, data,
 	name, getValueDropList, onChange,
-	maxlength, minlength, row, type, value, title, disable, addItem,icon,clickIcon, checked }) => {
-
+	maxlength, minlength, row, type, value, 
+	title, disable, addItem,icon,clickIcon, checked }) => {
+	console.log(value)
 	const showModal = useSelector(state => state.controllDropDownModal)
 	const dispatch = useDispatch()
 	const [id] = useState(generated(storageKey.SIZE_ID))

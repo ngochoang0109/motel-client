@@ -1,10 +1,6 @@
-import { Button, DatePicker, Input, Select, Table } from "antd";
+import { Button, Table } from "antd";
 import { useEffect, useState } from "react"
 import { PlusCircleOutlined } from '@ant-design/icons';
-import Modal from "antd/lib/modal/Modal"
-import { formatCommon } from "../../../common/format.common";
-import moment from "moment";
-import TextArea from "antd/lib/input/TextArea";
 import { message } from "../../../action/message";
 import { useDispatch } from "react-redux";
 import { userService } from "../../../service/UserService";
@@ -69,8 +65,7 @@ const UserMng = () => {
 			align: "center",
 			render: (text, row, index) => {
 				return <div style={{ "display": "flex" }}>
-					<Button style={{ "marginRight": "1rem" }} onClick={() => { alert("SUA") }}>Sửa</Button>
-					<Button type="danger" onClick={() => { alert("XOA") }}>Xóa</Button>
+					<Button type="danger" onClick={() => { alert("XOA") }}>Vô hiệu</Button>
 				</div>
 			}
 		}
@@ -93,7 +88,7 @@ const UserMng = () => {
 		<div className="container-header" style={{ "height": "100%" }}>
 			<div className='container-center'>
 				<div className="title">
-					<h3 className="sc-giIncl kuvrBD">Quản lý mã giảm giá</h3>
+					<h3 className="sc-giIncl kuvrBD">Quản lý thông tin tài khoản</h3>
 				</div>
 			</div>
 			<div className='table-data' style={{ "marginTop": "16px" }}>

@@ -1,10 +1,8 @@
 import { Fragment, useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { inputConstant } from "../../../constant/inputConstant"
 import { HomeService } from "../../../service/HomeService"
 import InputBox from "../../common/InputBox/InputBox"
 import NewsCard from './../NewsCard/NewsCard'
-import { message } from './../../../action/message'
 import { useNavigate } from "react-router-dom"
 import { Pagination } from "antd"
 import { modeNews } from "../../../constant/mode.news"
@@ -13,16 +11,19 @@ import { formatCommon } from "../../../common/format.common"
 const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePage, postType }) => {
 	const [getNewsCard, setNewsCard] = useState({ content: [], totalElements: 0, totalPages: 0 })
 	const navigate = useNavigate()
-
 	useEffect(() => {
-
-		console.log(queryParam)
 		if (!initPage) {
-			HomeService.searchCard(queryParam.pageNo - 1, queryParam.pageSize, queryParam.field, queryParam.mode, queryParam).then((page) => {
-				console.log(page)
+			console.log(queryParam)
+			HomeService.searchCard(queryParam.pageNo - 1,
+				queryParam.pageSize,
+				queryParam.field,
+				queryParam.mode,
+				queryParam, {
+				numBeds: queryParam.numbeds,
+				directionHouse: queryParam.directionHouse,
+				media: queryParam.media
+			}).then((page) => {
 				setNewsCard(page)
-
-				console.log(postType)
 				let updatePostType = postType
 				if (queryParam.type.value === 0) {
 					updatePostType = '/trang-chu'
@@ -33,18 +34,20 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 				} else if (queryParam.type.value === 3) {
 					updatePostType = '/phong-tro'
 				}
-				navigate(`${updatePostType}?pageNo=${queryParam.pageNo}
+				navigate(`${updatePostType}?pageNo=${queryParam.pageNo}&textSearch=${queryParam.textSearch}
 				&mode=${queryParam.mode}&sort=${queryParam.field}
 				&type=${queryParam.type.value}&province=${queryParam.province.value}
 				&district=${queryParam.district.value}&ward=${queryParam.ward.value}
 				&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}
-				&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`)
+				&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}&numbeds=${queryParam.numbeds}
+				&directionHouse=${queryParam.directionHouse}&media=${queryParam.media}`)
 			})
 		}
-	}, [queryParam.type.value, queryParam.province.value,
+	}, [queryParam.textSearch, queryParam.type.value, queryParam.province.value,
 	queryParam.district.value, queryParam.ward.value, queryParam.priceFrom,
 	queryParam.priceTo, queryParam.areaFrom, queryParam.areaTo, initPage,
-	queryParam.mode, queryParam.field, queryParam.pageNo])
+	queryParam.mode, queryParam.field, queryParam.pageNo, JSON.stringify(queryParam.numbeds),
+	JSON.stringify(queryParam.directionHouse), JSON.stringify(queryParam.media)])
 
 	const showNewsCard = () => {
 		if (getNewsCard) {
@@ -155,7 +158,6 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 		if (queryParam.ward.value) {
 			rendering.push(queryParam.ward.value)
 		}
-		console.log(rendering)
 		let updatePostType = postType
 		if (queryParam.type.value === 0) {
 			updatePostType = '/trang-chu'
@@ -167,7 +169,7 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 			updatePostType = '/phong-tro'
 		}
 		return rendering.map((el) => {
-			return <Fragment>
+			return <Fragment key={el}>
 				<span>/</span>
 				<a className="re__link-se"
 					href={`${updatePostType}?pageNo=${queryParam.pageNo}
@@ -212,7 +214,7 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 				onChange={handleChoosePage}
 				showSizeChanger={false} />
 		</div>
-		<div style={{"marginBottom":"16px"}}>
+		<div style={{ "marginBottom": "16px" }}>
 		</div>
 	</div>
 }

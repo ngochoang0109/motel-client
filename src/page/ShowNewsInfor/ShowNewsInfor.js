@@ -23,8 +23,15 @@ const ShowNewsInfor = () => {
 	const [provinces, setProvinces] = useState([])
 	const [district, setDistrict] = useState([])
 	const [ward, setWard] = useState([])
+	const [textSearch, setTextSearch] = useState('')
 	const [countNewsOfProvince, setCountNewsOfProvince] = useState([])
+	const [additionalFilter, setAdditionalFilter] = useState({
+		numbeds: [],
+		directionHouse: [],
+		media: []
+	})
 	const [queryParam, setQueryParam] = useState({
+		textSearch: '',
 		type: {
 			title: 'Loại BĐS',
 			value: 0
@@ -47,8 +54,8 @@ const ShowNewsInfor = () => {
 		pageSize: 20,
 		field: 'startedDate',
 		numbeds: [],
-		directionHouse: '',
-		media: 0
+		directionHouse: [],
+		media: []
 	})
 	const location = useLocation()
 	const [initPage, setInitPage] = useState(true)
@@ -56,12 +63,11 @@ const ShowNewsInfor = () => {
 	{ id: 1, name: 'Giá thấp đến cao' }, { id: 2, name: 'Giá cao đến thấp' },
 	{ id: 3, name: 'Diện tích thấp đến cao' }, { id: 4, name: 'Diện tích cao đến thấp' }])
 
-	console.log(location)
-
 	useEffect(() => {
 		setInitPage(false)
 		if (location.search.length !== 0) {
 			const obj = formatCommon.getQueryStringParams(location.search)
+			console.log(obj)
 			const updateQueryParam = queryParam
 			PostNewsService.getTypeOfAcc().then((data) => {
 				setAccType(data.data)
@@ -73,7 +79,6 @@ const ShowNewsInfor = () => {
 					}
 				})
 			})
-			console.log(obj)
 			updateQueryParam.province = { title: obj.province.length === 0 ? 'Khu vực' : obj.province, value: obj.province }
 			updateQueryParam.district = { title: obj.district, value: obj.district }
 			updateQueryParam.ward = { title: obj.ward, value: obj.ward }
@@ -84,6 +89,21 @@ const ShowNewsInfor = () => {
 			updateQueryParam.mode = Number(obj.mode)
 			updateQueryParam.field = obj.sort
 			updateQueryParam.pageNo = Number(obj.pageNo)
+			updateQueryParam.numbeds = obj.numbeds ? obj.numbeds.split(',').map(str => {
+				return Number(str);
+			}) : []
+			updateQueryParam.directionHouse = obj.directionHouse ? obj.directionHouse.split(',').map(str => {
+				return str;
+			}) : []
+			updateQueryParam.media = obj.media ? obj.media.split(',').map(str => {
+				return Number(str);
+			}) : []
+			setAdditionalFilter({
+				numbeds: updateQueryParam.numbeds,
+				directionHouse: updateQueryParam.directionHouse,
+				media: updateQueryParam.media
+			})
+			setTextSearch(obj.textSearch)
 			setQueryParam(updateQueryParam)
 		} else {
 			PostNewsService.getTypeOfAcc().then((data) => {
@@ -225,7 +245,14 @@ const ShowNewsInfor = () => {
 	const resetQueryParam = () => {
 		setWard([])
 		setDistrict([])
+		setAdditionalFilter({
+			numbeds: [],
+			directionHouse: [],
+			media: []
+		})
+		setTextSearch('')
 		setQueryParam({
+			textSearch: '',
 			type: {
 				title: 'Loại BĐS',
 				value: 0
@@ -243,10 +270,13 @@ const ShowNewsInfor = () => {
 			priceTo: 100000000,
 			areaFrom: 0,
 			areaTo: 150,
-			mode: 2,
-			field: 'startedDate',
+			mode: 1,
 			pageNo: 1,
-			pageSize: 20
+			pageSize: 20,
+			field: 'startedDate',
+			numbeds: [],
+			directionHouse: [],
+			media: 0
 		})
 	}
 	const renderModalContent = () => {
@@ -435,16 +465,17 @@ const ShowNewsInfor = () => {
 								<div className="re__listing-search-tag-container js__listing-search-tag-container">
 									<div className="re__listing-search-tag-list js__listing-search-tag-list">
 										{dataCommon.getNumberBeds.map((el) => {
-											return <div className="re__listing-search-tag-list-item js__listing-search-tag-list-item"
-												style={queryParam.numbeds.includes(el.id) ? { "backgroundColor": "#eecda3" } : null}
+											return <div className="re__listing-search-tag-list-item"
+												key={el}
+												style={additionalFilter.numbeds.includes(el.id) ? { "backgroundColor": "#eecda3" } : null}
 												onClick={() => {
-													let arr = queryParam.numbeds
+													let arr = additionalFilter.numbeds
 													if (!arr.includes(el.id)) {
 														arr.push(el.id);
 													} else {
 														arr.splice(arr.indexOf(el.id), 1);
 													}
-													setQueryParam({ ...queryParam, numbeds: arr })
+													setAdditionalFilter({ ...additionalFilter, numbeds: arr })
 												}}>{el.name}</div>
 										})}
 									</div>
@@ -454,11 +485,16 @@ const ShowNewsInfor = () => {
 								<div className="re__listing-search-tag-container js__listing-search-tag-container">
 									<div className="re__listing-search-tag-list js__listing-search-tag-list">
 										{dataCommon.getDirections.map((el) => {
-											return <div className="re__listing-search-tag-list-item js__listing-search-tag-list-item"
-												style={el.name === queryParam.directionHouse ? { "backgroundColor": "#eecda3" } : null}
+											return <div className="re__listing-search-tag-list-item"
+												style={additionalFilter.directionHouse.includes(el.name) ? { "backgroundColor": "#eecda3" } : null}
 												key={el.name} onClick={() => {
-													const directionHouse = queryParam.directionHouse === el.name ? '' : el.name
-													setQueryParam({ ...queryParam, directionHouse: directionHouse })
+													let arr = additionalFilter.directionHouse
+													if (!arr.includes(el.name)) {
+														arr.push(el.name);
+													} else {
+														arr.splice(arr.indexOf(el.name), 1);
+													}
+													setAdditionalFilter({ ...additionalFilter, directionHouse: arr })
 												}}>{el.name}</div>
 										})}
 									</div>
@@ -468,29 +504,56 @@ const ShowNewsInfor = () => {
 								<div className="re__listing-search-tag-container js__listing-search-tag-container">
 									<div className="re__listing-search-tag-list js__listing-search-tag-list">
 										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item "
-											style={1 === queryParam.mode ? { "backgroundColor": "#eecda3" } : null}
+											style={additionalFilter.media.includes(1) ? { "backgroundColor": "#eecda3" } : null}
 											onClick={() => {
-												const mode = queryParam.mode === 1 ? 0 : 1
-												setQueryParam({ ...queryParam, mode: mode })
-											}}>Hình ảnh</div>
+												let arr = additionalFilter.media
+												if (!arr.includes(1)) {
+													arr.push(1);
+												} else {
+													arr.splice(arr.indexOf(1), 1);
+												}
+												setAdditionalFilter({ ...additionalFilter, media: arr })
+											}}
+										>Hình ảnh</div>
 										<div className="re__listing-search-tag-list-item js__listing-search-tag-list-item "
-											style={2 === queryParam.mode ? { "backgroundColor": "#eecda3" } : null}
+											style={additionalFilter.media.includes(2) ? { "backgroundColor": "#eecda3" } : null}
 											onClick={() => {
-												const mode = queryParam.mode === 2 ? 0 : 2
-												setQueryParam({ ...queryParam, mode: mode })
+												let arr = additionalFilter.media
+												if (!arr.includes(2)) {
+													arr.push(2);
+												} else {
+													arr.splice(arr.indexOf(2), 1);
+												}
+												setAdditionalFilter({ ...additionalFilter, media: arr })
 											}}>Video</div>
 									</div>
 									<input id="MediasAsString" name="MediasAsString" type="hidden" defaultValue />
 								</div>
 							</div>
 							<div className="re__listing-filter-popup-footer">
-								<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+								<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm"
+									onClick={() => {
+										setVisible(false)
+									}}>
 									<i className="re__icon-refresh" />
-									<span>Đặt lại</span>
+									<span>Thoát</span>
 								</div>
-								<div className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm js__lfilter-more-search-button">
+								<div className="re__btn re__btn-pr-solid--sm re__btn-icon-left--sm"
+									onClick={() => {
+										setAdditionalFilter({
+											numbeds: [],
+											directionHouse: [],
+											media: []
+										})
+										setQueryParam({
+											...queryParam,
+											numbeds: [],
+											directionHouse: [],
+											media: 0
+										})
+									}}>
 									<i className="re__icon-search--sm" />
-									<span>Tìm kiếm</span>
+									<span>Đặt lại</span>
 								</div>
 							</div>
 						</div>
@@ -498,19 +561,29 @@ const ShowNewsInfor = () => {
 				</Modal>
 		}
 	}
-
+	console.log(additionalFilter)
 	return <div className='flex-col'>
 		{renderModalContent()}
 		<div id="boxSearchForm">
 			<div className='container-search-form' >
 				<div className="input-selection ml-12">
 					<div className="input-selection-level-one" style={{ width: '100%' }}>
-						<InputBox mode={inputConstant.INPUT_TEXT_BOX}
-							name='address'
-							type='text'
-							icon={seo}
-							placeholder='Tìm nhanh'
-							onChange={() => { }}></InputBox>
+						<div className={`input-selection-level-second input-selection-font-focus`}>
+							<input name='textSearch'
+								className="placeholder input-box"
+								placeholder='Tìm nhanh'
+								style={{ width: "100%", height: "100%" }}
+								icon={seo}
+								onChange={(event) => {
+									setTextSearch(event.target.value)
+								}}
+								value={textSearch}></input>
+							<div className="icon-clear" onClick={() => {
+								setQueryParam({ ...queryParam, textSearch: textSearch })
+							}}>
+								<img src={seo}></img>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div className="re__filter-wall"></div>
