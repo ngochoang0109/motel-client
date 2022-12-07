@@ -67,7 +67,6 @@ const ShowNewsInfor = () => {
 		setInitPage(false)
 		if (location.search.length !== 0) {
 			const obj = formatCommon.getQueryStringParams(location.search)
-			console.log(obj)
 			const updateQueryParam = queryParam
 			PostNewsService.getTypeOfAcc().then((data) => {
 				setAccType(data.data)
@@ -561,7 +560,6 @@ const ShowNewsInfor = () => {
 				</Modal>
 		}
 	}
-	console.log(additionalFilter)
 	return <div className='flex-col'>
 		{renderModalContent()}
 		<div id="boxSearchForm">

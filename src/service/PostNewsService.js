@@ -118,9 +118,9 @@ const getHightExpenseRelated = () => {
 		})
 }
 
-const getRelatedNews = (province, district) => {
+const getRelatedNews = (province, district, idPost) => {
 	return httpClient({}, storageKey.API,
-		`auth/get-related?province=${province}&district=${district}`, 'GET', {}).then((response) => {
+		`auth/get-related?province=${province}&district=${district}&idPost=${idPost}`, 'GET', {}).then((response) => {
 			return response.data;
 		})
 }

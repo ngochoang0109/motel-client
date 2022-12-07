@@ -10,7 +10,6 @@ const searchCard = (pageNo, pageSize, sort, mode, searchParam) => {
 							&areaFrom=${searchParam.areaFrom}&areaTo=${searchParam.areaTo}
 							&numBeds=${searchParam.numbeds}&directionHouse=${searchParam.directionHouse}
 							&media=${searchParam.media}`
-	console.log(strParam)
 	return httpClient({}, storageKey.API,
 		`auth/menu-news${strParam}`, 'GET', {}).then((response) => {
 			return response.data;

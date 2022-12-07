@@ -1,6 +1,6 @@
 import { Fragment, useEffect } from 'react'
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { formatCommon } from '../../common/format.common'
 import SlideImage from '../../components/user/SlideImage/SlideImage'
 import { PostNewsService } from '../../service/PostNewsService'
@@ -31,7 +31,7 @@ const NewsDetail = () => {
 				setReleatedDistrict(res)
 				dispatch(message.information(false))
 			})
-			PostNewsService.getRelatedNews(data.province, data.district).then((data) => {
+			PostNewsService.getRelatedNews(data.province, data.district, param.id).then((data) => {
 				console.log(data)
 				setReleatedNews(data)
 			})
@@ -48,17 +48,20 @@ const NewsDetail = () => {
 			<SlideImage images={detailPost.images} videos={detailPost.videos}
 				size={detailPost.images.length + detailPost.videos.length}></SlideImage>
 			<div className='news-detail-tag'>
-				<Link className="re__link-se" to="/ban-can-ho-chung-cu-tp-hcm" >
+				<a className="re__link-se"
+					href={`http://localhost:3000/trang-chu?pageNo=1&pageSize=20&textSearch=&mode=1&sort=startedDate&type=0&province=${detailPost.province}&district=&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150&numbeds=&directionHouse=&media=`}>
 					{detailPost.province}
-				</Link>
+				</a>
 				<span>/</span>
-				<Link className="re__link-se" to="/ban-can-ho-chung-cu-quan-2" >{detailPost.district}</Link>
+				<a className="re__link-se"
+					href={`http://localhost:3000/trang-chu?pageNo=1&pageSize=20&textSearch=&mode=1&sort=startedDate&type=0&province=${detailPost.province}&district=${detailPost.district}&ward=&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150&numbeds=&directionHouse=&media=`}>{detailPost.district}</a>
 				<span>/</span>
-				<Link className="re__link-se" to="/ban-can-ho-chung-cu-quan-2" >{detailPost.ward}</Link>
+				<a className="re__link-se"
+					href={`http://localhost:3000/trang-chu?pageNo=1&pageSize=20&textSearch=&mode=1&sort=startedDate&type=0&province=${detailPost.province}&district=${detailPost.district}&ward=${detailPost.ward}&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150&numbeds=&directionHouse=&media=`}>{detailPost.ward}</a>
 				<span>/</span>
-				<Link className="re__link-se" to="/ban-can-ho-chung-cu-empire-city-thu-thiem" >
+				<a className="re__link-se">
 					{`${detailPost.typeOfPost} tại ${detailPost.street}`}
-				</Link>
+				</a>
 			</div>
 			<div className='news-detail-content'>
 				<h1 className="re__pr-title pr-title">{detailPost.title}</h1>
@@ -75,11 +78,12 @@ const NewsDetail = () => {
 							<span className="title">Diện tích</span>
 							<span className="value">{detailPost.area} m²</span>
 						</div>
-						{detailPost.numOfBed === 0 ? <Fragment></Fragment> : <div className="re__pr-short-info-item js__pr-short-info-item">
-							<span className="title">Phòng ngủ</span>
-							<span className="value">{detailPost.numOfBed} PN</span>
-						</div>}
-
+						{detailPost.numOfBed === 0 ?
+							<Fragment></Fragment> :
+							<div className="re__pr-short-info-item js__pr-short-info-item">
+								<span className="title">Phòng ngủ</span>
+								<span className="value">{detailPost.numOfBed} PN</span>
+							</div>}
 						<div className="js__marking-product 
 							re__btn re__btn-se-ghost--md re__btn-icon--md 
 							re__pr-short-info-action re__marking-product">
@@ -588,9 +592,7 @@ const NewsDetail = () => {
 						<div style={{ "marginBottom": "16px" }} className="swiper-slide-1 swiper-slide-visible swiper-slide-active">
 							{releatedNews.map((el) => {
 								return <div className="js__card js__card-compact-web pr-container re__card-compact vip5 re__vip-5">
-									<Link className="js__product-link-for-product-id"
-										to={`/trang-chu/chi-tiet-bai-viet/${el.id}`}
-									>
+									<a href={`/trang-chu/chi-tiet-bai-viet/${el.id}`}>
 										<div className="re__card-image">
 											<img className="pr-img lazyloaded"
 												src={el.image} />
@@ -622,7 +624,7 @@ const NewsDetail = () => {
 												</div>
 											</div>
 										</div>
-									</Link>
+									</a>
 								</div>
 							})}
 						</div>
@@ -653,12 +655,14 @@ const NewsDetail = () => {
 			</div>
 
 			<div className="re__sidebar-box re__product-count-box">
-				<h2 className="re__sidebar-box-title">Cho thuê {detailPost.typeOfPost} tại {detailPost.district}</h2>
+				<h2 className="re__sidebar-box-title">
+					Cho thuê {detailPost.typeOfPost} tại {detailPost.district}
+				</h2>
 				<div className="re__sidebar-box-content">
 					{releatedDistrict.map((el) => {
 						return <h3 className="re__sidebar-box-item ">
-							<a tracking-id="srp-suggestion-link" tracking-label="loc=Sale-Listing Details;type=related"
-								className="re__link-se" href="/ban-can-ho-chung-cu-can-ho-dlusso">
+							<a className="re__link-se"
+								href={`http://localhost:3000/trang-chu?pageNo=1&textSearch=&mode=1&sort=startedDate&type=0&province=${detailPost.province}&district=${detailPost.district}&ward=${el.ward}&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150&numbeds=&directionHouse=&media=`}>
 								{el.ward} ({el.numNews})
 							</a>
 						</h3>
@@ -669,9 +673,17 @@ const NewsDetail = () => {
 				<h2 className="re__sidebar-box-title">Bất động sản nỗi bật</h2>
 				<div className="re__sidebar-box-content">
 					{releatedHighExpense.map((el) => {
+						let id = 0
+						if (el.typePost === 'Nhà nguyên căn') {
+							id = 1
+						} else if (el.typePost === 'Căn hộ, chung cư') {
+							id = 2
+						} else if (el.typePost === 'Phòng trọ') {
+							id = 3
+						}
 						return <h3 className="re__sidebar-box-item ">
-							<a tracking-id="srp-suggestion-link" tracking-label="loc=Sale-Listing Details;type=related"
-								className="re__link-se" href="/ban-can-ho-chung-cu-can-ho-dlusso">
+							<a className="re__link-se"
+								href={`http://localhost:3000/trang-chu?pageNo=1&textSearch=&mode=1&sort=startedDate&type=${id}&province=&district=&ward=${el.wardOrStreet}&priceFrom=0&priceTo=100000000&areaFrom=0&areaTo=150&numbeds=&directionHouse=&media=`}>
 								{el.typePost} {el.wardOrStreet}
 							</a>
 						</h3>

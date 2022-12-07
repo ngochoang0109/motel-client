@@ -13,7 +13,6 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 	const navigate = useNavigate()
 	useEffect(() => {
 		if (!initPage) {
-			console.log(queryParam)
 			HomeService.searchCard(queryParam.pageNo - 1,
 				queryParam.pageSize,
 				queryParam.field,
@@ -70,7 +69,6 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 	}
 
 	const handleGetValue = (target) => {
-		console.log(target)
 		if (target.value === '') {
 			chooseSortMode(1, 'startedDate')
 			return
@@ -128,9 +126,6 @@ const MenuNewsCard = ({ queryParam, initPage, sortMode, chooseSortMode, choosePa
 			arrItemTitle.push(`Khoảng dưới ${queryParam.areaTo}m²`)
 		} else if (queryParam.areaFrom >= 150) {
 			arrItemTitle.push(`Trên ${queryParam.areaFrom}m²`)
-		}
-		if (queryParam.ward.value) {
-			arrItemTitle.push(queryParam.ward.value)
 		}
 		for (let i = 0; i < arrItemTitle.length; i++) {
 			if (i == arrItemTitle.length - 1) {
