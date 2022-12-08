@@ -5,7 +5,8 @@ import { modeNews } from "../../../constant/mode.news";
 
 const NewsCard = ({ title, price, area, province, district, description,
 	fullName, phone, startedDate, closedDate,
-	avatar, mode, totalAmount, id, addToCart, fromCalled }) => {
+	avatar, mode, totalAmount, id, addToCart, fromCalled, viewReasonReject,
+	onHindden }) => {
 
 	const location = useLocation()
 
@@ -40,12 +41,19 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xem lý do</span></span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								viewReasonReject(id)
+							}}>
+							<span>Xem lý do</span>
+						</span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Chỉnh sửa</span></span>
+							<span>Chỉnh sửa</span>
+						</span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa</span></span>
+							<span>Xóa bài</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -99,10 +107,15 @@ const NewsCard = ({ title, price, area, province, district, description,
 							<span>Liên hệ: {formatCommon.phoneNumberFormat(phone).slice(0, 8)} ***</span>
 						</span>
 					</div> : <div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Ẩn bài viết</span></span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" 
+							onClick={()=>{
+								onHindden(id)
+							}}>
+							<span>Ẩn bài viết</span>
+						</span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+							<span>Xóa bài</span>
+						</span>
 					</div>}
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -133,7 +146,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 					</div>
 
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm">
 							<span>Hiện thị lại</span></span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
 							<span>Xóa bài</span></span>
@@ -155,7 +168,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 		}
 	}
 	return <div className="re__card-full re__card-full-no-label vip5 re__vip-5">
-		<Link className="link-item" to={mode === modeNews.SHOWING ? `/trang-chu/chi-tiet-bai-viet/${id}` : location.pathname}>
+		<a className="link-item">
 			<div className="re__card-image re__card-image-no-image">
 				<img src={avatar} />
 				<div className="re__card-image-feature" />
@@ -179,7 +192,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 				</div>
 			</div>
 			<div style={{ clear: 'left' }} />
-		</Link>
+		</a>
 	</div>
 }
 

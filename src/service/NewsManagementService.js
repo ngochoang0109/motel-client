@@ -1,7 +1,6 @@
 import headerCommon from "../common/header.common";
 import httpClient from "../common/httpClient";
 import { storageKey } from "../constant/storageKey";
-import { AddressApiService } from "./AddressApiService";
 
 const getAllPostOfUser = (pageNo, pageSize, sort, mode) => {
 	const headers = headerCommon();
@@ -152,6 +151,15 @@ const getCartOfUser = () => {
 		})
 }
 
+const updateHiddenToPost = (id) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		'news-management/update-hidden-post?id=' + id,
+		'POST', {}).then((response) => {
+			return response.data
+		})
+}
+
 export const NewsManagementService = {
 	getAllPostOfUser,
 	getWaittingApproved,
@@ -168,5 +176,6 @@ export const NewsManagementService = {
 	insertReason,
 	showReason,
 	addNewsToCart,
-	getCartOfUser
+	getCartOfUser,
+	updateHiddenToPost
 }

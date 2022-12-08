@@ -16,10 +16,13 @@ import { PostNewsService } from '../../service/PostNewsService';
 import { AddressApiService } from '../../service/AddressApiService';
 import Modal from 'antd/lib/modal/Modal';
 import { cartConstant } from '../../constant/cart.constant';
-import { useNavigate } from 'react-router-dom';
 
 const NewsManagement = () => {
 
+	const [messageReturn, setMessageReturn] = useState('')
+	const [reason, setReason] = useState('')
+	const [chooseId, setChooseId] = useState(0)
+	const [isLoading, setIdLoading] = useState(false)
 	const [modeModal, setModeModal] = useState(0)
 	const [getNewsCard, setNewsCard] = useState({ content: [] })
 	const [visible, setVisible] = useState(false)
@@ -96,9 +99,24 @@ const NewsManagement = () => {
 					mode={el.mode}
 					totalAmount={el.totalAmount}
 					id={el.id}
-					addToCart={addToCart}></NewsCard>
+					addToCart={addToCart}
+					viewReasonReject={viewReasonReject}
+					onHindden={onHindden}></NewsCard>
 			})
 		}
+	}
+
+	const onHindden = (id) => {
+		setChooseId(id)
+		setModeModal(6)
+		setVisible(true)
+	}
+
+	const viewReasonReject = (id) => {
+		// show modal reject
+		NewsManagementService.showReason(id).then(data => setReason(data))
+		setModeModal(5)
+		setVisible(true)
 	}
 
 	const selectedItemMenuBar = async (event, i, el) => {
@@ -173,8 +191,6 @@ const NewsManagement = () => {
 				return
 			case modeNews.SHOWING:
 				await NewsManagementService.getNewsShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
-					console.log(page)
-					console.log("adsffffffffffffffffff" + page.totalPages)
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
 					setNewsCard(page)
 					dispatch(message.information(false))
@@ -295,8 +311,8 @@ const NewsManagement = () => {
 										return <li itemProp="itemListElement"
 											className="Styles_option__1f2OH" key={el.id}
 											onClick={() => {
-												setFilterParam({...filterParam, province: el.id})
-												AddressApiService.getAllDistricByProvinceId(el.id).then((data)=>{
+												setFilterParam({ ...filterParam, province: el.id })
+												AddressApiService.getAllDistricByProvinceId(el.id).then((data) => {
 													setDistrict(data.reverse())
 												})
 												setVisible(false)
@@ -331,14 +347,69 @@ const NewsManagement = () => {
 										>
 											<div className="Styles_tagLink__w5_mC">
 												<span>{el.name}</span>
-												<img src="https://static.chotot.com/storage/chotot-icons/svg/grey-next.svg"
-													alt="next" height="14px" width="5px" style={{ marginLeft: 'auto' }} />
+												<img height="14px" width="5px" style={{ marginLeft: 'auto' }} />
 											</div>
 										</li>
 									})}
 								</ul>
 							</div>
 						</div>
+					</div>
+				</Modal>
+			case 5:
+				return <Modal title='Lý do'
+					visible={visible}
+					footer={null}
+					bodyStyle={{ height: "100px" }}
+					closable={true}
+					onCancel={() => {
+						setVisible(false)
+					}}
+					style={{ top: 240 }}>
+					<div className="styles_modal-body__1C3xw">
+						<p className='reason'> {reason ? reason : 'Chưa có nội dung'} </p>
+					</div>
+				</Modal>
+			case 6:
+				return <Modal title='Ẩn bài viết'
+					visible={visible}
+					bodyStyle={{ height: "100px" }}
+					closable={true}
+					onCancel={() => {
+						setVisible(false)
+					}}
+					confirmLoading={isLoading}
+					onOk={() => {
+						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
+							NewsManagementService.getNewsShowOfUser(0, 5, 'startedDate', 2).then((page) => {
+								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
+								setNewsCard(page)
+								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+								setIdLoading(false)
+								setMessageReturn('success')
+								setVisible(false)
+							})
+						}).catch(() => {
+							setIdLoading(false)
+							setMessageReturn('error')
+							setVisible(false)
+						})
+					}}
+					afterClose={() => {
+						console.log(messageReturn)
+						if (messageReturn === '') {
+							return
+						} else if (messageReturn === 'success') {
+							setMessageReturn('')
+							dispatch(message.successfully(true, "Ẩn bài viết thành công!!!"))
+						} else if (messageReturn === 'error') {
+							setMessageReturn('')
+							dispatch(message.successfully(true, "Ẩn bài viết thất bại, vui lòng thử lại!!!"))
+						}
+					}}
+					style={{ top: 240 }}>
+					<div className="styles_modal-body__1C3xw">
+						<p className='reason'> Bạn có muốn ẩn bài viết trên hệ thống </p>
 					</div>
 				</Modal>
 		}
