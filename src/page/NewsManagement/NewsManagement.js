@@ -101,13 +101,30 @@ const NewsManagement = () => {
 					id={el.id}
 					addToCart={addToCart}
 					viewReasonReject={viewReasonReject}
-					onHindden={onHindden}></NewsCard>
+					onHindden={onHindden}
+					updateReShowToPost={updateReShowToPost}
+					extendedTime={extendedTime}></NewsCard>
 			})
 		}
 	}
 
+	const extendedTime = (id) => {
+		setChooseId(id)
+		// extended time to post
+		setModeModal(8)
+		setVisible(true)
+	}
+
+	const updateReShowToPost = (id) => {
+		setChooseId(id)
+		// re-show post
+		setModeModal(7)
+		setVisible(true)
+	}
+
 	const onHindden = (id) => {
 		setChooseId(id)
+		// hidden post
 		setModeModal(6)
 		setVisible(true)
 	}
@@ -410,6 +427,90 @@ const NewsManagement = () => {
 					style={{ top: 240 }}>
 					<div className="styles_modal-body__1C3xw">
 						<p className='reason'> Bạn có muốn ẩn bài viết trên hệ thống </p>
+					</div>
+				</Modal>
+			case 7:
+				return <Modal title='Hiển thị bài viết'
+					visible={visible}
+					bodyStyle={{ height: "100px" }}
+					closable={true}
+					onCancel={() => {
+						setVisible(false)
+					}}
+					confirmLoading={isLoading}
+					onOk={() => {
+						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
+							NewsManagementService.getNewsHiddenOfUser(0, 5, 'startedDate', 2).then((page) => {
+								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
+								setNewsCard(page)
+								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+								setIdLoading(false)
+								setMessageReturn('success')
+								setVisible(false)
+							})
+						}).catch(() => {
+							setIdLoading(false)
+							setMessageReturn('error')
+							setVisible(false)
+						})
+					}}
+					afterClose={() => {
+						console.log(messageReturn)
+						if (messageReturn === '') {
+							return
+						} else if (messageReturn === 'success') {
+							setMessageReturn('')
+							dispatch(message.successfully(true, "Hiển thị lại bài viết thành công!!!"))
+						} else if (messageReturn === 'error') {
+							setMessageReturn('')
+							dispatch(message.successfully(true, "Hiển thị lại bài viết thất bại, vui lòng thử lại!!!"))
+						}
+					}}
+					style={{ top: 240 }}>
+					<div className="styles_modal-body__1C3xw">
+						<p className='reason'> Bạn có muốn hiển thị lại bài viết trên hệ thống </p>
+					</div>
+				</Modal>
+			case 8:
+				return <Modal title='Gia hạn bài viết'
+					visible={visible}
+					bodyStyle={{ height: "100px" }}
+					closable={true}
+					onCancel={() => {
+						setVisible(false)
+					}}
+					confirmLoading={isLoading}
+					onOk={() => {
+						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
+							NewsManagementService.getNewsHiddenOfUser(0, 5, 'startedDate', 2).then((page) => {
+								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
+								setNewsCard(page)
+								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+								setIdLoading(false)
+								setMessageReturn('success')
+								setVisible(false)
+							})
+						}).catch(() => {
+							setIdLoading(false)
+							setMessageReturn('error')
+							setVisible(false)
+						})
+					}}
+					afterClose={() => {
+						console.log(messageReturn)
+						if (messageReturn === '') {
+							return
+						} else if (messageReturn === 'success') {
+							setMessageReturn('')
+							dispatch(message.successfully(true, "Hiển thị lại bài viết thành công!!!"))
+						} else if (messageReturn === 'error') {
+							setMessageReturn('')
+							dispatch(message.successfully(true, "Hiển thị lại bài viết thất bại, vui lòng thử lại!!!"))
+						}
+					}}
+					style={{ top: 240 }}>
+					<div className="styles_modal-body__1C3xw">
+						<p className='reason'> Bạn có muốn gia hạn bài viết trên hệ thống </p>
 					</div>
 				</Modal>
 		}

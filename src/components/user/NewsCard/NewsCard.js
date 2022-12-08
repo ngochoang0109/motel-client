@@ -1,14 +1,11 @@
 import { Fragment } from "react";
-import { Link, useLocation } from "react-router-dom";
 import { formatCommon } from "../../../common/format.common";
 import { modeNews } from "../../../constant/mode.news";
 
 const NewsCard = ({ title, price, area, province, district, description,
 	fullName, phone, startedDate, closedDate,
 	avatar, mode, totalAmount, id, addToCart, fromCalled, viewReasonReject,
-	onHindden }) => {
-
-	const location = useLocation()
+	onHindden, updateReShowToPost, extendedTime }) => {
 
 	const clickAddItemToCart = () => {
 		addToCart(id)
@@ -107,8 +104,8 @@ const NewsCard = ({ title, price, area, province, district, description,
 							<span>Liên hệ: {formatCommon.phoneNumberFormat(phone).slice(0, 8)} ***</span>
 						</span>
 					</div> : <div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" 
-							onClick={()=>{
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							onClick={() => {
 								onHindden(id)
 							}}>
 							<span>Ẩn bài viết</span>
@@ -129,10 +126,15 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							onClick={()=>{
+								extendedTime(id)
+							}}>
+							<span>Gia hạn</span>
+						</span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Gia hạn</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+							<span>Xóa bài</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -146,10 +148,15 @@ const NewsCard = ({ title, price, area, province, district, description,
 					</div>
 
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm">
-							<span>Hiện thị lại</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" onClick={() => {
+							updateReShowToPost(id)
+						}}>
+							<span>Hiện thị lại</span>
+						</span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}>
+							<span>Xóa bài</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
