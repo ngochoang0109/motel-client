@@ -175,3 +175,12 @@
 	color: rgb(44, 44, 44);
 	text-align: center;
 }
+
+.exception-text{
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 20px;
+	color: #A52A2A;
+	text-align: center;
+}

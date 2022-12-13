@@ -160,6 +160,16 @@ const updateHiddenToPost = (id) => {
 		})
 }
 
+const deletedPost = (id) => {
+	const headers = headerCommon();
+	console.log('news-management/deleted-post/' + id)
+	return httpClient(headers, storageKey.API,
+		'news-management/deleted-post/' + id,
+		'POST', {}).then((response) => {
+			return response.data
+		})
+}
+
 export const NewsManagementService = {
 	getAllPostOfUser,
 	getWaittingApproved,
@@ -177,5 +187,6 @@ export const NewsManagementService = {
 	showReason,
 	addNewsToCart,
 	getCartOfUser,
-	updateHiddenToPost
+	updateHiddenToPost,
+	deletedPost
 }

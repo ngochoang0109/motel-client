@@ -125,6 +125,23 @@ const getRelatedNews = (province, district, idPost) => {
 		})
 }
 
+const getNewsDetail = (postId) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		`get-news-infor/${postId}`, 'GET', {}).then((response) => {
+			return response.data;
+		})
+}
+
+const extendedTimeToPost = (postId, cost) => {
+	const headers = headerCommon();
+	return httpClient(headers, storageKey.API,
+		'post-news/extended-time/' + postId,
+		'POST', cost).then((response) => {
+			return response.data;
+		})
+}
+
 export const PostNewsService = {
 	getTypeOfAcc,
 	getCurrentUserInfor,
@@ -134,5 +151,7 @@ export const PostNewsService = {
 	getPostDetail,
 	getRelatedNewsOfDistrict,
 	getHightExpenseRelated,
-	getRelatedNews
+	getRelatedNews,
+	getNewsDetail,
+	extendedTimeToPost
 }

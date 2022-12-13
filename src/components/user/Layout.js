@@ -61,6 +61,20 @@ const Layout = () => {
 							</PrivateRoute>
 						}>
 					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet/gia-han-bai-viet/:id"
+						element={
+							<PrivateRoute>
+								<CreatePost />
+							</PrivateRoute>
+						}>
+					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet/chinh-sua-bai-viet/:id"
+						element={
+							<PrivateRoute>
+								<CreatePost />
+							</PrivateRoute>
+						}>
+					</Route>
 				</Routes>
 			</Container>
 

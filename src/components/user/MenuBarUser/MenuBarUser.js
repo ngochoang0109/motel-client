@@ -8,8 +8,6 @@ import './MenuBarUser.css'
 const MenuBarUser = () => {
 	const currentUser = useSelector(state => state.userReducer)
 	const location = useLocation()
-
-	console.log(location)
 	
 	const showDropListManagement = () => {
 		return dataCommon.menuBarNewsManagement.map((el, i) => {

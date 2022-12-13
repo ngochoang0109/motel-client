@@ -14,10 +14,20 @@ import { message } from "../../action/message"
 import cancel from '../../assets/cancel.png'
 import Modal from "antd/lib/modal/Modal"
 import MenuBarUser from "../../components/user/MenuBarUser/MenuBarUser"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
+import AWS from 'aws-sdk';
 
 const CreatePost = () => {
-	const nav= useNavigate()
+
+	AWS.config.update({
+		accessKeyId: 'AKIAVHFYBTGIYO5R42QK',
+		secretAccessKey: '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',
+	})
+	const nav = useNavigate()
+	const [modeForm, setModeForm] = useState('Create')
+	const [controlForm, setControlForm] = useState(false)
+	const location = useLocation()
+	const param = useParams()
 	const [typesOfAcc, setTypeOffAcc] = useState([])
 	const [expenses, setExpenses] = useState([])
 	const [getAllProvinces, setGetAllProvinces] = useState([{ id: 0, name: '' }])
@@ -87,9 +97,65 @@ const CreatePost = () => {
 			})
 			setExpenses(convert)
 		})
+		const obj = formatCommon.getQueryStringParams(location.search)
+		if (param.id) {
+			if (obj.mode && obj.mode === 'ExtendedTime') {
+				setModeForm(obj.mode)
+				setControlForm(true)
+			}
+			PostNewsService.getNewsDetail(param.id).then((data) => {
+				let imagesUpdated = []
+				data.images.forEach(async img => {
+					console.log(img)
+					const arr = img.split('/')
+					const s3 = new AWS.S3()
+					const params = {
+						Bucket: 'motel-video',
+						Key: arr[arr.length - 1]
+					}
+					const arrayUint = await s3.getObject(params).promise()
+					imagesUpdated.push(arrayBufferToFile(arrayUint.Body, img))
+					console.log(imagesUpdated)
+				})
+				console.log(data.images)
+				setPostNews({
+					...postNews,
+					airConditioner: data.accomodationInfor.airConditioner,
+					area: data.accomodationInfor.area,
+					balcony: data.accomodationInfor.balcony,
+					directionBalcony: data.accomodationInfor.directionBalcony,
+					directionHouse: data.accomodationInfor.directionHouse,
+					district: data.accomodationInfor.district,
+					floorNumber: data.accomodationInfor.floorNumber,
+					furniture: data.accomodationInfor.furniture,
+					heater: data.accomodationInfor.heater,
+					internet: data.accomodationInfor.internet,
+					numOfBed: data.accomodationInfor.numOfBed,
+					numOfFloor: data.accomodationInfor.numOfFloor,
+					numOfToilet: data.accomodationInfor.numOfToilet,
+					parking: data.accomodationInfor.parking,
+					price: data.accomodationInfor.price,
+					province: data.accomodationInfor.province,
+					street: data.accomodationInfor.street,
+					tower: data.accomodationInfor.tower,
+					typesOfAcc: renderTypeOfAcc(data.accomodationInfor.typesOfAcc),
+					ward: data.accomodationInfor.ward,
+					description: data.newsInfor.description,
+					title: data.newsInfor.title,
+					videos: data.newsInfor.videos,
+					images: imagesUpdated
+				})
+			})
+		}
 	}, [])
 
+	const arrayBufferToFile = (buffer, filename) => {
+		const blob = new Blob([buffer], { type: 'image/png' });
+		return new File([blob], filename, { type: 'image/png' });
+	};
+
 	const handleGetValue = (target) => {
+		console.log(target)
 		let newArr = [];
 		switch (target.nameOfinput) {
 			case 'province':
@@ -145,7 +211,7 @@ const CreatePost = () => {
 
 	const handleCancel = e => {
 		setVisible(false)
-	};
+	}
 
 	const handleSetImages = (target) => {
 
@@ -198,8 +264,10 @@ const CreatePost = () => {
 	}
 
 	const handlePreviewImage = () => {
+		console.log(postNews.images)
 		return postNews.images.map((image) => {
 			let objImage = URL.createObjectURL(image)
+			console.log(objImage)
 			return <div className="wrapper-image-item"
 				style={{ marginRight: '4px', marginLeft: '4px', marginBottom: '16px' }}
 				key={image.name}>
@@ -250,22 +318,44 @@ const CreatePost = () => {
 	}
 
 	const submitData = () => {
-		dispatch(message.information(true))
 		postNews.totalAmount = finalTotalAmountNeeded()
-		PostNewsService.sendRequestPostNews(postNews, cost, typesOfAcc)
-			.then((data) => {
-				console.log(data)
-				if (data) {
-					nav("/trang-chu/quan-ly-bai-viet",{replace:true})
+		dispatch(message.information(true))
+		if (modeForm === 'ExtendedTime') {
+			PostNewsService.extendedTimeToPost(param.id, cost).then(() => {
+				dispatch(message.information(false))
+				dispatch(message.successfully(true, 'Gia hạn bài viết thành công'))
+				nav("/trang-chu/quan-ly-bai-viet")
+			}).catch((error) => {
+				console.log(error)
+				dispatch(message.error(true, 'Gia hạn bài viết thất bại!!!'))
+			})
+		} else if (modeForm === 'Create') {
+			PostNewsService.sendRequestPostNews(postNews, cost, typesOfAcc)
+				.then((data) => {
+					console.log(data)
+					if (data) {
+						nav("/trang-chu/quan-ly-bai-viet", { replace: true })
+						dispatch(message.information(false))
+						dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
+					} else {
+						dispatch(message.error(true, 'Tạo tin thất bại'))
+					}
+				})
+				.catch((error) => {
 					dispatch(message.information(false))
-					dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
-				} else {
 					dispatch(message.error(true, 'Tạo tin thất bại'))
-				}
-			})
-			.catch((error)=>{
-				dispatch(message.error(true, 'Tạo tin thất bại'))
-			})
+				})
+		}
+	}
+
+	const renderTypeOfAcc = (typesOfAcc) => {
+		if (typesOfAcc === 1) {
+			return TypeAccomodationConstant.HOUSE
+		} else if (typesOfAcc === 2) {
+			return TypeAccomodationConstant.APARTMENT
+		} else if (typesOfAcc === 3) {
+			return TypeAccomodationConstant.MOTEL
+		}
 	}
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
@@ -273,7 +363,13 @@ const CreatePost = () => {
 			<div className="container-right-bar">
 				<div className="ant-row wrap-table">
 					<div className="ant-col first-col">
-						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+						<div style={controlForm ? {
+							display: 'flex', flexDirection: 'column',
+							"pointerEvents": "none", "opacity": "0.5"
+						} : {
+							display: 'flex', flexDirection: 'column'
+						}}
+							className='first-col-wrap'>
 							<div className="infor-basic">
 								<h3 className="mb-16 font-stand">Thông tin cơ bản</h3>
 								<div className="flex-col">
@@ -291,7 +387,8 @@ const CreatePost = () => {
 														getValueDropList={handleGetValue}
 														name='typesOfAcc'
 														onChange={handleGetValue}
-														value={postNews.typesOfAcc}></InputBox>
+														value={postNews.typesOfAcc}
+													></InputBox>
 												</div>
 											</div>
 										</div>
@@ -313,7 +410,8 @@ const CreatePost = () => {
 														})}
 														getValueDropList={handleGetValue}
 														name='province'
-														onChange={handleGetValue}></InputBox>
+														onChange={handleGetValue}
+														value={postNews.province}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -333,7 +431,8 @@ const CreatePost = () => {
 														})}
 														getValueDropList={handleGetValue}
 														name='district'
-														onChange={handleGetValue}></InputBox>
+														onChange={handleGetValue}
+														value={postNews.district}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -358,7 +457,8 @@ const CreatePost = () => {
 														})}
 														getValueDropList={handleGetValue}
 														name='ward'
-														onChange={handleGetValue}></InputBox>
+														onChange={handleGetValue}
+														value={postNews.ward}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -374,7 +474,8 @@ const CreatePost = () => {
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
 														placeholder={`Nhập tên đường, số nhà`}
 														name='street'
-														onChange={handleGetValue}></InputBox>
+														onChange={handleGetValue}
+														value={postNews.street}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -427,7 +528,12 @@ const CreatePost = () => {
 								</div>
 							</div>
 						</div>
-						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+						<div style={controlForm ? {
+							display: 'flex', flexDirection: 'column',
+							"pointerEvents": "none", "opacity": "0.5"
+						} : {
+							display: 'flex', flexDirection: 'column'
+						}} className='first-col-wrap'>
 							<div className="infor-basic">
 								<h3 className="mb-16 font-stand">Thông tin bài viết</h3>
 								<div className="flex-col">
@@ -444,7 +550,8 @@ const CreatePost = () => {
 														onChange={handleGetValue}
 														name='title'
 														maxlength="100" minlength="30"
-														row='2'></InputBox>
+														row='2'
+														value={postNews.title}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -464,7 +571,8 @@ const CreatePost = () => {
 														placeholder={`VD: Thông tin về bất động sản: giờ giấc, vị trí thuận lợi, mô tả không gian bất động sản.... Tối thiểu 300 ký tự, tối đa 10000 ký tự`}
 														onChange={handleGetValue}
 														name='description'
-														maxlength="10000" minlength="300" row={8}></InputBox>
+														maxlength="10000" minlength="300" row={8}
+														value={postNews.description}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -472,7 +580,12 @@ const CreatePost = () => {
 								</div>
 							</div>
 						</div>
-						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+						<div style={controlForm ? {
+							display: 'flex', flexDirection: 'column',
+							"pointerEvents": "none", "opacity": "0.5"
+						} : {
+							display: 'flex', flexDirection: 'column'
+						}} className='first-col-wrap'>
 							<div className="infor-basic">
 								<h3 className="mb-16 font-stand">Thông tin bất động sản</h3>
 								<div className="flex-col">
@@ -488,7 +601,8 @@ const CreatePost = () => {
 														placeholder={`Nhập tên bất động sản`}
 														onChange={handleGetValue}
 														name='tower'
-														type='text'></InputBox>
+														type='text'
+														value={postNews.tower}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -508,7 +622,8 @@ const CreatePost = () => {
 														placeholder={`Nhập diện tích VD: 20, 25, 30, ...`}
 														onChange={handleGetValue}
 														name='area'
-														type='number'></InputBox>
+														type='number'
+														value={postNews.area}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -528,7 +643,8 @@ const CreatePost = () => {
 														placeholder={`Nhập giá VD: 2.500.000, 3.000.000, 5.000.000,...`}
 														onChange={handleGetValue}
 														name='price'
-														type='text'></InputBox>
+														type='text'
+														value={postNews.price}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -548,7 +664,8 @@ const CreatePost = () => {
 														placeholder={'Nhập số lượng phòng ngủ'}
 														name='numOfBed'
 														onChange={handleGetValue}
-														type='number'></InputBox>
+														type='number'
+														value={postNews.numOfBed}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -562,10 +679,11 @@ const CreatePost = () => {
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
-														placeholder={`Nhập số lượng phòng ngủ`}
+														placeholder={`Nhập số lượng phòng vệ sinh`}
 														name='numOfToilet'
 														onChange={handleGetValue}
-														type='number'></InputBox>
+														type='number'
+														value={postNews.numOfToilet}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -585,7 +703,8 @@ const CreatePost = () => {
 														placeholder={'Nhập số tầng'}
 														name='numOfFloor'
 														onChange={handleGetValue}
-														type='number'></InputBox>
+														type='number'
+														value={postNews.numOfFloor}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -602,7 +721,8 @@ const CreatePost = () => {
 														placeholder={`Nhập tầng số đang ở`}
 														name='floorNumber'
 														onChange={handleGetValue}
-														type='number'></InputBox>
+														type='number'
+														value={postNews.floorNumber}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -622,7 +742,8 @@ const CreatePost = () => {
 														data={dataCommon.getDirections}
 														getValueDropList={handleGetValue}
 														onChange={handleGetValue}
-														name='directionHouse'></InputBox>
+														name='directionHouse'
+														value={postNews.directionHouse}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -640,7 +761,8 @@ const CreatePost = () => {
 														data={dataCommon.getDirections}
 														getValueDropList={handleGetValue}
 														onChange={handleGetValue}
-														name='directionBalcony'></InputBox>
+														name='directionBalcony'
+														value={postNews.directionBalcony}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -655,27 +777,32 @@ const CreatePost = () => {
 											</div>
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
-													<div style={{ "display": "flex"}}>
+													<div style={{ "display": "flex" }}>
 														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Internet'}
 															name={'internet'}
-															onChange={handleGetValue}></InputBox>
+															onChange={handleGetValue}
+															checked={postNews.internet}></InputBox>
 														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Bãi đổ xe'}
 															name={'parking'}
-															onChange={handleGetValue}></InputBox>
+															onChange={handleGetValue}
+															checked={postNews.parking}></InputBox>
 														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Ban công'}
 															name={'balcony'}
-															onChange={handleGetValue}></InputBox>
-															<InputBox mode={inputConstant.CHECK_BOX}
+															onChange={handleGetValue}
+															checked={postNews.balcony}></InputBox>
+														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Điều hòa'}
 															name={'airConditioner'}
-															onChange={handleGetValue}></InputBox>
+															onChange={handleGetValue}
+															checked={postNews.airConditioner}></InputBox>
 														<InputBox mode={inputConstant.CHECK_BOX}
 															title={'Máy nóng lạnh'}
 															name={'heater'}
-															onChange={handleGetValue}></InputBox>
+															onChange={handleGetValue}
+															checked={postNews.heater}></InputBox>
 													</div>
 												</div>
 											</div>
@@ -695,7 +822,8 @@ const CreatePost = () => {
 														placeholder={`VD: Tủ lạnh, máy giặt, bồn rửa chén,...`}
 														onChange={handleGetValue}
 														name='furniture'
-														type='text'></InputBox>
+														type='text'
+														value={postNews.furniture}></InputBox>
 												</div>
 											</div>
 										</div>
@@ -703,7 +831,12 @@ const CreatePost = () => {
 								</div>
 							</div>
 						</div>
-						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+						<div style={controlForm ? {
+							display: 'flex', flexDirection: 'column',
+							"pointerEvents": "none", "opacity": "0.5"
+						} : {
+							display: 'flex', flexDirection: 'column'
+						}} className='first-col-wrap'>
 							<div className="infor-basic">
 								<h3 className="mb-16 font-stand">Hình ảnh & Video đính kèm</h3>
 								<div className="flex-col">
@@ -760,7 +893,12 @@ const CreatePost = () => {
 								</div>
 							</div>
 						</div>
-						<div style={{ display: 'flex', flexDirection: 'column' }} className='first-col-wrap'>
+						<div style={controlForm ? {
+							display: 'flex', flexDirection: 'column',
+							"pointerEvents": "none", "opacity": "0.5"
+						} : {
+							display: 'flex', flexDirection: 'column'
+						}} className='first-col-wrap'>
 							<div className="infor-basic">
 								<h3 className="mb-16 font-stand">Thông tin liên hệ</h3>
 								<div className="fields-form">
@@ -840,7 +978,7 @@ const CreatePost = () => {
 									</button>
 									<button className="btn-left" onClick={submitData}>
 										<div className="bKiBMa">
-											<span className="dUUUwk">Tạo bài viết</span>
+											<span className="dUUUwk">{modeForm === 'ExtendedTime' ? 'Gia hạn' :'Tạo bài viết'}</span>
 											<span className="jBNrga">
 												<div className="cCSKON">
 													<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -5,7 +5,7 @@ import { modeNews } from "../../../constant/mode.news";
 const NewsCard = ({ title, price, area, province, district, description,
 	fullName, phone, startedDate, closedDate,
 	avatar, mode, totalAmount, id, addToCart, fromCalled, viewReasonReject,
-	onHindden, updateReShowToPost, extendedTime }) => {
+	onHindden, updateReShowToPost, extendedTime, deletedPost, editPost }) => {
 
 	const clickAddItemToCart = () => {
 		addToCart(id)
@@ -21,11 +21,20 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
-					<div className="re__card-contact-button">
+					<div className="re__card-contact-button"
+						onClick={() => {
+							editPost(id)
+						}}>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Chỉnh sửa</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+							<span>Chỉnh sửa</span>
+						</span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
+							<span>Xóa bài</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -45,10 +54,17 @@ const NewsCard = ({ title, price, area, province, district, description,
 							}}>
 							<span>Xem lý do</span>
 						</span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							onClick={() => {
+								editPost(id)
+							}}>
 							<span>Chỉnh sửa</span>
 						</span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
 							<span>Xóa bài</span>
 						</span>
 					</div>
@@ -67,8 +83,13 @@ const NewsCard = ({ title, price, area, province, district, description,
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" onClick={clickAddItemToCart}>
 							<span>Thêm vào giỏ tin</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
+							<span>Xóa bài</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -81,8 +102,13 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
+							<span>Xóa bài</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -110,7 +136,11 @@ const NewsCard = ({ title, price, area, province, district, description,
 							}}>
 							<span>Ẩn bài viết</span>
 						</span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
 							<span>Xóa bài</span>
 						</span>
 					</div>}
@@ -127,12 +157,16 @@ const NewsCard = ({ title, price, area, province, district, description,
 					</div>
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
-							onClick={()=>{
+							onClick={() => {
 								extendedTime(id)
 							}}>
 							<span>Gia hạn</span>
 						</span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
 							<span>Xóa bài</span>
 						</span>
 					</div>
@@ -154,7 +188,10 @@ const NewsCard = ({ title, price, area, province, district, description,
 							<span>Hiện thị lại</span>
 						</span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
-							style={{ "background": "#A52A2A" }}>
+							style={{ "background": "#A52A2A" }}
+							onClick={() => {
+								deletedPost(id)
+							}}>
 							<span>Xóa bài</span>
 						</span>
 					</div>
@@ -168,14 +205,15 @@ const NewsCard = ({ title, price, area, province, district, description,
 					</div>
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Liên hệ: {phone}</span></span>
+							<span>Liên hệ: {phone}</span>
+						</span>
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
 		}
 	}
 	return <div className="re__card-full re__card-full-no-label vip5 re__vip-5">
-		<a className="link-item">
+		{<a className="link-item" href={fromCalled === 'HOME' ? '/trang-chu/chi-tiet-bai-viet/' + id : null}>
 			<div className="re__card-image re__card-image-no-image">
 				<img src={avatar} />
 				<div className="re__card-image-feature" />
@@ -199,7 +237,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 				</div>
 			</div>
 			<div style={{ clear: 'left' }} />
-		</a>
+		</a>}
 	</div>
 }
 

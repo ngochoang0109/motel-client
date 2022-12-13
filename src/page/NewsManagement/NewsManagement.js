@@ -16,9 +16,11 @@ import { PostNewsService } from '../../service/PostNewsService';
 import { AddressApiService } from '../../service/AddressApiService';
 import Modal from 'antd/lib/modal/Modal';
 import { cartConstant } from '../../constant/cart.constant';
+import { useNavigate } from 'react-router-dom';
 
 const NewsManagement = () => {
 
+	const nav = useNavigate()
 	const [messageReturn, setMessageReturn] = useState('')
 	const [reason, setReason] = useState('')
 	const [chooseId, setChooseId] = useState(0)
@@ -51,6 +53,7 @@ const NewsManagement = () => {
 		dispatch(message.information(true))
 		NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
 			setNewsCard(page)
+			console.log(page)
 			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
 			dispatch(message.information(false))
 		})
@@ -103,9 +106,23 @@ const NewsManagement = () => {
 					viewReasonReject={viewReasonReject}
 					onHindden={onHindden}
 					updateReShowToPost={updateReShowToPost}
-					extendedTime={extendedTime}></NewsCard>
+					extendedTime={extendedTime}
+					deletedPost={deletedPost}
+					editPost={editPost}></NewsCard>
 			})
 		}
+	}
+
+	const editPost = (id) => {
+		setChooseId(id)
+		setModeModal(10)
+		setVisible(true)
+	}
+
+	const deletedPost = (id) => {
+		setChooseId(id)
+		setModeModal(9)
+		setVisible(true)
 	}
 
 	const extendedTime = (id) => {
@@ -380,6 +397,7 @@ const NewsManagement = () => {
 					bodyStyle={{ height: "100px" }}
 					closable={true}
 					onCancel={() => {
+						setMessageReturn('')
 						setVisible(false)
 					}}
 					style={{ top: 240 }}>
@@ -393,19 +411,30 @@ const NewsManagement = () => {
 					bodyStyle={{ height: "100px" }}
 					closable={true}
 					onCancel={() => {
+						setMessageReturn('')
 						setVisible(false)
 					}}
 					confirmLoading={isLoading}
 					onOk={() => {
 						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
-							NewsManagementService.getNewsShowOfUser(0, 5, 'startedDate', 2).then((page) => {
-								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
-								setNewsCard(page)
-								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
-								setIdLoading(false)
-								setMessageReturn('success')
-								setVisible(false)
-							})
+							if (isActive.mode === modeNews.SHOWING) {
+								NewsManagementService.getNewsShowOfUser(0, 5, 'startedDate', 2).then((page) => {
+									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
+									setNewsCard(page)
+									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+									setIdLoading(false)
+									setMessageReturn('success')
+									setVisible(false)
+								})
+							} else {
+								NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
+									setNewsCard(page)
+									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_ALL })
+									setIdLoading(false)
+									setMessageReturn('success')
+									setVisible(false)
+								})
+							}
 						}).catch(() => {
 							setIdLoading(false)
 							setMessageReturn('error')
@@ -435,19 +464,30 @@ const NewsManagement = () => {
 					bodyStyle={{ height: "100px" }}
 					closable={true}
 					onCancel={() => {
+						setMessageReturn('')
 						setVisible(false)
 					}}
 					confirmLoading={isLoading}
 					onOk={() => {
 						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
-							NewsManagementService.getNewsHiddenOfUser(0, 5, 'startedDate', 2).then((page) => {
-								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
-								setNewsCard(page)
-								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
-								setIdLoading(false)
-								setMessageReturn('success')
-								setVisible(false)
-							})
+							if (isActive.mode === modeNews.HINDDEN) {
+								NewsManagementService.getNewsHiddenOfUser(0, 5, 'startedDate', 2).then((page) => {
+									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
+									setNewsCard(page)
+									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+									setIdLoading(false)
+									setMessageReturn('success')
+									setVisible(false)
+								})
+							} else {
+								NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
+									setNewsCard(page)
+									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_ALL })
+									setIdLoading(false)
+									setMessageReturn('success')
+									setVisible(false)
+								})
+							}
 						}).catch(() => {
 							setIdLoading(false)
 							setMessageReturn('error')
@@ -455,7 +495,6 @@ const NewsManagement = () => {
 						})
 					}}
 					afterClose={() => {
-						console.log(messageReturn)
 						if (messageReturn === '') {
 							return
 						} else if (messageReturn === 'success') {
@@ -477,15 +516,39 @@ const NewsManagement = () => {
 					bodyStyle={{ height: "100px" }}
 					closable={true}
 					onCancel={() => {
+						setMessageReturn('')
 						setVisible(false)
 					}}
 					confirmLoading={isLoading}
 					onOk={() => {
-						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
-							NewsManagementService.getNewsHiddenOfUser(0, 5, 'startedDate', 2).then((page) => {
-								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
-								setNewsCard(page)
-								setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
+						setIdLoading(false)
+						setMessageReturn('success')
+						setVisible(false)
+					}}
+					afterClose={() => {
+						if (messageReturn === '') {
+							return
+						}
+						nav('gia-han-bai-viet/' + chooseId + '?mode=ExtendedTime')
+					}}
+					style={{ top: 240 }}>
+					<div className="styles_modal-body__1C3xw">
+						<p className='reason'> Bạn có muốn gia hạn bài viết trên hệ thống </p>
+					</div>
+				</Modal>
+			case 9:
+				return <Modal title='Xóa bài viết'
+					visible={visible}
+					bodyStyle={{ height: "100px" }}
+					closable={true}
+					onCancel={() => {
+						setMessageReturn('')
+						setVisible(false)
+					}}
+					confirmLoading={isLoading}
+					onOk={() => {
+						NewsManagementService.deletedPost(chooseId).then(() => {
+							getNewsDataList(isActive.mode, isActive.pageNo).then(() => {
 								setIdLoading(false)
 								setMessageReturn('success')
 								setVisible(false)
@@ -497,20 +560,45 @@ const NewsManagement = () => {
 						})
 					}}
 					afterClose={() => {
-						console.log(messageReturn)
 						if (messageReturn === '') {
 							return
 						} else if (messageReturn === 'success') {
 							setMessageReturn('')
-							dispatch(message.successfully(true, "Hiển thị lại bài viết thành công!!!"))
+							dispatch(message.successfully(true, "Xóa bài viết thành công!!!"))
 						} else if (messageReturn === 'error') {
 							setMessageReturn('')
-							dispatch(message.successfully(true, "Hiển thị lại bài viết thất bại, vui lòng thử lại!!!"))
+							dispatch(message.successfully(true, "Xóa bài viết thất bại, vui lòng thử lại!!!"))
 						}
 					}}
 					style={{ top: 240 }}>
 					<div className="styles_modal-body__1C3xw">
-						<p className='reason'> Bạn có muốn gia hạn bài viết trên hệ thống </p>
+						<p className='reason'> Bạn có muốn <span className='exception-text'>XÓA BÀI VIẾT</span> trên hệ thống </p>
+					</div>
+				</Modal>
+			case 10:
+				return <Modal title='Chỉnh sửa bài viết'
+					visible={visible}
+					bodyStyle={{ height: "100px" }}
+					closable={true}
+					onCancel={() => {
+						setMessageReturn('')
+						setVisible(false)
+					}}
+					confirmLoading={isLoading}
+					onOk={() => {
+						setIdLoading(false)
+						setMessageReturn('success')
+						setVisible(false)
+					}}
+					afterClose={() => {
+						if (messageReturn === '') {
+							return
+						}
+						nav('chinh-sua-bai-viet/' + chooseId + '?mode=EditPost')
+					}}
+					style={{ top: 240 }}>
+					<div className="styles_modal-body__1C3xw">
+						<p className='reason'> Bạn có muốn <span className='exception-text'>CHỈNH SỬA BÀI VIẾT</span> trên hệ thống </p>
 					</div>
 				</Modal>
 		}
@@ -529,7 +617,6 @@ const NewsManagement = () => {
 	const handleCancel = e => {
 		setVisible(false)
 	}
-	console.log(filterParam)
 
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
@@ -697,7 +784,6 @@ const NewsManagement = () => {
 					"marginBottom": "16px", "display": "flex",
 					"justifyContent": "center"
 				}}>
-				{console.log(isActive)}
 				<Pagination current={isActive.pageNo}
 					total={isActive.totalPages}
 					onChange={handleChoosePage}

@@ -16,9 +16,9 @@ import moment from "moment";
 
 const InputBox = ({ mode, placeholder, data,
 	name, getValueDropList, onChange,
-	maxlength, minlength, row, type, value, 
-	title, disable, addItem,icon,clickIcon, checked }) => {
-		
+	maxlength, minlength, row, type, value,
+	title, disable, addItem, icon, clickIcon, checked }) => {
+
 	const showModal = useSelector(state => state.controllDropDownModal)
 	const dispatch = useDispatch()
 	const [id] = useState(generated(storageKey.SIZE_ID))
@@ -64,13 +64,14 @@ const InputBox = ({ mode, placeholder, data,
 					<div className="input-selection-font"
 						onClick={onFocusInputBox}
 						style={{ width: '100%' }} id={id}>
-						<div className={inputValue.value.length === 0 ? `placeholder` : `placeholder value-selected`}>
+						<div className={inputValue.value.length === 0 ?
+							`placeholder` : `placeholder value-selected`}>
 							{inputValue.value.length === 0 ? `${placeholder}` : inputValue.value}
 						</div>
 					</div>
-					{icon?<div onClick={clearInputData} className="icon-clear">
+					{icon ? <div onClick={clearInputData} className="icon-clear">
 						<img src={icon}></img>
-					</div>:currentInput.show ? <div onClick={clearInputData} className="icon-clear">
+					</div> : currentInput.show ? <div onClick={clearInputData} className="icon-clear">
 						<img src={cross}></img>
 					</div> : <div className="div-button-right">
 						<img src={down}></img>
@@ -100,9 +101,9 @@ const InputBox = ({ mode, placeholder, data,
 					</div> : type === 'calendar' ? <div className="icon-clear">
 						<img src={calendar}></img>
 					</div> : null)))}
-					{icon? <div className="icon-clear" onClick={clickIconButton}>
+					{icon ? <div className="icon-clear" onClick={clickIconButton}>
 						<img src={icon}></img>
-					</div>:<Fragment></Fragment>}
+					</div> : <Fragment></Fragment>}
 				</div>
 			case inputConstant.INPUT_BIG_BOX:
 				return <div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}><textarea rows={row} id={id} type="text"
@@ -116,7 +117,7 @@ const InputBox = ({ mode, placeholder, data,
 					onBlur={onFocusOutInputBox}
 					name={name}
 					disabled={disable ? disable : false}></textarea>
-					</div>
+				</div>
 			case inputConstant.CHECK_BOX:
 				return <div className="checkbox-row">
 					<div color="#CCCCCC" className="size-checkbox">
@@ -144,14 +145,14 @@ const InputBox = ({ mode, placeholder, data,
 			case inputConstant.CALENDAR_BOX:
 				return <DatePicker format={formatCommon.formatDate()}
 					defaultValue={moment(inputValue.value.toString().length !== 0 ? new Date(inputValue.value) : new Date())}
-					disabledDate={!disable?false:disabledDate}
+					disabledDate={!disable ? false : disabledDate}
 					onChange={onChangeCalendar}></DatePicker>
 		}
 	}
 
 	function disabledDate(current) {
-		const temp =new Date()
-		temp.setDate(temp.getDate()-1)
+		const temp = new Date()
+		temp.setDate(temp.getDate() - 1)
 		return current && current.valueOf() < temp;
 	}
 
@@ -253,10 +254,10 @@ const InputBox = ({ mode, placeholder, data,
 
 	const clearInputData = () => {
 		setInputValue({ value: "", nameOfinput: "" })
-		try{
-			onChange({ ...inputValue, value: "", nameOfinput: name, index: value.index})
-		}catch{
-			onChange({ ...inputValue, value: "", nameOfinput: name})
+		try {
+			onChange({ ...inputValue, value: "", nameOfinput: name, index: value.index })
+		} catch {
+			onChange({ ...inputValue, value: "", nameOfinput: name })
 		}
 	}
 
@@ -274,7 +275,7 @@ const InputBox = ({ mode, placeholder, data,
 		controllInput()
 	}
 
-	const clickIconButton=()=>{
+	const clickIconButton = () => {
 		clickIcon()
 	}
 
