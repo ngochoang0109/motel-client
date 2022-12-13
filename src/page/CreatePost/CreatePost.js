@@ -78,7 +78,6 @@ const CreatePost = () => {
 		discount: ''
 	})
 	const dispatch = useDispatch();
-	const [rollImage, setRollImage] = useState({ number: 0, name: '' })
 
 	useEffect(() => {
 		PostNewsService.getTypeOfAcc()
@@ -100,9 +99,9 @@ const CreatePost = () => {
 		const obj = formatCommon.getQueryStringParams(location.search)
 		if (param.id) {
 			if (obj.mode && obj.mode === 'ExtendedTime') {
-				setModeForm(obj.mode)
 				setControlForm(true)
 			}
+			setModeForm(obj.mode)
 			PostNewsService.getNewsDetail(param.id).then((data) => {
 				let imagesUpdated = []
 				data.images.forEach(async img => {
@@ -117,7 +116,7 @@ const CreatePost = () => {
 					imagesUpdated.push(arrayBufferToFile(arrayUint.Body, img))
 					console.log(imagesUpdated)
 				})
-				console.log(data.images)
+				console.log(data)
 				setPostNews({
 					...postNews,
 					airConditioner: data.accomodationInfor.airConditioner,
@@ -274,7 +273,7 @@ const CreatePost = () => {
 				<div className="image-item">
 					<div className="image">
 						<img src={objImage}
-							style={{ height: '100%', width: 'auto', transform: `rotate(${image.name === rollImage.name ? rollImage.number : 0}deg)` }} />
+							style={{ height: '100%', width: 'auto' }} />
 					</div>
 					<div className="user-controll">
 						<button>
@@ -978,11 +977,19 @@ const CreatePost = () => {
 									</button>
 									<button className="btn-left" onClick={submitData}>
 										<div className="bKiBMa">
-											<span className="dUUUwk">{modeForm === 'ExtendedTime' ? 'Gia hạn' :'Tạo bài viết'}</span>
+											<span className="dUUUwk">
+												{modeForm === 'ExtendedTime' ? 'Gia hạn' : ( modeForm === 'EditPost' ? 'Chỉnh sữa bài viết' : 'Tạo bài viết')}
+											</span>
 											<span className="jBNrga">
 												<div className="cCSKON">
-													<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path xmlns="http://www.w3.org/2000/svg" d="M9 20L17 12L9 4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+													<svg fontSize="16px" width="1em" height="1em"
+														viewBox="0 0 24 24" fill="none"
+														xmlns="http://www.w3.org/2000/svg">
+														<path xmlns="http://www.w3.org/2000/svg"
+															d="M9 20L17 12L9 4" stroke="currentColor"
+															strokeWidth="1.9"
+															strokeLinecap="round"
+															strokeLinejoin="round" />
 													</svg>
 												</div>
 											</span>
@@ -1127,7 +1134,11 @@ const CreatePost = () => {
 													<div className="first-row-total">Tổng cộng</div>
 													<div className="second-row-total">
 														<div className="sc-gsTCUz bLoRcR sc-hmgsod jgvoXG">
-															<span className="second-row"><span className="sc-fodVxV sUpQc">{formatCommon.formatNumberic(finalTotalAmountNeeded())}</span> VND</span></div>
+															<span className="second-row">
+																<span className="sc-fodVxV sUpQc">
+																	{formatCommon.formatNumberic(finalTotalAmountNeeded())}
+																</span> VND</span>
+														</div>
 													</div>
 												</div>
 											</div> : <Fragment></Fragment>
@@ -1138,7 +1149,6 @@ const CreatePost = () => {
 						</div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</Fragment >
