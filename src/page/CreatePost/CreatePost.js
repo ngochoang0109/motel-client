@@ -105,7 +105,6 @@ const CreatePost = () => {
 			PostNewsService.getNewsDetail(param.id).then((data) => {
 				let imagesUpdated = []
 				data.images.forEach(async img => {
-					console.log(img)
 					const arr = img.split('/')
 					const s3 = new AWS.S3()
 					const params = {
@@ -114,9 +113,7 @@ const CreatePost = () => {
 					}
 					const arrayUint = await s3.getObject(params).promise()
 					imagesUpdated.push(arrayBufferToFile(arrayUint.Body, img))
-					console.log(imagesUpdated)
 				})
-				console.log(data)
 				setPostNews({
 					...postNews,
 					airConditioner: data.accomodationInfor.airConditioner,
@@ -142,7 +139,7 @@ const CreatePost = () => {
 					description: data.newsInfor.description,
 					title: data.newsInfor.title,
 					videos: data.newsInfor.videos,
-					images: imagesUpdated
+					images: []
 				})
 			})
 		}
@@ -151,10 +148,9 @@ const CreatePost = () => {
 	const arrayBufferToFile = (buffer, filename) => {
 		const blob = new Blob([buffer], { type: 'image/png' });
 		return new File([blob], filename, { type: 'image/png' });
-	};
+	}
 
 	const handleGetValue = (target) => {
-		console.log(target)
 		let newArr = [];
 		switch (target.nameOfinput) {
 			case 'province':
@@ -263,10 +259,8 @@ const CreatePost = () => {
 	}
 
 	const handlePreviewImage = () => {
-		console.log(postNews.images)
 		return postNews.images.map((image) => {
 			let objImage = URL.createObjectURL(image)
-			console.log(objImage)
 			return <div className="wrapper-image-item"
 				style={{ marginRight: '4px', marginLeft: '4px', marginBottom: '16px' }}
 				key={image.name}>
@@ -325,15 +319,23 @@ const CreatePost = () => {
 				dispatch(message.successfully(true, 'Gia hạn bài viết thành công'))
 				nav("/trang-chu/quan-ly-bai-viet")
 			}).catch((error) => {
-				console.log(error)
 				dispatch(message.error(true, 'Gia hạn bài viết thất bại!!!'))
+			})
+		} else if (modeForm === 'EditPost') {
+			console.log(postNews)
+			PostNewsService.editPost(postNews, cost, typesOfAcc, param.id).then(() => {
+				dispatch(message.information(false))
+				dispatch(message.successfully(true, 'Chỉnh sữa bài viết thành công'))
+				nav("/trang-chu/quan-ly-bai-viet")
+			}).catch((error) => {
+				console.log(error)
+				dispatch(message.error(true, 'Chỉnh sữa bài viết thất bại!!!'))
 			})
 		} else if (modeForm === 'Create') {
 			PostNewsService.sendRequestPostNews(postNews, cost, typesOfAcc)
 				.then((data) => {
-					console.log(data)
 					if (data) {
-						nav("/trang-chu/quan-ly-bai-viet", { replace: true })
+						nav("/trang-chu/quan-ly-bai-viet")
 						dispatch(message.information(false))
 						dispatch(message.successfully(true, 'Tạo bài đăng thành công'))
 					} else {
@@ -970,7 +972,9 @@ const CreatePost = () => {
 						<div className="footer-button">
 							<div className="wrap-button">
 								<div className="flex-between">
-									<button className="btn-right">
+									<button className="btn-right" onClick={()=>{
+										nav("/trang-chu/quan-ly-bai-viet")
+									}}>
 										<div className="bKiBMa">
 											<span className="dUUUwk">Thoát</span>
 										</div>

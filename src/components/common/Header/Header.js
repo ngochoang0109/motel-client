@@ -140,7 +140,7 @@ const Header = () => {
 										<div onMouseLeave={closePopupOver}>
 											<ul className={`menu-user-child ${showControll}`}>
 												<li className="subMenuUser">
-													<a href="/quan-ly-bai-viet" className="haslink">
+													<a href="/trang-chu/quan-ly-bai-viet" className="haslink">
 														<svg fontSize="16px" width="1em" height="1em" viewBox="0 0 24 24" fill="none">
 															<path d="M4.5 6C5.32843 6 6 5.32843 6 4.5C6 3.67157 5.32843 3 4.5 3C3.67157 3 3 3.67157 3 4.5C3 5.32843 3.67157 6 4.5 6Z" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
 															<path d="M4.5 13C5.32843 13 6 12.3284 6 11.5C6 10.6716 5.32843 10 4.5 10C3.67157 10 3 10.6716 3 11.5C3 12.3284 3.67157 13 4.5 13Z" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
@@ -153,7 +153,7 @@ const Header = () => {
 													</a>
 												</li>
 												<li className="subMenuUser">
-													<a href="/trang-ca-nhan/uspg-changeinfo" className="haslink">
+													<a href="/trang-chu/quan-ly-bai-viet/thong-tin-ca-nhan" className="haslink">
 														<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
 															<path d="M12 3.75C10.2051 3.75 8.75 5.20507 8.75 7C8.75 8.79493 10.2051 10.25 12 10.25C13.7949 10.25 15.25 8.79493 15.25 7C15.25 5.20507 13.7949 3.75 12 3.75ZM7.25 7C7.25 4.37665 9.37665 2.25 12 2.25C14.6234 2.25 16.75 4.37665 16.75 7C16.75 9.62335 14.6234 11.75 12 11.75C9.37665 11.75 7.25 9.62335 7.25 7ZM3.25 19C3.25 16.3766 5.37665 14.25 8 14.25H16C18.6234 14.25 20.75 16.3766 20.75 19V21C20.75 21.4142 20.4142 21.75 20 21.75C19.5858 21.75 19.25 21.4142 19.25 21V19C19.25 17.2051 17.7949 15.75 16 15.75H8C6.20507 15.75 4.75 17.2051 4.75 19V21C4.75 21.4142 4.41421 21.75 4 21.75C3.58579 21.75 3.25 21.4142 3.25 21V19Z" fill="#2C2C2C" />
 														</svg>

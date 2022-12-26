@@ -78,7 +78,7 @@ const UserInfor = () => {
 											<div className="input-selection">
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
-														placeholder={`Nhập tên bất động sản`}
+														placeholder='Nhập địa chỉ'
 														// onChange={handleGetValue}
 														name='tower'
 														type='text'></InputBox>

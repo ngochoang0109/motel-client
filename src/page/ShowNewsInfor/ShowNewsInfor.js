@@ -5,10 +5,8 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { dataCommon } from '../../common/data.common';
 import { formatCommon } from '../../common/format.common';
-import InputBox from '../../components/common/InputBox/InputBox';
 import MenuNewsCard from '../../components/user/MenuNewsCard/MenuNewsCard';
 import SideFilterBox from '../../components/user/SideFilterBox/SideFilterBox';
-import { inputConstant } from '../../constant/inputConstant';
 import { AddressApiService } from '../../service/AddressApiService';
 import { HomeService } from '../../service/HomeService';
 import { PostNewsService } from '../../service/PostNewsService';
@@ -548,7 +546,7 @@ const ShowNewsInfor = () => {
 											...queryParam,
 											numbeds: [],
 											directionHouse: [],
-											media: 0
+											media: []
 										})
 									}}>
 									<i className="re__icon-search--sm" />

@@ -640,7 +640,9 @@ const NewsDetail = () => {
 				<span className="re__prefix-contact-name">Được đăng bởi</span>
 				<div className="re__contact-name js_contact-name">{detailPost.fullname}</div>
 				<div className="re__contact-link">
-					<a tracking-id="user-listing-ldp" className="re__link-se" href="/tin-rao-cung-nguoi-dang-nha-dat-ban-us204789">
+					<a tracking-id="user-listing-ldp"
+						className="re__link-se"
+						href="/tin-rao-cung-nguoi-dang-nha-dat-ban-us204789">
 						Xem thêm {detailPost.otherPost} tin khác
 					</a>
 				</div>

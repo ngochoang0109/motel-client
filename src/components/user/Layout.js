@@ -32,49 +32,13 @@ const Layout = () => {
 					<Route path="/can-ho-chung-cu" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="/phong-tro" element={<ShowNewsInfor></ShowNewsInfor>}></Route>
 					<Route path="trang-chu/tao-bai-viet" element={<PrivateRoute><CreatePost /></PrivateRoute>}></Route>
-					<Route path="trang-chu/quan-ly-bai-viet"element={	<PrivateRoute>		<NewsManagement />	</PrivateRoute>}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan/:id"element={
-							<PrivateRoute>
-								<PaymentComfirm />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/gio-tin"
-						element={
-							<PrivateRoute>
-								<CartPage />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/lich-su-giao-dich"
-						element={
-							<PrivateRoute>
-								<HistoryPayment />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/thong-tin-ca-nhan"
-						element={
-							<PrivateRoute>
-								<UserInfor />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/gia-han-bai-viet/:id"
-						element={
-							<PrivateRoute>
-								<CreatePost />
-							</PrivateRoute>
-						}>
-					</Route>
-					<Route path="trang-chu/quan-ly-bai-viet/chinh-sua-bai-viet/:id"
-						element={
-							<PrivateRoute>
-								<CreatePost />
-							</PrivateRoute>
-						}>
-					</Route>
+					<Route path="trang-chu/quan-ly-bai-viet"element={	<PrivateRoute>		<NewsManagement />	</PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet/gio-tin/thanh-toan/:id" element={<PrivateRoute><PaymentComfirm /></PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet/gio-tin" element={<PrivateRoute><CartPage /></PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet/lich-su-giao-dich" element={<PrivateRoute><HistoryPayment /></PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet/thong-tin-ca-nhan" element={<PrivateRoute><UserInfor /></PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet/gia-han-bai-viet/:id" element={<PrivateRoute><CreatePost /></PrivateRoute>}></Route>
+					<Route path="trang-chu/quan-ly-bai-viet/chinh-sua-bai-viet/:id" element={<PrivateRoute><CreatePost /></PrivateRoute>}></Route>
 				</Routes>
 			</Container>
 

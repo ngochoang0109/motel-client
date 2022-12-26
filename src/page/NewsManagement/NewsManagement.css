@@ -184,3 +184,10 @@
 	color: #A52A2A;
 	text-align: center;
 }
+
+.ant-btn-default span {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 450;
+	font-size: 14px;
+	line-height: 20px;
+}

@@ -169,7 +169,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
 						<span className="re__card-published-info-published-at"> Đăng bởi {fullName} &ensp;</span>
-						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())} trước</span>
+						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())}</span>
 					</div>
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >

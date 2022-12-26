@@ -21,11 +21,11 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> --- &ensp;</span>
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
-					<div className="re__card-contact-button"
-						onClick={() => {
-							editPost(id)
-						}}>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
+					<div className="re__card-contact-button">
+						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
+							onClick={() => {
+								editPost(id)
+							}}>
 							<span>Chỉnh sửa</span>
 						</span>
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm"
@@ -117,7 +117,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 					<div className="re__card-published-info">
 						{fromCalled === "HOME" ? <Fragment>
 							<span className="re__card-published-info-published-at"> Đăng bởi: {fullName}&ensp;&ensp;</span>
-							<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())} trước</span>
+							<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())}</span>
 						</Fragment> : <Fragment>
 							<span className="re__card-published-info-published-at"> Mã bài viết: #{id}&ensp;&ensp;</span>
 							<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(startedDate)} &ensp;</span>
@@ -201,7 +201,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 				return <div className="re__card-contact">
 					<div className="re__card-published-info">
 						<span className="re__card-published-info-published-at"> Đăng bởi {fullName} &ensp;</span>
-						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())} trước</span>
+						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())}</span>
 					</div>
 					<div className="re__card-contact-button">
 						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >

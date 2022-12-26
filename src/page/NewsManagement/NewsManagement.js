@@ -1,4 +1,4 @@
-import { Pagination } from 'antd';
+import { Button, DatePicker, Pagination } from 'antd';
 import { Fragment, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { message } from '../../action/message';
@@ -17,6 +17,8 @@ import { AddressApiService } from '../../service/AddressApiService';
 import Modal from 'antd/lib/modal/Modal';
 import { cartConstant } from '../../constant/cart.constant';
 import { useNavigate } from 'react-router-dom';
+import { formatCommon } from '../../common/format.common';
+import moment from 'moment';
 
 const NewsManagement = () => {
 
@@ -35,25 +37,24 @@ const NewsManagement = () => {
 		pageNo: 0,
 		totalPages: 0
 	})
-	const [textSearch, setTextSearch] = useState({ searched: false, text: '' })
 	const [btnDurationTime, setBtnDurationTime] = useState(false)
 	const [getProvince, setProvince] = useState([])
 	const [getDistrict, setDistrict] = useState([])
 	const [typeOfAcc, setTypeOfAcc] = useState([])
 	const [typeOfNews, setTypeOfNews] = useState([])
 	const [filterParam, setFilterParam] = useState({
-		startedDate: new Date(),
-		closedDate: new Date(),
-		typeOfAcc: [],
-		typeOfNews: [],
-		province: 0,
-		district: 0
+		textSearch: '',
+		startedDate: moment(new Date('2018-12-17T00:00:00')).utc(true).format(),
+		closedDate: moment(new Date('2024-12-17T00:00:00')).utc(true).format(),
+		typeOfAcc: 0,
+		typeOfNews: 0,
+		province: '',
+		district: ''
 	})
 	useEffect(() => {
 		dispatch(message.information(true))
-		NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
+		NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2, filterParam).then((page) => {
 			setNewsCard(page)
-			console.log(page)
 			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
 			dispatch(message.information(false))
 		})
@@ -68,7 +69,7 @@ const NewsManagement = () => {
 			setTypeOfNews(convert)
 		})
 		AddressApiService.getAllProvince().then((data) => {
-			setProvince(data)
+			setProvince(data.reverse())
 			dispatch(message.information(false))
 		})
 	}, [])
@@ -156,7 +157,7 @@ const NewsManagement = () => {
 	const selectedItemMenuBar = async (event, i, el) => {
 		setActive({ id: i, status: !isActive.status, mode: el.mode, pageNo: 1 })
 		console.log(el.mode)
-		getNewsDataList(el.mode, 1)
+		getNewsDataList(el.mode, 1, filterParam)
 	}
 
 	const showMenuBarStatus = () => {
@@ -173,72 +174,64 @@ const NewsManagement = () => {
 
 	const handleChoosePage = (page) => {
 		setActive({ ...isActive, pageNo: page })
-		getNewsDataList(isActive.mode, page)
+		getNewsDataList(isActive.mode, page, filterParam)
 	}
 
-	const getNewsDataList = async (mode, page) => {
+	const getNewsDataList = async (mode, page, fillter) => {
 		dispatch(message.information(true))
-		if (textSearch.searched) {
-			NewsManagementService.getNewsByTextSearch(page - 1, 5, 'startedDate', 2, mode, textSearch.text).then((page) => {
-				setNewsCard(page)
-				dispatch(message.information(false))
-				setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: mode })
-				console.log(isActive)
-			})
-			return
-		}
+		console.log(filterParam)
 		switch (mode) {
 			case modeNews.NEWS_ALL:
-				await NewsManagementService.getAllPostOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getAllPostOfUser(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					setNewsCard(page)
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_ALL })
 					dispatch(message.information(false))
 				})
 				return
 			case modeNews.WAITING_APROVED:
-				await NewsManagementService.getWaittingApproved(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getWaittingApproved(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					dispatch(message.information(false))
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.WAITING_APROVED })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.NEWS_REJECT:
-				await NewsManagementService.getNewsRejected(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getNewsRejected(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					dispatch(message.information(false))
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_REJECT })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.NEWS_WAIT_PAYMENT:
-				await NewsManagementService.getDontPayment(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getDontPayment(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					dispatch(message.information(false))
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_WAIT_PAYMENT })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.WAITING_SHOW:
-				await NewsManagementService.getWaittingShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getWaittingShowOfUser(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					dispatch(message.information(false))
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.WAITING_SHOW })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.SHOWING:
-				await NewsManagementService.getNewsShowOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getNewsShowOfUser(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
 					setNewsCard(page)
 					dispatch(message.information(false))
 				})
 				return
 			case modeNews.EXPRIED:
-				await NewsManagementService.getNewsExpriedOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getNewsExpriedOfUser(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					dispatch(message.information(false))
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.EXPRIED })
 					setNewsCard(page)
 				})
 				return
 			case modeNews.HINDDEN:
-				await NewsManagementService.getNewsHiddenOfUser(page - 1, 5, 'startedDate', 2).then((page) => {
+				await NewsManagementService.getNewsHiddenOfUser(page - 1, 5, 'startedDate', 2, fillter).then((page) => {
 					setNewsCard(page)
 					setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.HINDDEN })
 					dispatch(message.information(false))
@@ -247,28 +240,12 @@ const NewsManagement = () => {
 		}
 	}
 
-	const searchByTextSearch = (target) => {
-		setTextSearch({ searched: false, text: target.value })
-	}
-
-	const clickIconSeach = () => {
-		dispatch(message.information(true))
-		setTextSearch({ ...textSearch, searched: true })
-		NewsManagementService.getNewsByTextSearch(0, 5, 'startedDate', 2, isActive.mode, textSearch.text).then((page) => {
-			console.log(page)
-			setNewsCard(page)
-			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
-			dispatch(message.information(false))
-		})
-	}
-
 	const chooseDurationTime = () => {
 		setBtnDurationTime(!btnDurationTime)
 	}
 
-	const handleSetDateFilterParam = (target) => {
-		setFilterParam({ ...filterParam, [target.nameOfinput]: target.value })
-	}
+	console.log(isActive)
+	console.log(filterParam)
 
 	const renderModalContent = () => {
 		switch (modeModal) {
@@ -277,16 +254,20 @@ const NewsManagement = () => {
 					visible={visible}
 					centered footer={null}
 					onCancel={handleCancel}
-					bodyStyle={{ height: "200px" }}
-					style={{ top: -152 }}><div className="styles_modal-body__1C3xw undefined">
+					bodyStyle={{ height: "216px" }}
+					style={{ top: -152 }}><div className="styles_modal-body__1C3xw">
 						<div className="Styles_bodyCustom__1gL0v">
 							<div className="Styles_body__4HzMi">
 								<ul>
 									{typeOfAcc.map((el) => {
 										return <li key={el.id}
-											// onClick={() => updateParamQuery(el, 'type')}
+											onClick={() => {
+												setFilterParam({ ...filterParam, typeOfAcc: el.id })
+												getNewsDataList(isActive.mode, 1, { ...filterParam, typeOfAcc: el.id })
+												setVisible(false)
+											}}
 											className="Styles_option__1f2OH" >
-											<div className="Styles_tagLink__w5_mC " to={el.id === 1 ? '/nha-nguyen-can' : el.id === 2 ? '/can-ho-chung-cu' : '/phong-tro'}>
+											<div className="Styles_tagLink__w5_mC">
 												<span>{el.name}</span>
 												<img src="https://static.chotot.com/storage/chotot-icons/svg/grey-next.svg"
 													alt="next" height="14px" width="5px" style={{ marginLeft: 'auto' }} />
@@ -294,6 +275,23 @@ const NewsManagement = () => {
 										</li>
 									})}
 								</ul>
+							</div>
+						</div>
+						<div className="re__listing-filter-popup-footer">
+							<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+								<i className="re__icon-refresh" />
+								<span></span>
+							</div>
+							<div className="re__btn re__btn-pr-solid--sm 
+									re__btn-icon-left--sm 
+									js__lfilter-more-search-button"
+								onClick={() => {
+									setFilterParam({ ...filterParam, typeOfAcc: 0 })
+									getNewsDataList(isActive.mode, 1, { ...filterParam, typeOfAcc: 0 })
+									setVisible(false)
+								}}>
+								<i className="re__icon-search--sm" />
+								<span>Đặt lại</span>
 							</div>
 						</div>
 					</div>
@@ -310,9 +308,13 @@ const NewsManagement = () => {
 								<ul>
 									{typeOfNews.map((el) => {
 										return <li key={el.id}
-											// onClick={() => updateParamQuery(el, 'type')}
+											onClick={() => {
+												setFilterParam({ ...filterParam, typeOfNews: el.id })
+												getNewsDataList(isActive.mode, 1, { ...filterParam, typeOfNews: el.id })
+												setVisible(false)
+											}}
 											className="Styles_option__1f2OH" >
-											<div className="Styles_tagLink__w5_mC " to={el.id === 1 ? '/nha-nguyen-can' : el.id === 2 ? '/can-ho-chung-cu' : '/phong-tro'}>
+											<div className="Styles_tagLink__w5_mC">
 												<span>{el.name}</span>
 												<img src="https://static.chotot.com/storage/chotot-icons/svg/grey-next.svg"
 													alt="next" height="14px" width="5px" style={{ marginLeft: 'auto' }} />
@@ -322,33 +324,53 @@ const NewsManagement = () => {
 								</ul>
 							</div>
 						</div>
+						<div className="re__listing-filter-popup-footer">
+							<div className="re__btn re__btn-se-ghost--sm re__btn-icon-left--sm js__filter-more-reset-button">
+								<i className="re__icon-refresh" />
+								<span></span>
+							</div>
+							<div className="re__btn re__btn-pr-solid--sm 
+									re__btn-icon-left--sm 
+									js__lfilter-more-search-button"
+								onClick={() => {
+									setFilterParam({ ...filterParam, typeOfNews: 0 })
+									getNewsDataList(isActive.mode, 1, { ...filterParam, typeOfNews: 0 })
+									setVisible(false)
+								}}>
+								<i className="re__icon-search--sm" />
+								<span>Đặt lại</span>
+							</div>
+						</div>
 					</div>
 				</Modal>
 			case 3:
 				return <Modal title="Chọn khu vực"
 					visible={visible}
 					centered footer={[
-						// <Button onClick={previousAddress}>
-						// 	Trước
-						// </Button>,
-						// <Button onClick={resetAddress}>
-						// 	Đặt lại
-						// </Button>
-					]}
+						<Button onClick={() => {
+							setFilterParam({ ...filterParam, province: '', district: '' })
+							setDistrict([])
+							getNewsDataList(isActive.mode, 1, { ...filterParam, province: '', district: '' })
+							setVisible(false)
+						}}>
+							Đặt lại
+						</Button>]}
 					onCancel={handleCancel}
 					bodyStyle={{ height: "400px" }}
-					style={{ top: -46 }}><div className="styles_modal-body__1C3xw">
+					style={{ top: -46 }}>
+					<div className="styles_modal-body__1C3xw">
 						<div className="Styles_bodyCustom__1gL0v">
 							<div className="Styles_body__4HzMi">
 								<ul>
-									{getProvince.reverse().map((el) => {
+									{getProvince.map((el) => {
 										return <li itemProp="itemListElement"
 											className="Styles_option__1f2OH" key={el.id}
 											onClick={() => {
-												setFilterParam({ ...filterParam, province: el.id })
+												setFilterParam({ ...filterParam, province: el.name })
 												AddressApiService.getAllDistricByProvinceId(el.id).then((data) => {
-													setDistrict(data.reverse())
+													setDistrict(data)
 												})
+												getNewsDataList(isActive.mode, 1, { ...filterParam, province: el.name })
 												setVisible(false)
 											}}
 										>
@@ -367,21 +389,34 @@ const NewsManagement = () => {
 			case 4:
 				return <Modal title='Chọn danh mục'
 					visible={visible}
-					centered footer={null}
+					centered footer={[
+						<Button onClick={() => {
+							setFilterParam({ ...filterParam, district: '' })
+							setDistrict([])
+							getNewsDataList(isActive.mode, 1, { ...filterParam, district: '' })
+							setVisible(false)
+						}}>
+							Đặt lại
+						</Button>]}
 					onCancel={handleCancel}
 					bodyStyle={{ height: "400px" }}
-					style={{ top: -46 }}><div className="styles_modal-body__1C3xw undefined">
+					style={{ top: -46 }}><div className="styles_modal-body__1C3xw">
 						<div className="Styles_bodyCustom__1gL0v">
 							<div className="Styles_body__4HzMi">
 								<ul>
 									{getDistrict.reverse().map((el) => {
 										return <li itemProp="itemListElement"
 											className="Styles_option__1f2OH" key={el.id}
-										// onClick={() => updateParamQuery(el, mode)}
+											onClick={() => {
+												setFilterParam({ ...filterParam, district: el.name })
+												getNewsDataList(isActive.mode, 1, { ...filterParam, district: el.name })
+												setVisible(false)
+											}}
 										>
 											<div className="Styles_tagLink__w5_mC">
 												<span>{el.name}</span>
-												<img height="14px" width="5px" style={{ marginLeft: 'auto' }} />
+												<img src="https://static.chotot.com/storage/chotot-icons/svg/grey-next.svg"
+													alt="next" height="14px" width="5px" style={{ marginLeft: 'auto' }} />
 											</div>
 										</li>
 									})}
@@ -417,24 +452,11 @@ const NewsManagement = () => {
 					confirmLoading={isLoading}
 					onOk={() => {
 						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
-							if (isActive.mode === modeNews.SHOWING) {
-								NewsManagementService.getNewsShowOfUser(0, 5, 'startedDate', 2).then((page) => {
-									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
-									setNewsCard(page)
-									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
-									setIdLoading(false)
-									setMessageReturn('success')
-									setVisible(false)
-								})
-							} else {
-								NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
-									setNewsCard(page)
-									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_ALL })
-									setIdLoading(false)
-									setMessageReturn('success')
-									setVisible(false)
-								})
-							}
+							getNewsDataList(isActive.mode, 1, { ...filterParam, typeOfNews: 0 }).then(() => {
+								setIdLoading(false)
+								setMessageReturn('success')
+								setVisible(false)
+							})
 						}).catch(() => {
 							setIdLoading(false)
 							setMessageReturn('error')
@@ -455,7 +477,7 @@ const NewsManagement = () => {
 					}}
 					style={{ top: 240 }}>
 					<div className="styles_modal-body__1C3xw">
-						<p className='reason'> Bạn có muốn ẩn bài viết trên hệ thống </p>
+						<p className='reason'> Bạn có muốn <span className='exception-text'>ẨN BÀI VIẾT</span> trên hệ thống </p>
 					</div>
 				</Modal>
 			case 7:
@@ -470,24 +492,11 @@ const NewsManagement = () => {
 					confirmLoading={isLoading}
 					onOk={() => {
 						NewsManagementService.updateHiddenToPost(chooseId).then(() => {
-							if (isActive.mode === modeNews.HINDDEN) {
-								NewsManagementService.getNewsHiddenOfUser(0, 5, 'startedDate', 2).then((page) => {
-									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.SHOWING })
-									setNewsCard(page)
-									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
-									setIdLoading(false)
-									setMessageReturn('success')
-									setVisible(false)
-								})
-							} else {
-								NewsManagementService.getAllPostOfUser(0, 5, 'startedDate', 2).then((page) => {
-									setNewsCard(page)
-									setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10, mode: modeNews.NEWS_ALL })
-									setIdLoading(false)
-									setMessageReturn('success')
-									setVisible(false)
-								})
-							}
+							getNewsDataList(isActive.mode, 1, { ...filterParam, typeOfNews: 0 }).then(() => {
+								setIdLoading(false)
+								setMessageReturn('success')
+								setVisible(false)
+							})
 						}).catch(() => {
 							setIdLoading(false)
 							setMessageReturn('error')
@@ -507,7 +516,7 @@ const NewsManagement = () => {
 					}}
 					style={{ top: 240 }}>
 					<div className="styles_modal-body__1C3xw">
-						<p className='reason'> Bạn có muốn hiển thị lại bài viết trên hệ thống </p>
+						<p className='reason'> Bạn có muốn <span className='exception-text'>HIỂN THỊ LẠI BÀI VIẾT</span> trên hệ thống </p>
 					</div>
 				</Modal>
 			case 8:
@@ -533,7 +542,7 @@ const NewsManagement = () => {
 					}}
 					style={{ top: 240 }}>
 					<div className="styles_modal-body__1C3xw">
-						<p className='reason'> Bạn có muốn gia hạn bài viết trên hệ thống </p>
+						<p className='reason'> Bạn có muốn <span className='exception-text'>GIA HẠN BÀI VIẾT</span> trên hệ thống </p>
 					</div>
 				</Modal>
 			case 9:
@@ -548,7 +557,7 @@ const NewsManagement = () => {
 					confirmLoading={isLoading}
 					onOk={() => {
 						NewsManagementService.deletedPost(chooseId).then(() => {
-							getNewsDataList(isActive.mode, isActive.pageNo).then(() => {
+							getNewsDataList(isActive.mode, isActive.pageNo, filterParam).then(() => {
 								setIdLoading(false)
 								setMessageReturn('success')
 								setVisible(false)
@@ -604,16 +613,7 @@ const NewsManagement = () => {
 		}
 	}
 
-	const filterData = () => {
-		dispatch(message.information(true))
-		setTextSearch({ ...textSearch, searched: true })
-		NewsManagementService.getNewsByTextSearch(0, 5, 'startedDate', 2, isActive.mode, textSearch.text, filterParam).then((page) => {
-			console.log(page)
-			setNewsCard(page)
-			setActive({ ...isActive, pageNo: page.pageNo + 1, totalPages: page.totalPages * 10 })
-			dispatch(message.information(false))
-		})
-	}
+
 	const handleCancel = e => {
 		setVisible(false)
 	}
@@ -637,9 +637,19 @@ const NewsManagement = () => {
 										placeholder={`Tìm theo mã tin, tiêu đề`}
 										name='textSearch'
 										icon={seo}
-										onChange={searchByTextSearch}
-										clickIcon={clickIconSeach}
-										value={textSearch.text}></InputBox>
+										value={filterParam.textSearch}
+										onChange={(value) => {
+											if (value.value === '') {
+												setFilterParam({ ...filterParam, textSearch: '' })
+												getNewsDataList(isActive.mode, 1, { ...filterParam, textSearch: '' })
+												return
+											}
+											setFilterParam({ ...filterParam, textSearch: value.value })
+										}}
+										clickIcon={() => {
+											getNewsDataList(isActive.mode, 1, filterParam)
+										}}
+									></InputBox>
 								</div>
 							</div>
 						</div>
@@ -647,7 +657,9 @@ const NewsManagement = () => {
 							<div className="wrapper-text">
 								<span className="icon">
 									<div>
-										<svg width="48px" height="48px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-labelledby="calendarEventIconTitle" stroke="#2329D6" strokeWidth={1} strokeLinecap="square" strokeLinejoin="miter" fill="none" color="#2329D6">
+										<svg width="48px" height="48px" viewBox="0 0 24 24"
+											xmlns="http://www.w3.org/2000/svg"
+											aria-labelledby="calendarEventIconTitle" stroke="#2329D6" strokeWidth={1} strokeLinecap="square" strokeLinejoin="miter" fill="none" color="#2329D6">
 											<title id="calendarEventIconTitle">Calendar event</title>
 											<path d="M3 5H21V21H3V5Z" />
 											<path d="M21 9H3" />
@@ -735,14 +747,27 @@ const NewsManagement = () => {
 							<div className="wrapper-input-level-2">
 								<div className="label-input">
 									Ngày bắt đầu
-									<div className="sc-kstrdz kihuz">&nbsp;*</div>
+									<div className="sc-kstrdz kihuz">&nbsp;</div>
 								</div>
 								<div className="input-selection">
 									<div className="input-selection-level-one" style={{ width: '100%' }}>
-										<InputBox mode={inputConstant.CALENDAR_BOX}
+										<DatePicker format={formatCommon.formatDate()}
+											onChange={(momentObj) => {
+												if (momentObj == null) {
+													setFilterParam({
+														...filterParam,
+														startedDate: moment(new Date('2018-12-17T03:24:00')).utc(true).format()
+													})
+												} else {
+													setFilterParam({
+														...filterParam,
+														startedDate: moment(momentObj._d).utc(true).format()
+													})
+												}
+											}}
+
 											name='startedDate'
-											onChange={handleSetDateFilterParam}
-											disable={false}></InputBox>
+											value={moment(filterParam.startedDate.toString())}></DatePicker>
 									</div>
 								</div>
 							</div>
@@ -751,14 +776,26 @@ const NewsManagement = () => {
 							<div className="wrapper-input-level-2">
 								<div className="label-input">
 									Ngày kết thúc
-									<div className="sc-kstrdz kihuz">&nbsp;*</div>
+									<div className="sc-kstrdz kihuz">&nbsp;</div>
 								</div>
 								<div className="input-selection">
 									<div className="input-selection-level-one" style={{ width: '100%' }}>
-										<InputBox mode={inputConstant.CALENDAR_BOX}
+										<DatePicker format={formatCommon.formatDate()}
+											onChange={(momentObj) => {
+												if (momentObj == null) {
+													setFilterParam({
+														...filterParam,
+														closedDate: moment(new Date()).utc(true).format()
+													})
+												} else {
+													setFilterParam({
+														...filterParam,
+														closedDate: moment(momentObj._d).utc(true).format()
+													})
+												}
+											}}
 											name='closedDate'
-											onChange={handleSetDateFilterParam}
-											disable={false}></InputBox>
+											value={moment(filterParam.closedDate.toString())}></DatePicker>
 									</div>
 								</div>
 							</div>
