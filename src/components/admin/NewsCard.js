@@ -98,8 +98,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatNumberic(totalAmount)} VNĐ </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -112,8 +111,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -126,10 +124,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Ẩn bài viết</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -142,10 +137,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Gia hạn</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
+
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>
@@ -158,22 +150,7 @@ const NewsCard = ({ title, price, area, province, district, description,
 						<span className="re__card-published-info-published-at"> {formatCommon.formatWithTimeDate(closedDate)} </span>
 					</div>
 					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Hiện thị lại</span></span>
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" style={{ "background": "#A52A2A" }}>
-							<span>Xóa bài</span></span>
-					</div>
-					<div style={{ clear: 'left' }} />
-				</div>
-			default:
-				return <div className="re__card-contact">
-					<div className="re__card-published-info">
-						<span className="re__card-published-info-published-at"> Đăng bởi {fullName} &ensp;</span>
-						<span className="re__card-published-info-published-at"> {formatCommon.getResultDiffDate(new Date(startedDate), new Date())}</span>
-					</div>
-					<div className="re__card-contact-button">
-						<span className="re__btn re__btn-cyan-solid--sm re__btn-icon-left--sm" >
-							<span>Liên hệ: {phone}</span></span>
+
 					</div>
 					<div style={{ clear: 'left' }} />
 				</div>

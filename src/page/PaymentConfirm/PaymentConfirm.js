@@ -90,9 +90,6 @@ const PaymentComfirm = () => {
 								style={{ "color": "rgb(255, 66, 78)" }}>{`${currentUser.address}`}</div>
 						</div>
 					</div>
-					<div className="lhekIy dqTjzx hover-point" style={{ "minWidth": "5rem" }}>
-						Thay đổi
-					</div>
 				</div>
 			</div>
 			<div className="payment-container" style={{ "marginTop": "16px", "boxShadow": "0px 4px 10px rgb(182 182 182 / 100%)" }}>

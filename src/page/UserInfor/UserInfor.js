@@ -9,14 +9,18 @@ const UserInfor = () => {
 		fullname: '',
 		phone: '',
 		address: '',
-		email: ''
+		email: '',
+		username : '',
+		avatar : ''
 	})
 
 	useEffect(() => {
 		PostNewsService.getCurrentUserInfor().then((data) => {
+			console.log(data)
 			setCurrentUser(data)
 		})
 	}, [])
+
 	return <Fragment>
 		<MenuBarUser></MenuBarUser>
 		<div className="right-bar">
@@ -98,7 +102,7 @@ const UserInfor = () => {
 												<div className="input-selection-level-one" style={{ width: '100%' }}>
 													<InputBox mode={inputConstant.INPUT_TEXT_BOX}
 														name='addressOfAuthor'
-														value={currentUser.address ? currentUser.address : 'HoangTN'}
+														value={currentUser.username ? currentUser.username : ''}
 														type='text'></InputBox>
 												</div>
 											</div>

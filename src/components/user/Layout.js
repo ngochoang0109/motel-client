@@ -41,7 +41,6 @@ const Layout = () => {
 					<Route path="trang-chu/quan-ly-bai-viet/chinh-sua-bai-viet/:id" element={<PrivateRoute><CreatePost /></PrivateRoute>}></Route>
 				</Routes>
 			</Container>
-
 		</Fragment>
 	)
 }

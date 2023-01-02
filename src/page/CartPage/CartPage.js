@@ -337,7 +337,6 @@ const CartPage = () => {
 																	<DatePicker
 																		format={formatCommon.formatDate()}
 																		value={moment(el.startedDate)}
-																		disabledDate={formatCommon.disabledDate}
 																		onChange={(momentObj, id, checked, numDate) => startedDateOnChange(momentObj, el.id, el.checked, el.numDate)}
 																		name='startedDate'
 																	></DatePicker>
