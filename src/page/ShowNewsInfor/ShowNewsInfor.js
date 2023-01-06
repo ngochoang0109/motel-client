@@ -776,9 +776,6 @@ const ShowNewsInfor = () => {
 					<h3 className="re__sidebar-box-item">
 						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=70000000&priceTo=100000000&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>70 - 100 triệu</Link>
 					</h3>
-					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=100000000&priceTo=100000001&areaFrom=${queryParam.areaFrom}&areaTo=${queryParam.areaTo}`}>Trên 100 triệu</Link>
-					</h3>
 				</SideFilterBox>
 				<SideFilterBox title='Lọc theo diện tích'>
 					<h3 className="re__sidebar-box-item">
@@ -795,9 +792,6 @@ const ShowNewsInfor = () => {
 					</h3>
 					<h3 className="re__sidebar-box-item">
 						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=100&areaTo=150`}>100 - 150 m²</Link>
-					</h3>
-					<h3 className="re__sidebar-box-item">
-						<Link className="re__link-se" to={`${location.pathname}?pageNo=1&pageSize=${queryParam.pageSize}&mode=${queryParam.mode}&sort=${queryParam.field}&type=${queryParam.type.value}&province=${queryParam.province.value}&district=${queryParam.district.value}&ward=${queryParam.ward.value}&priceFrom=${queryParam.priceFrom}&priceTo=${queryParam.priceTo}&areaFrom=150&areaTo=151`}>Trên 150 m²</Link>
 					</h3>
 				</SideFilterBox>
 				<SideFilterBox title='Cho thuê theo địa chỉ'>

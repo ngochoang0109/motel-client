@@ -758,11 +758,13 @@ const NewsManagement = () => {
 														...filterParam,
 														startedDate: moment(new Date('2018-12-17T03:24:00')).utc(true).format()
 													})
+													getNewsDataList(isActive.mode, 1, { ...filterParam, startedDate: moment(new Date('2018-12-17T03:24:00')).utc(true).format() })
 												} else {
 													setFilterParam({
 														...filterParam,
 														startedDate: moment(momentObj._d).utc(true).format()
 													})
+													getNewsDataList(isActive.mode, 1, { ...filterParam, startedDate: moment(momentObj._d).utc(true).format() })
 												}
 											}}
 
@@ -787,11 +789,13 @@ const NewsManagement = () => {
 														...filterParam,
 														closedDate: moment(new Date()).utc(true).format()
 													})
+													getNewsDataList(isActive.mode, 1, { ...filterParam, closedDate: moment(new Date()).utc(true).format() })
 												} else {
 													setFilterParam({
 														...filterParam,
 														closedDate: moment(momentObj._d).utc(true).format()
 													})
+													getNewsDataList(isActive.mode, 1, { ...filterParam, closedDate: moment(momentObj._d).utc(true).format() })
 												}
 											}}
 											name='closedDate'
