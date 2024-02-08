@@ -42,6 +42,7 @@ const InputBox = ({ mode, placeholder, data,
 	}
 
 	const controllTextBoxMode = () => {
+		// eslint-disable-next-line default-case
 		switch (mode) {
 			case inputConstant.INPUT_SEARCH:
 				return <Fragment>
