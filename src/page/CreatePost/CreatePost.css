@@ -1,11 +1,3 @@
-.left-bar {
-	position: absolute;
-	width: 280px;
-	background-color: white;
-	height: 100%;
-	box-shadow: rgb(182 182 182 / 18%) 0px 4px 8px;
-}
-
 .right-bar {
 	width: 100%;
 	display: flex;
@@ -429,10 +421,11 @@ h3 {
 	margin-top: 16px;
 }
 
+/* width: text+check */
 .checkbox-row {
 	max-height: 24px;
 	overflow: hidden;
-	width: 32%;
+	margin-right: 8px;
 }
 
 .size-checkbox {
@@ -442,9 +435,10 @@ h3 {
 	flex-direction: row;
 	-webkit-box-align: center;
 	align-items: center;
-	width: fit-content;
+	width: 170px;
 }
 
+/* width: check */
 .size-checkbox .check-box {
 	height: 1.2rem;
 	width: 1.2rem;
@@ -750,7 +744,6 @@ h3 {
 	padding-left: 0.25rem;
 	position: relative;
 	padding-right: 1.25rem;
-	margin-top: 1.25rem;
 	width: 100%;
 	height: 100%;
 }
@@ -932,7 +925,7 @@ h3 {
 	justify-content: space-between;
 }
 
-.bOmeuB {
+.flex-between .btn-right {
 	position: relative;
 	height: 48px;
 	display: inline-block;
@@ -946,7 +939,7 @@ h3 {
 	opacity: 1;
 	border: 1px solid rgb(204, 204, 204);
 }
-.jYwsoP {
+.flex-between .btn-left {
 	position: relative;
 	height: 48px;
 	display: inline-block;
@@ -985,26 +978,10 @@ h3 {
 	background-color: rgb(242, 242, 242);
 }
 
-.bKiBMa {
-	display: flex;
-	-webkit-box-align: center;
-	align-items: center;
-	height: 100%;
-	width: 100%;
-	-webkit-box-pack: center;
-	justify-content: center;
-}
 .jYwsoP.jYwsoP span {
 	color: rgb(255, 255, 255);
 }
-.dUUUwk {
-	font-family: 'Roboto', sans-serif;
-	font-size: 14px;
-	line-height: 20px;
-	font-weight: 500;
-	color: rgb(44, 44, 44);
-	display: inline-block;
-}
+
 .jYwsoP.jYwsoP span {
 	color: rgb(255, 255, 255);
 }

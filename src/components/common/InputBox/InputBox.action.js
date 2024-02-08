@@ -1,4 +1,4 @@
-import { inputConstant } from "../../../constant/InputConstant"
+import { inputConstant } from "../../../constant/inputConstant"
 
 const addInputBox = (id) => {
 	return {

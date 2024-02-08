@@ -3,11 +3,15 @@ import controllMessage from './controllMessage'
 import authenticated from './authenticated'
 import { authentication } from '../action/authentication'
 import controllDropDownModal from './controllDropDownModal'
+import cartReducer from './cart.reducer'
+import userReducer from './user.information'
 
 const appReducer = combineReducers({
     controllMessage,
     authenticated,
-    controllDropDownModal
+    controllDropDownModal,
+    cartReducer,
+    userReducer
 })
 
 const rootReducer = (state, action) => {

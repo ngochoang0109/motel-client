@@ -22,9 +22,18 @@ const getTokenOfLocalStorage = () => {
 	return false
 }
 
+const getRoles=()=>{
+	if (localStorage.getItem('tokenUser')) {
+		let obj = JSON.parse(localStorage.getItem('tokenUser'));
+		return obj.roles;
+	}
+	return false
+}
+
 export const AuthService = {
 	register,
 	login,
 	logout,
-	getTokenOfLocalStorage
+	getTokenOfLocalStorage,
+	getRoles
 }

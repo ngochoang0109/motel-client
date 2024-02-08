@@ -1,9 +1,8 @@
-import { inputConstant } from "../constant/InputConstant";
+import { inputConstant } from "../constant/inputConstant";
 
 const initialState = [];
 
 const controllDropDownModal = (state = initialState, action) => {
-
 	switch (action.type) {
 		case inputConstant.ADD_INPUT_BOX:
 			let idAlreadyExists = state.some((value) => {

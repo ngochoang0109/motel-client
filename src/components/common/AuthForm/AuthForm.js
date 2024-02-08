@@ -14,7 +14,7 @@ const AuthForm = ({ form }) => {
 	const [userInfor, setUserInfor] = useState({
 		email: '',
 		username: '',
-		fullname: '',
+		fullName: '',
 		phone: '',
 		password: '',
 		usernameOrEmail: ''
@@ -40,7 +40,7 @@ const AuthForm = ({ form }) => {
 						localStorage.setItem('tokenUser', JSON.stringify(response.data));
 						dispatch(authentication.loginSuccess())
 						dispatch(message.successfully(true, 'Đăng nhập thành công'))
-						await navigate('/', { replace: true })
+						navigate('/', { replace: true })
 					} else {
 						dispatch(authentication.loginFailure())
 						dispatch(message.error(true, 'Đăng nhập thất bại'))
@@ -57,7 +57,7 @@ const AuthForm = ({ form }) => {
 					dispatch(message.information(false))
 					if (response.data.status) {
 						dispatch(message.successfully(true, response.data.message))
-						await navigate('/login', { replace: true })
+						navigate('/login', { replace: true })
 					}
 				})
 				.catch((error) => {
@@ -86,14 +86,6 @@ const AuthForm = ({ form }) => {
 			</form>
 		</div>
 		<ul className="login-more">
-			<li>
-				<span className="txt1">
-					Quên&nbsp;
-				</span>
-				<Link to={'/'} className="txt2">
-					mật khẩu?
-				</Link>
-			</li>
 			<li>
 				<span className="txt1">
 					Chưa có tài khoản&nbsp;
@@ -130,7 +122,7 @@ const AuthForm = ({ form }) => {
 				</div>
 				<label className="styles__TextFieldLabel-sc-12i1x7w-1 cvbjEz">Họ và tên</label>
 				<div className="sc-icwmWt iXXDXO">
-					<input type="text" className="sc-dYdBQb hxqKDG styles__TextField-sc-12i1x7w-2 igEGOe" name="fullname"
+					<input type="text" className="sc-dYdBQb hxqKDG styles__TextField-sc-12i1x7w-2 igEGOe" name="fullName"
 						onChange={inputOnChangeHandler} />
 				</div>
 				<label className="styles__TextFieldLabel-sc-12i1x7w-1 cvbjEz">Số điện thoại liên lạc</label>

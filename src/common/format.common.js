@@ -5,9 +5,9 @@ const formatNumberic = (price) => {
 	return (resutl || resutl === 0) ? resutl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
 }
 
-const convertStringNumricToNumber=(strNumberic)=>{
+const convertStringNumricToNumber = (strNumberic) => {
 	let resutl = strNumberic.toString().replace(/[^0-9]/g, '')
-	return resutl;
+	return parseFloat(resutl);
 }
 
 const combineComponentOfAddress = (province, district, ward, street) => {
@@ -18,16 +18,10 @@ const combineComponentOfAddress = (province, district, ward, street) => {
 }
 /*input: String contains url youtube*/
 const getVideoIdFromUrlYoutube = (urls) => {
-	const str = 'llll;one,two.three four';
-	const result = str.split(/[;,.\s]/);
-}
-
-const formatStringToNewLineInTexarea = (arrStr) => {
-	let finalStr = ''
-	arrStr.map((str) => {
-		return finalStr = finalStr + `${str}\r\n`
-	})
-	return finalStr
+	if (urls) {
+		return urls.split("v=")[1].split("&")[0];
+	}
+	return '';
 }
 
 const formatDate = () => {
@@ -36,7 +30,7 @@ const formatDate = () => {
 
 const addDate = (initDate, numDate) => {
 	const copy = new Date(initDate)
-	copy.setDate(initDate.getDate() + numDate)
+	copy.setDate(copy.getDate() + numDate)
 	return moment(copy).format(formatCommon.formatDate());
 }
 
@@ -61,7 +55,6 @@ function getDifferenceInSeconds(date1, date2) {
 }
 
 const getResultDiffDate = (date1, date2) => {
-	console.log(date1, date2)
 	if (getDifferenceInSeconds(date1, date2) < 60) {
 		return `${getDifferenceInSeconds(date1, date2)} giây`
 	}
@@ -75,18 +68,69 @@ const getResultDiffDate = (date1, date2) => {
 		return `${getDifferenceInDays(date1, date2)} ngày`
 	}
 	else {
-		return formatDate(date1);
+		return moment(date1).format(formatCommon.formatDate());
 	}
 }
 
+const formatWithTimeDate = (initDate) => {
+	const copy = new Date(initDate)
+	return moment(copy).format('HH:mm DD/MM/YYYY');
+}
+
+const getQueryStringParams = query => {
+	return query ? (/^[?#]/.test(query) ? query.slice(1) : query)
+		.split('&')
+		.reduce((params, param) => {
+			let [key, value] = param.split('=');
+			params[key] = value ? decodeURIComponent(value.replace(/\+/g, ' ')) : '';
+			return params;
+		}, {}
+		)
+		: {}
+};
+
+function disabledDate(current) {
+	const temp = new Date(current._i)
+	temp.setDate(temp.getDate() - 1)
+	return current && current.valueOf() < temp;
+}
+
+const convertPriceToStringVn = (price) => {
+	let strPrice = '' + price.toString()
+	if (strPrice.length >= 7 && strPrice.length <= 9) {
+		if (strPrice.length == 7) {
+			return `${strPrice[0]} triệu`
+		}
+		if (strPrice.length == 8) {
+			return `${strPrice[0]}${strPrice[1]} triệu`
+		}
+		if (strPrice.length == 9) {
+			return `${strPrice[0]}${strPrice[1]}${strPrice[2]} triệu`
+		}
+	}
+}
+
+const phoneNumberFormat = (phoneNumberString) => {
+	var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+	var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+	if (match) {
+		return ' ' + match[1] + ' ' + match[2] + ' ' + match[3];
+	}
+	return null;
+}
 
 export const formatCommon = {
 	formatNumberic,
 	combineComponentOfAddress,
 	getVideoIdFromUrlYoutube,
-	formatStringToNewLineInTexarea,
 	formatDate,
 	addDate,
 	getResultDiffDate,
-	convertStringNumricToNumber
+	convertStringNumricToNumber,
+	getVideoIdFromUrlYoutube,
+	formatWithTimeDate,
+	getQueryStringParams,
+	disabledDate,
+	convertPriceToStringVn,
+	phoneNumberFormat
 }

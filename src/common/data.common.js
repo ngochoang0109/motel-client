@@ -1,5 +1,36 @@
-export const dataCommon={
-	getDirections:[{id:0,name:'Đông'},{id:0,name:'Tây'},{id:0,name:'Nam'},
-						{id:0,name:'Bắc'},{id:0,name:'Đông Bắc'},{id:0,name:'Tây Bắc'},
-						{id:0,name:'Tây Nam'},{id:0,name:'Đông Nam'}]
+import { modeNews } from "../constant/mode.news";
+
+export const dataCommon = {
+	getDirections: [{ id: 0, name: 'Đông' }, { id: 0, name: 'Tây' }, { id: 0, name: 'Nam' },
+	{ id: 0, name: 'Bắc' }, { id: 0, name: 'Đông Bắc' }, { id: 0, name: 'Tây Bắc' },
+	{ id: 0, name: 'Tây Nam' }, { id: 0, name: 'Đông Nam' }],
+	getNumberBeds: [{ id: 1, name: '1' }, { id: 2, name: '2' }, { id: 3, name: '3' },
+	{ id: 4, name: '4' }, { id: 5, name: '5+' }],
+	menuBarNewsManagement: [{ className: `item`, title: 'Đăng mới', to:'/trang-chu/tao-bai-viet' },
+	{ className: `item`, title: 'Danh sách tin', to:'/trang-chu/quan-ly-bai-viet' },
+	{ className: `item`, title: 'Giỏ tin', to:'/trang-chu/quan-ly-bai-viet/gio-tin'},
+	{ className: `item`, title: 'Lịch sử giao dịch', to:'/trang-chu/quan-ly-bai-viet/lich-su-giao-dich'},
+	{ className: `item`, title: 'Thông tin cá nhân', to:'/trang-chu/quan-ly-bai-viet/thong-tin-ca-nhan'}],
+	menuBarStatusManagement:[{ className: `active`, title: 'Tất cả', mode:modeNews.NEWS_ALL},
+	{ className: `active`, title: 'Chờ Duyệt', mode:modeNews.WAITING_APROVED },
+	{ className: `active`, title: 'Không duyệt', mode:modeNews.NEWS_REJECT},
+	{ className: `active`, title: 'Chờ thanh toán', mode:modeNews.NEWS_WAIT_PAYMENT},
+	{ className: `active`, title: 'Chờ hiển thị' , mode:modeNews.WAITING_SHOW},
+	{ className: `active`, title: 'Đang hiển thị', mode:modeNews.SHOWING},
+	{ className: `active`, title: 'Đã ẩn' , mode:modeNews.HINDDEN},
+	{ className: `active`, title: 'Hết hạn', mode:modeNews.EXPRIED}],
+	bankList:[{code:'NCB',title:'NCB', img:'https://batdongsan.com.vn/sellernet/static/media/ncbank.fd7ec961.jpg'},
+	{code:'SCB',title:'SCB', img:'https://batdongsan.com.vn/sellernet/static/media/scbbank.a1e6168c.jpg'},
+	{code:'SACOMBANK',title:'SACOMBANK', img:'	https://batdongsan.com.vn/sellernet/static/media/sacombank.cb5dea80.jpg'},
+	{code:'EXIMBANK',title:'EXIMBANK', img:'https://batdongsan.com.vn/sellernet/static/media/eximbank.6bb847d8.jpg'},
+	{code:'NAMABANK',title:'NAMABANK', img:'https://batdongsan.com.vn/sellernet/static/media/namabank.baa84164.jpg'},
+	{code:'VIETINBANK',title:'VIETINBANK', img:'https://batdongsan.com.vn/sellernet/static/media/viettinbank.383a3e0f.jpg'},
+	{code:'HDBANK',title:'HDBANK', img:'https://batdongsan.com.vn/sellernet/static/media/hdbank.7768f4ba.jpg'},
+	{code:'DONGABANK',title:'DONGABANK', img:'https://batdongsan.com.vn/sellernet/static/media/dongabank.4567e2cf.jpg'},
+	{code:'TPBANK',title:'TPBANK', img:'	https://batdongsan.com.vn/sellernet/static/media/tpbank.1aa7da2c.jpg'},
+	{code:'BIDV',title:'BIDV', img:'https://batdongsan.com.vn/sellernet/static/media/bidvbank.6fad6a21.jpg'},
+	{code:'TCB',title:'TECHCOMBANK', img:'https://batdongsan.com.vn/sellernet/static/media/techcombank.558a0474.jpg'},
+	{code:'VPBANK',title:'VPBANK', img:'https://batdongsan.com.vn/sellernet/static/media/vpbank.fac02b82.jpg'},
+	{code:'AGRIBANK',title:'AGRIBANK', img:'	https://batdongsan.com.vn/sellernet/static/media/argibank.934b954a.jpg'},
+	{code:'MBBANK',title:'MBBANK', img:'https://batdongsan.com.vn/sellernet/static/media/mbbank.31cee54a.jpg'}]
 }

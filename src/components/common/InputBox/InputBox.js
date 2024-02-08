@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { inputConstant } from "../../../constant/InputConstant";
+import { inputConstant } from "../../../constant/inputConstant";
 import { useDispatch, useSelector } from 'react-redux';
 import generated from "../../../common/generated.common";
 import { storageKey } from "../../../constant/storageKey";
@@ -11,12 +11,13 @@ import down from './../../../assets/down.png'
 import add from './../../../assets/add.png'
 import calendar from './../../../assets/calendar.png'
 import { DatePicker } from "antd";
-import "antd/dist/antd.css";
+import 'antd/dist/antd.min.css';
 import moment from "moment";
 
 const InputBox = ({ mode, placeholder, data,
 	name, getValueDropList, onChange,
-	maxlength, minlength, row, type, value, title, disable, addItem }) => {
+	maxlength, minlength, row, type, value,
+	title, disable, addItem, icon, clickIcon, checked }) => {
 
 	const showModal = useSelector(state => state.controllDropDownModal)
 	const dispatch = useDispatch()
@@ -41,6 +42,7 @@ const InputBox = ({ mode, placeholder, data,
 	}
 
 	const controllTextBoxMode = () => {
+		// eslint-disable-next-line default-case
 		switch (mode) {
 			case inputConstant.INPUT_SEARCH:
 				return <Fragment>
@@ -63,11 +65,14 @@ const InputBox = ({ mode, placeholder, data,
 					<div className="input-selection-font"
 						onClick={onFocusInputBox}
 						style={{ width: '100%' }} id={id}>
-						<div className={inputValue.value.length === 0 ? `placeholder` : `placeholder value-selected`}>
+						<div className={inputValue.value.length === 0 ?
+							`placeholder` : `placeholder value-selected`}>
 							{inputValue.value.length === 0 ? `${placeholder}` : inputValue.value}
 						</div>
 					</div>
-					{currentInput.show ? <div onClick={clearInputData} className="icon-clear">
+					{icon ? <div onClick={clearInputData} className="icon-clear">
+						<img src={icon}></img>
+					</div> : currentInput.show ? <div onClick={clearInputData} className="icon-clear">
 						<img src={cross}></img>
 					</div> : <div className="div-button-right">
 						<img src={down}></img>
@@ -97,6 +102,9 @@ const InputBox = ({ mode, placeholder, data,
 					</div> : type === 'calendar' ? <div className="icon-clear">
 						<img src={calendar}></img>
 					</div> : null)))}
+					{icon ? <div className="icon-clear" onClick={clickIconButton}>
+						<img src={icon}></img>
+					</div> : <Fragment></Fragment>}
 				</div>
 			case inputConstant.INPUT_BIG_BOX:
 				return <div className={`input-selection-level-second ${currentInput.show ? `input-selection-font-focus` : `not-focus`}`}><textarea rows={row} id={id} type="text"
@@ -109,14 +117,15 @@ const InputBox = ({ mode, placeholder, data,
 					minLength={minlength}
 					onBlur={onFocusOutInputBox}
 					name={name}
-					disabled={disable ? disable : false}></textarea></div>
+					disabled={disable ? disable : false}></textarea>
+				</div>
 			case inputConstant.CHECK_BOX:
 				return <div className="checkbox-row">
 					<div color="#CCCCCC" className="size-checkbox">
 						<input type='checkbox'
 							className="check-box"
-							onClick={clickCheckBox}
-							value={inputValue.value} />
+							onChange={clickCheckBox}
+							checked={checked} />
 						<div className="mr-l-8">
 							<div className="text-of-checkbox">{title}</div>
 						</div>
@@ -137,19 +146,18 @@ const InputBox = ({ mode, placeholder, data,
 			case inputConstant.CALENDAR_BOX:
 				return <DatePicker format={formatCommon.formatDate()}
 					defaultValue={moment(inputValue.value.toString().length !== 0 ? new Date(inputValue.value) : new Date())}
-					disabledDate={disabledDate}
-					onChange={onChangeCalendar}
-					placeholder=''></DatePicker>
+					disabledDate={!disable ? false : disabledDate}
+					onChange={onChangeCalendar}></DatePicker>
 		}
 	}
 
 	function disabledDate(current) {
-		// Can not select days before today and today
-		return current && current.valueOf() < Date.now();
+		const temp = new Date()
+		temp.setDate(temp.getDate() - 1)
+		return current && current.valueOf() < temp;
 	}
 
 	const onChangeCalendar = (value) => {
-		console.log(value)
 		if (value.length === 0) {
 			return
 		}
@@ -247,10 +255,10 @@ const InputBox = ({ mode, placeholder, data,
 
 	const clearInputData = () => {
 		setInputValue({ value: "", nameOfinput: "" })
-		try{
-			onChange({ ...inputValue, value: "", nameOfinput: name, index: value.index})
-		}catch{
-			onChange({ ...inputValue, value: "", nameOfinput: name})
+		try {
+			onChange({ ...inputValue, value: "", nameOfinput: name, index: value.index })
+		} catch {
+			onChange({ ...inputValue, value: "", nameOfinput: name })
 		}
 	}
 
@@ -266,6 +274,10 @@ const InputBox = ({ mode, placeholder, data,
 			setInputValue({ ...inputValue, value: formatCommon.formatNumberic(event.target.value), nameOfinput: name })
 		}
 		controllInput()
+	}
+
+	const clickIconButton = () => {
+		clickIcon()
 	}
 
 	return <Fragment>

@@ -1,0 +1,5 @@
+export const cartConstant={
+	GET_CART:"GET_CART",
+	UPDATE_CART:"UPDATE_CART",
+	DELETED_ITEM:"DELETED_ITEM"
+}
